@@ -1,6 +1,6 @@
 import * as types from '../actions/photo'
 
-const init = {
+export const init = {
     isFetch: false,
     uri: null,
     error: null
