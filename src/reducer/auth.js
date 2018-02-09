@@ -1,5 +1,5 @@
 const init = {
-    token: 'e80333227fc61a7bfd1b5a1008c90220d35f2dde'
+    token: '5969cde32ee95eaa406baffefe9f6f899c2a8eec'
 }
 
 export default (state = init, action) => {

@@ -1,34 +1,61 @@
 import React, {Component} from 'react';
 import {addNavigationHelpers, StackNavigator, NavigationActions} from 'react-navigation';
 import {BackHandler} from "react-native";
-import { addListener } from '../utils/redux';
+import {addListener} from '../utils/redux';
 
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import MainScene from '../scenes/MainScene';
 import VisitListScene from '../scenes/VisitListScene';
+import CreateVisitScene from '../scenes/CreateVisitScene';
+import SettingsScene from '../scenes/SettingsScene';
 
-export const AppNavigator = StackNavigator(
-    {
-        Main: {
-            screen: MainScene,
-            navigationOptions: {
-                header: null,
-            }
-        },
-        VisitList:{
-            screen: VisitListScene,
-            navigationOptions: {
-                header: null,
-            }
-
+export const AppNavigator = StackNavigator({
+    Main: {screen: MainScene},
+    VisitList: {
+        screen: VisitListScene,
+        navigationOptions: {
+            header: null,
         }
+    },
+    CreateVisit: {
+        screen: CreateVisitScene,
+        navigationOptions: {
+            header: null,
+        }
+    },
+    Settings: {
+        screen: SettingsScene,
+        navigationOptions: {
+            // header: null,
+        }
+    },
+}, {
+    mode: 'modal',
+});
 
-    },{
-        headerMode: 'none',
-        // initialRouteName: 'Main',
-    }
-)
+
+//     StackNavigator(
+//     {
+//         Main: {
+//             screen: MainScene,
+//             navigationOptions: {
+//                 header: null,
+//             }
+//         },
+//         VisitList:{
+//             screen: VisitListScene,
+//             navigationOptions: {
+//                 header: null,
+//             }
+//
+//         }
+//
+//     },{
+//         headerMode: 'none',
+//         // initialRouteName: 'Main',
+//     }
+// )
 
 class AppWithNavigationState extends Component {
     componentDidMount() {
@@ -50,7 +77,7 @@ class AppWithNavigationState extends Component {
 
 
     render() {
-        const { dispatch, nav } = this.props;
+        const {dispatch, nav} = this.props;
         return (
             <AppNavigator
                 navigation={addNavigationHelpers({

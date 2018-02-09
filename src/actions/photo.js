@@ -3,7 +3,7 @@ export const UPLOAD_PHOTO_RESPONSE = 'UPLOAD_PHOTO_RESPONSE'
 export const UPLOAD_PHOTO_ERROR = 'UPLOAD_PHOTO_ERROR'
 
 export const uploadPhoto = (uri) => (dispatch, getState) => {
-    dispatch({type: UPLOAD_PHOTO_REQUEST, uri:uri})
+    dispatch({type: UPLOAD_PHOTO_REQUEST, })
     var formData = new FormData();
     console.log('photo', uri)
     formData.append('datafile', {uri:uri, type: 'image/jpg', name:uri.replace(/^.*[\\\/]/, '')})
