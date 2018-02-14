@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {ActivityIndicator, View, StyleSheet,TextInput} from 'react-native';
+import {ActivityIndicator, View, StyleSheet, TextInput} from 'react-native';
 import {
     Container,
     Header,
@@ -15,58 +15,55 @@ import {
     Title,
     Subtitle,
     Button,
-    Fab,Form
+    Fab, Form
 } from 'native-base';
 import {connect} from 'react-redux';
-import {back, goToSettings} from '../actions/navigation'
+import {back, goToSettings, goToVisitDetails} from '../actions/navigation'
+import {createVisit} from '../actions/visist'
 import I18n from 'react-native-i18n'
+import Toolbar from '../component/Toolbar'
 
 export class CreateVisitScene extends Component {
-    renderHeader() {
-        return (
-            <Header>
-                <Left>
-                    <Button transparent onPress={() => this.props.back()}>
-                        <Icon name='arrow-back'/>
-                    </Button>
-                </Left>
-                <Body>
-                <Title>{I18n.t('CreateVisit.title')}</Title>
-                </Body>
-                <Right>
-                    <Button transparent
-                            onPress={() => this.props.goToSettings()}
-                    >
-                        <Icon name='settings'/>
-                    </Button>
-
-                </Right>
-            </Header>
-        )
+    constructor(props) {
+        super(props)
+        this.state = {
+            text: '',
+        }
     }
+
 
     render() {
         return (
             <Container>
-                {this.renderHeader()}
-
+                <Toolbar title={I18n.t('CreateVisit.title')} rightButton={null}/>
                 <View style={{
-                    flex: 1,  padding:15, justifyContent: 'center', backgroundColor:'white'
+                    flex: 1, padding: 15, justifyContent: 'center', backgroundColor: 'white'
                 }}>
-                    <Form>
-                        <Item floatingLabel>
-                            <Label>{I18n.t('CreateVisit.label')}</Label>
-                            <Input/>
-                        </Item>
+                    <Item floatingLabel>
+                        <Label>{I18n.t('CreateVisit.label')}</Label>
+                        <Input onChangeText={(text) => this.setState({text})}
+                               value={this.state.text}/>
+                    </Item>
 
-                            <Button block success style={{marginTop:20}}>
-                                <Text>{I18n.t('CreateVisit.createAction')}</Text>
-                            </Button>
-                    </Form>
+                    <Button block success style={{marginTop: 20,}}
+                            onPress={() => this.props.createVisit(this.state.text)}>
+                        <Text>{I18n.t('CreateVisit.createAction')}</Text>
+                        {this.props.isFetch ? <ActivityIndicator color="white"/> : null}
+                    </Button>
                 </View>
             </Container>
         )
     }
 }
 
-export default connect(null, {goToSettings, back})(CreateVisitScene)
+export default connect(state => {
+    const {nav, visits} = state
+    return {
+        nav: nav,
+        error: visits.error,
+        isFetch: visits.isFetch,
+        result: visits.result,
+
+
+    }
+}, {goToSettings, back, createVisit, goToVisitDetails})(CreateVisitScene)

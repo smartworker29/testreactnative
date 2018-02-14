@@ -1,1 +1,0 @@
-export const base_url = 'https://mobile-app.inspector-cloud-staging.ru/api/v1.5/visits/'

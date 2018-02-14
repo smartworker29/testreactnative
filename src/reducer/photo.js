@@ -18,6 +18,8 @@ export default (state = init, action) => {
 
         case types.ADD_PHOTO:
             return {...state, uri:action.payload.uri}
+        case types.CLEAR_PHOTO:
+            return {...init}
         default:
             return state
     }
