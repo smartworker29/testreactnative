@@ -9,21 +9,36 @@ import {
     Text,
     StyleSheet,
 } from 'react-native';
-import {Container, Header, Left, Body, Right, Icon, Title, ListItem, Button, Fab} from 'native-base';
+import {Container, Header, Left, Body, Right, Icon, Title, Button, Fab} from 'native-base';
 import {isIphoneX} from '../utils/util'
 import PropTypes from 'prop-types';
+import ListItem from '../component/ListItem'
 import {connect} from 'react-redux';
 import {goToCreateVisit, goToSettings, goToVisitDetails} from '../actions/navigation'
-import {getVisitsList, refreshVisitsList} from '../actions/visist'
+import {syncPhoto} from '../actions/photo'
+import {getVisitsList, refreshVisitsList, syncVisitList} from '../actions/visist'
 import I18n from 'react-native-i18n'
 import Toolbar from '../component/Toolbar'
 
 const heightCenter = Dimensions.get('window').height * 0.5
 
+
 export class VisitListScene extends Component {
 
     componentDidMount = () => {
         this.props.refreshVisitsList(false)
+        this.props.syncVisitList()
+        console.log('urisByVisit', this.props.urisByVisit)
+        if (Object.keys(this.props.urisByVisit).length === 0) {
+            this.props.syncPhoto()
+
+        }
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.isFetch && !nextProps.isFetch && nextProps.error !== null && nextProps.error.connection == false) {
+        }
     }
 
     renderEmptyComponent = () => {
@@ -62,12 +77,14 @@ export class VisitListScene extends Component {
 
     render() {
         const {result, entities} = this.props
+
+        // const ids = result.sort((a,b)=>b-a)
         return (
             <Container>
                 <Toolbar
                     leftButton={
-                        <Button transparent onPress={() => this.props.goToCreateVisit()}>
-                            <Icon name="create"/></Button>
+                        <Button transparent>
+                            <Icon ios='ios-menu' android="md-menu"/></Button>
                     }
                     title={I18n.t('visits_list.title')}
                 />
@@ -75,18 +92,7 @@ export class VisitListScene extends Component {
                     <FlatList
                         data={result}
                         renderItem={({item}) => (
-                            <TouchableOpacity onPress={() => {
-                                console.log('item', item)
-                                this.props.goToVisitDetails(item)
-                            }
-                            }>
-                                <View style={styles.item}>
-                                    <View>
-                                        <Text>{entities[item].id}</Text></View>
-
-                                    <Text note>{entities[item].started_date}</Text>
-                                </View>
-                            </TouchableOpacity>
+                            <ListItem visit={entities[item]} onPress={() => this.props.goToVisitDetails(item)}/>
 
                         )}
                         keyExtractor={item => `visit_${item}`}
@@ -103,8 +109,13 @@ export class VisitListScene extends Component {
                                 titleColor="#fff"
                             />
                         }                        // onRefresh={this.props.refreshVisitsList()}
-                        // refreshing={this.props.refresh}
+                        refreshing={this.props.refresh}
                     />
+                    <Fab position="bottomRight"
+                         onPress={() => this.props.goToCreateVisit()}
+                    >
+                        <Icon name="add"/>
+                    </Fab>
                 </View>
             </Container>
         );
@@ -113,7 +124,7 @@ export class VisitListScene extends Component {
 }
 
 export default connect(state => {
-    const {nav, visits} = state
+    const {nav, visits, photo} = state
     console.log(state)
     return {
         nav: nav,
@@ -122,6 +133,8 @@ export default connect(state => {
         isFetch: visits.isFetch,
         refresh: visits.refresh,
         hasMore: visits.hasMore,
+        error: visits.error,
+        urisByVisit: photo.urisByVisit
 
     }
 }, {
@@ -129,7 +142,9 @@ export default connect(state => {
     goToCreateVisit,
     getVisitsList,
     refreshVisitsList,
-    goToVisitDetails
+    goToVisitDetails,
+    syncVisitList,
+    syncPhoto
 })(VisitListScene)
 const styles = StyleSheet.create({
     container: {
@@ -144,7 +159,7 @@ const styles = StyleSheet.create({
     innerContainer: {
         alignItems: 'center',
     },
-    item:{
+    item: {
         // shadowColor: '#000000',
         backgroundColor: 'white',
         padding: 8,
@@ -158,3 +173,15 @@ const styles = StyleSheet.create({
     },
     empty: {flex: 1, justifyContent: 'center', alignItems: 'center'}
 });
+
+/**<TouchableOpacity onPress={() => {
+    // console.log('item', item)
+    this.props.goToVisitDetails(item)}}
+ >
+ <View style={styles.item}>
+ <View>
+ <Text>{entities[item].id}</Text></View>
+
+ <Text note>{entities[item].started_date}</Text>
+ </View>
+ </TouchableOpacity>*/

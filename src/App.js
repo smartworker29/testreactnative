@@ -9,7 +9,8 @@ import {Provider} from 'react-redux';
 import {Root} from 'native-base'
 import {configureStore} from './configStore'
 import AppWithNavigationState from './navigators/AppNavigator'
-
+import {NetInfo} from 'react-native'
+import * as types from './actions/app'
 import I18n from 'react-native-i18n';
 import en from '../locales/en';
 import ru from '../locales/ru';
@@ -20,6 +21,20 @@ const currentLocale = I18n.currentLocale();
 const store = configureStore();
 
 export default class App extends Component {
+    // componentDidMount() {
+    //     NetInfo.isConnected.addEventListener('change', this._handleConnectionChange);
+    // }
+    //
+    // componentWillUnmount() {
+    //     NetInfo.isConnected.removeEventListener('change', this._handleConnectionChange);
+    // }
+    //
+    // _handleConnectionChange = (isConnected) => {
+    //     const { dispatch, actionQueue } = this.props;
+    //     dispatch(store.dispatch({ type:types.CHANGE_CONNECTION_STATUS,payload: isConnected }));
+    //
+    //
+    // };
     render() {
         return (
             <Root>

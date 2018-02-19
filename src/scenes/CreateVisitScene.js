@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {ActivityIndicator, View, StyleSheet, TextInput} from 'react-native';
+import {ActivityIndicator, View, StyleSheet,KeyboardAvoidingView, TextInput, ScrollView} from 'react-native';
 import {
     Container,
     Header,
@@ -36,21 +36,27 @@ export class CreateVisitScene extends Component {
         return (
             <Container>
                 <Toolbar title={I18n.t('CreateVisit.title')} rightButton={null}/>
+                <KeyboardAvoidingView style={{flex:1,}}       behavior="padding"
+                >
                 <View style={{
                     flex: 1, padding: 15, justifyContent: 'center', backgroundColor: 'white'
                 }}>
                     <Item floatingLabel>
                         <Label>{I18n.t('CreateVisit.label')}</Label>
-                        <Input onChangeText={(text) => this.setState({text})}
-                               value={this.state.text}/>
+                        <Input onChangeText={(text) => this.setState({text:text.replace(/[^0-9]/g, '')})}
+                               keyboardType="numeric"
+                               value={this.state.text}
+                               // disable = {this.props.isFetch}
+                        />
                     </Item>
 
-                    <Button block success style={{marginTop: 20,}}
+                    <Button block success style={{marginTop: 20,}} disabled={this.state.text===''}
                             onPress={() => this.props.createVisit(this.state.text)}>
                         <Text>{I18n.t('CreateVisit.createAction')}</Text>
                         {this.props.isFetch ? <ActivityIndicator color="white"/> : null}
                     </Button>
                 </View>
+                </KeyboardAvoidingView>
             </Container>
         )
     }
@@ -61,7 +67,7 @@ export default connect(state => {
     return {
         nav: nav,
         error: visits.error,
-        isFetch: visits.isFetch,
+        isFetch: visits.isCreateFetch,
         result: visits.result,
 
 

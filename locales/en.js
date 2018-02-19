@@ -17,6 +17,8 @@ export default {
         agent: 'Agent',
         shop: 'Shop',
         started_date: 'Date of visit',
+        offline:`don't sync`
+
     },
 
     CreateVisit: {
@@ -33,10 +35,12 @@ export default {
     photo: {
         title: 'Photo',
         reship: 'Reship',
+        makePhoto:'Make photo',
         send: 'Send',
         back:'Back',
         cancel:'Cancel',
-        ok:'Ok'
+        ok:'Ok',
+        sync:'Syncing in progress'
 
     }
 

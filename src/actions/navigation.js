@@ -1,6 +1,11 @@
 import {NavigationActions} from 'react-navigation'
 import visits from "../reducer/visits";
+
 export const back = () => dispatch => dispatch(NavigationActions.back({key: null}))
+export const backTo = (scene) => dispatch => dispatch(NavigationActions.reset({
+    index: 0,
+    actions: [NavigationActions.navigate({routeName: scene})]
+}))
 
 export const goToCreateVisit = () => dispatch => dispatch(NavigationActions.navigate({routeName: 'CreateVisit'}));
 
@@ -8,7 +13,7 @@ export const goToSettings = () => dispatch => dispatch(NavigationActions.navigat
 
 export const goToVisitList = () => dispatch => dispatch(NavigationActions.navigate({routeName: 'VisitList'}));
 
-export const visitDetails=(id)=>NavigationActions.navigate({
+export const visitDetails = (id) => NavigationActions.navigate({
     routeName: 'VisitDetails',
     params: {id}
 })
@@ -23,6 +28,6 @@ export const goToVisitDetails = (id) => dispatch => dispatch(visitDetails(id));
  * @param id visit's id
  */
 export const goToPhoto = (id) => dispatch => dispatch(NavigationActions.navigate({
-        routeName: 'Photo',
-        params: {id}
-    }));
+    routeName: 'Photo',
+    params: {id}
+}));

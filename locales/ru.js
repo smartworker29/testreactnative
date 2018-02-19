@@ -16,6 +16,7 @@ export default {
         agent: 'Агент',
         shop: 'Магазин',
         started_date: 'Дата визита',
+        offline:'не синхронизированно'
     },
     CreateVisit: {
         title: "Начать визит",
@@ -32,9 +33,11 @@ export default {
     photo:{
         title:'Фото',
         reship:'Переснять',
+        makePhoto:'Сделать фото',
         send: 'Отправить',
         back:'Назад',
         cancel:'Отмена',
-        ok:'Готово'
+        ok:'Готово',
+        sync:'Идет синхронизация'
     }
 }
