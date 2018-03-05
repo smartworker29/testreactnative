@@ -3,13 +3,11 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {ActivityIndicator, Button, ImageBackground, Modal, StyleSheet, View} from 'react-native';
 import {CameraKitCameraScreen} from 'react-native-camera-kit';
-
 import {addPhoto, uploadPhoto} from '../actions/photo'
-
 
 class MainScene extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             modalVisible: false,
         }
@@ -32,7 +30,7 @@ class MainScene extends Component {
         } else if (event.type === 'right') {
             this.setState({
                 photo: event.captureImages[0].uri
-            }, () => this.showCamera(false))
+            }, () => this.showCamera(false));
             this.props.addPhoto(event.captureImages[0].uri)
 
         }
@@ -52,8 +50,8 @@ class MainScene extends Component {
 
     }
     render() {
-        const {isFetch, uri, error, uploadPhoto} = this.props
-        console.log(uri)
+        const {isFetch, uri, error, uploadPhoto} = this.props;
+        //console.log(uri);
         return (
             <View style={styles.container}>
                 <ImageBackground style={styles.image}

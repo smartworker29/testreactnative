@@ -1,76 +1,68 @@
 import * as types from '../actions/photo'
+import _ from "lodash"
+import { Map } from "immutable";
 
 export const init = {
     isFetch: false,
     error: null,
     uri: null,
-    /**
-     * {
-     *    uri:{isUpload, isFetch}
-     * }
-     */
-    urisByVisit: {},
+    needSync: false,
+    photos: Map()
+};
 
-}
+const checkNeedSync = (photos) => {
+    let needSync = false;
+    for (const [, val] of photos) {
+        needSync = (val.isUploaded === false)
+    }
+
+    return needSync;
+};
 
 export default (state = init, action) => {
+    let photos = state.photos;
     switch (action.type) {
         case types.UPLOAD_PHOTO_REQUEST:
-            return {...state, isFetch: true, error: null}
+            photos = photos.updateIn([action.payload.uri], photo => {
+                photo.isUploading = true;
+                return photo;
+            })
+            return {...state, isFetch: true, error: null, photos};
 
-        //
-        // {
-        //     "id": 31,
-        //     "duplicate": true,
-        //     "status": 30,
-        //     "ir_job_id": null,
-        //     "moderated_date": null,
-        //     "moderation_time": null,
-        //     "annotations_count_cached": 0,
-        //     "created_date": "2018-02-17T16:01:23.742685Z",
-        //     "ir_started_date": null,
-        //     "ir_response_date": null,
-        //     "media": 17662,
-        //     "annotated_image": null,
-        //     "visit": 10,
-        //     "scene": 6,
-        //     "primary_category": null,
-        //     "moderated_by": null,
-        //     "low_res_hq": 17663,
-        //     "low_res_lq": 17664
-        // }
         case types.UPLOAD_PHOTO_RESPONSE:
+            photos = state.photos.delete(action.payload.uri).delete(action.payload.tmpId);
             return {
                 ...state,
                 isFetch: false,
                 error: null,
-                urisByVisit:{
-                    ...state.urisByVisit,
-                    [action.payload.visit]:{
-                        ...state.urisByVisit[action.payload.visit],
-                        [action.payload.uri]:{isUpload:true, isFetch:false, ...action.payload}
+                needSync: checkNeedSync(photos),
+                photos
+            };
 
-                    }
-                }
-            }
         case types.UPLOAD_PHOTO_ERROR:
-            return {...state, isFetch: false, error: action.payload}
+            photos = photos.updateIn([action.payload.uri], photo => {
+                photo.isUploading = false;
+                photo.isUploaded = false;
+                return photo;
+            })
+            return {...state, photos, isFetch: false, error: action.payload.error};
 
-        case types.SYNC_PHOTO:
-            return {...state, urisByVisit:{...action.payload}}
+        case types.SYNC_PHOTO_END:
+            return {...state, needSync: checkNeedSync(state.photos)};
+
         case types.ADD_PHOTO:
+            photos = state.photos.set(action.payload.uri, {
+                isUpload: false,
+                isUploading: false,
+                uri: action.payload.uri,
+                visit: action.payload.id,
+                error: null
+            });
             return {
                 ...state,
-                urisByVisit:{
-                    ...state.urisByVisit,
-                    [action.payload.id]:{
-                        ...state.urisByVisit[action.payload.id],
-                        [action.payload.uri]:{isUpload:false, isFetch:false, uri:action.payload.uri}
-
-                    }
-                }
-
-            }
+                needSync: true,
+                photos
+            };
         // case
         // types.CLEAR_PHOTO
         // :

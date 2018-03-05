@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {addNavigationHelpers, StackNavigator, NavigationActions} from 'react-navigation';
-import {BackHandler} from "react-native";
+import {BackHandler, AsyncStorage} from "react-native";
 import {addListener} from '../utils/redux';
-import {clearPhoto} from '../actions/photo'
+import {clearPhoto, syncPhoto} from '../actions/photo'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import MainScene from '../scenes/MainScene';
@@ -10,28 +10,27 @@ import VisitListScene from '../scenes/VisitListScene';
 import VisitDetailScene from '../scenes/VisitDetailScene';
 import CreateVisitScene from '../scenes/CreateVisitScene';
 import PhotoScene from '../scenes/PhotoScene';
-import SettingsScene from '../scenes/SettingsScene';
-import photo from "../reducer/photo";
+import ProfileScene from '../scenes/ProfileScene';
+import {Toast} from "native-base";
+import {getVisitsList, initVisits, refreshVisitsList, syncVisitList} from "../actions/visist";
+import {appInit, setSyncTime} from "../actions/app";
+import I18n from "react-native-i18n";
+import {resetToProfile} from "../actions/navigation";
+import {authInit} from "../actions/auth";
 
 export const AppNavigator = StackNavigator({
     Main: {screen: MainScene},
     VisitList: {
         screen: VisitListScene,
-        navigationOptions: {
-            header: null,
-        }
+        key: "list"
     },
     VisitDetails: {
         screen: VisitDetailScene,
-        navigationOptions: {
-            header: null,
-        }
+
     },
     CreateVisit: {
         screen: CreateVisitScene,
-        navigationOptions: {
-            header: null,
-        }
+        mode: 'modal'
     },
     Photo: {
         screen: PhotoScene,
@@ -39,11 +38,9 @@ export const AppNavigator = StackNavigator({
             header: null,
         }
     },
-    Settings: {
-        screen: SettingsScene,
-        navigationOptions: {
-            header: null,
-        }
+    Profile: {
+        screen: ProfileScene,
+        mode: 'modal'
     },
 }, {
     // mode: 'modal',
@@ -51,12 +48,54 @@ export const AppNavigator = StackNavigator({
 
 
 class AppWithNavigationState extends Component {
-    componentDidMount() {
+
+    constructor() {
+        super()
+    }
+
+    async componentWillMount() {
+        await this.props.dispatch(appInit());
+        await this.props.dispatch(authInit());
+
+        if (this.props.authId === null) {
+            this.props.dispatch(resetToProfile());
+        }
+    }
+
+    async componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
     }
 
-    componentWillUnmount() {
+    async sync() {
+        await this.props.dispatch(syncVisitList());
+        await this.props.dispatch(syncPhoto());
+        await this.props.dispatch(refreshVisitsList(false));
+        this.props.dispatch(setSyncTime());
+    }
+
+    async componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
+    }
+
+    async componentWillReceiveProps(props) {
+
+        if (this.props.authId !== props.authId && this.props.dispatch) {
+            await this.props.dispatch(initVisits());
+            await this.props.dispatch(refreshVisitsList(false));
+
+            setInterval(async () => {
+                await this.sync();
+            }, 15000)
+        }
+
+
+        if (this.props.error !== props.error) {
+            Toast.show({
+                text: props.error,
+                position: 'bottom',
+                buttonText: null
+            });
+        }
     }
 
     onBackPress = () => {
@@ -64,7 +103,6 @@ class AppWithNavigationState extends Component {
         if (nav.index === 0) {
             return false;
         }
-        // this.props.clearPhoto()
         dispatch(NavigationActions.back());
         return true;
     };
@@ -92,6 +130,8 @@ AppWithNavigationState.propTypes = {
 
 const mapStateToProps = state => ({
     nav: state.nav,
+    error: state.app.error,
+    authId: state.auth.id
 });
 
-export default connect(mapStateToProps, )(AppWithNavigationState);
+export default connect(mapStateToProps)(AppWithNavigationState);

@@ -1,24 +1,16 @@
-import React, {Component, PureComponent} from 'react';
-import {StyleSheet, Text, ActivityIndicator, ImageBackground, TouchableOpacity, View,} from 'react-native';
-import I18n from 'react-native-i18n'
+import React, {PureComponent} from 'react';
+import {StyleSheet, ImageBackground, TouchableOpacity, View, Image,} from 'react-native';
 import PropTypes from 'prop-types';
-import {Icon} from 'native-base'
+import {photoUnsyncIcon} from "../utils/images";
 
 export default class ImageView extends PureComponent {
     render() {
         const {photo} = this.props
-        console.log('ImageView', photo)
         return (
             <TouchableOpacity {...this.props} onPress={this.props.onPress}>
                 <View style={styles.item}>
-
-                    {photo.isUpload ?null : <ActivityIndicator size="small" style={styles.indicator}/>}
-                    <ImageBackground style={styles.image}
-                        // loader={<ActivityIndicator/>}
-                                     source={{uri: photo.uri}}
-
-
-                    />
+                    {photo.isUpload ? null : <Image source={photoUnsyncIcon} style={styles.indicator}/>}
+                    <ImageBackground style={styles.image} source={{uri: photo.uri}}/>
                 </View>
             </TouchableOpacity>
         )
@@ -26,15 +18,8 @@ export default class ImageView extends PureComponent {
 }
 
 ImageView.propTypes = {
-    /**
-     * The data of visit
-     */
     photo: PropTypes.object,
-    /**
-     * action for when pressing the item
-     */
     onPress: PropTypes.func,
-
 }
 
 ImageView.defaultProps = {
@@ -43,9 +28,9 @@ ImageView.defaultProps = {
 
 const styles = StyleSheet.create({
     item: {
-        padding: 4,
-        height: 108,
-        width: 108,
+        padding: 1,
+        height: 106,
+        width: 106,
         backgroundColor: 'white'
     },
     isUploading: {
@@ -56,12 +41,12 @@ const styles = StyleSheet.create({
     indicator: {
         zIndex: 1,
         position: 'absolute',
-        top: 50,
-        left: 50,
+        right: 5,
+        top: 10,
     },
     image: {
         zIndex: 0,
-        height: 100,
-        width: 100,
+        height: 106,
+        width: 106,
     }
 });
