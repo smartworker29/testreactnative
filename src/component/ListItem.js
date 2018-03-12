@@ -7,13 +7,20 @@ import {
     unsyncIcon
 } from '../utils/images'
 import moment from 'moment'
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import ru from 'moment/locale/ru';
 
 class ListItem extends PureComponent {
     constructor() {
         super()
-        this.moment = moment
-        this.moment.locale(I18n.currentLocale())
+        this.moment = moment;
+        this.moment.updateLocale("ru", ru);
+
+        if (I18n.currentLocale().includes("ru")) {
+            this.moment.locale("ru");
+        } else {
+            this.moment.locale("en");
+        }
     }
 
     /**
@@ -101,10 +108,9 @@ class ListItem extends PureComponent {
     render() {
         const {visit, photos} = this.props
         const currentPhotosCount = photos.filter(photo => photo.id === visit.id).count();
-        let needPhotoSync = (currentPhotosCount > 0);
+        let needPhotoSync = photos.find(photo => photo.visit === visit.id && photo.isUpload === false);
 
-
-        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon
+        const sync_icon = (visit.tmp || needPhotoSync !== undefined) ? unsyncIcon : syncIcon
         const shopId = (visit.shop !== null) ? visit.shop : '- - -'
         const id = (!visit.id || visit.tmp === true) ? '- - -' : visit.id;
 
@@ -130,7 +136,7 @@ class ListItem extends PureComponent {
 
 ListItem.propTypes = {
     visit: PropTypes.object,
-    onPress: PropTypes.func
+    onPress: PropTypes.func,
 }
 
 ListItem.defaultProps = {

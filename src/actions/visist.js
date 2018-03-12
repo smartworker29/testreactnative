@@ -8,8 +8,10 @@ import {
     CREATE_VISIT_ERROR, CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, GET_VISIT_ERROR, GET_VISIT_RESPONSE,
     REFRESH_VISIT_ERROR,
     REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE, SET_APP_DATA, SET_SYNC_VISIT,
-    SET_VISIT_OFFLINE, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE
+    SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
 } from '../utils/constants'
+import { SYNC_PHOTO_START } from "./photo";
+import visits from "../reducer/visits";
 
 export const createVisit = (shop) => async (dispatch, getState) => {
 
@@ -87,7 +89,7 @@ export const getVisitsList = () => async (dispatch, getState) => {
     try {
         let response = await axios({
             method: 'get',
-            timeout: 2000,
+            timeout: 10000,
             url: `${base_url}/visits/?page=${getState().visits.page}`,
             headers: {
                 'Authorization': `Token ${getState().auth.token}`,
@@ -173,7 +175,14 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
     }
 }
 
+
 export const syncVisitList = () => async (dispatch, getState) => {
+
+    if (getState().visits.syncProcess === true) {
+        return;
+    }
+
+    dispatch({type: SYNC_VISIT_START});
     dispatch({type: SYNC_VISIT_REQUEST})
     const offline = JSON.parse(await AsyncStorage.getItem('@visits_offline')) || {}
     const sync = JSON.parse(await AsyncStorage.getItem('@visits_sync')) || {}
@@ -194,6 +203,7 @@ export const syncVisitList = () => async (dispatch, getState) => {
     dispatch({type: SET_APP_DATA, payload: {beenSyncVisit}})
     await AsyncStorage.setItem('@visits_offline', JSON.stringify(offline))
     await AsyncStorage.setItem('@visits_sync', JSON.stringify(sync))
+    dispatch({type: SYNC_VISIT_END});
 
     if (Object.keys(sync) > 0) {
         //dispatch({type: "SHOW_TOAST", payload: "Синхронизированно"});

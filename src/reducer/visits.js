@@ -4,8 +4,10 @@ import {
     CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, GET_VISIT_DETAILS_RESPONSE,
     GET_VISIT_REQUEST, GET_VISIT_RESPONSE, REFRESH_VISIT_ERROR, REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE,
     SET_SYNC_VISIT,
-    SET_VISIT_OFFLINE, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE
+    SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
 } from "../utils/constants";
+import { Map } from "immutable";
+import * as types from "../actions/photo";
 
 export const init = {
     isFetch: false,
@@ -14,6 +16,7 @@ export const init = {
     refresh: false,
     hasMore: false,
     needSync: false,
+    syncProcess: false,
     error: null,
     count: 0,
     page: '1',
@@ -30,11 +33,12 @@ export default (state = init, action) => {
         case GET_VISIT_REQUEST:
             return {...state, isFetch: true, error: null};
         case GET_VISIT_RESPONSE:
+            const getVisits = Map(action.payload.entities.visit).take(30).toObject();
             return {
                 ...state, isFetch: false,
                 error: null,
                 result: [...state.result, ...action.payload.result],
-                entities: {visit: {...state.entities.visit, ...action.payload.entities.visit}},
+                entities: {visit: {...state.entities.visit, ...getVisits}},
                 count: action.payload.count,
                 page: action.payload.page,
                 hasMore: action.payload.hasMore
@@ -52,6 +56,7 @@ export default (state = init, action) => {
             return nState;
 
         case REFRESH_VISIT_RESPONSE:
+            const refreshVisits = Map(action.payload.entities.visit).take(30).toObject();
             let tmpVisits = state.entities.offline || {};
             let tmpIds = [];
             if (state.entities.offline) {
@@ -66,7 +71,7 @@ export default (state = init, action) => {
                 isFetch: false,
                 result: [...ids],
                 needSync: (tmpIds.length > 0),
-                entities: {visit: {...tmpVisits, ...action.payload.entities.visit}, offline: tmpVisits},
+                entities: {visit: {...tmpVisits, ...refreshVisits}, offline: tmpVisits},
                 count: action.payload.count,
                 page: action.payload.page,
                 hasMore: action.payload.hasMore
@@ -89,6 +94,7 @@ export default (state = init, action) => {
                 ...state,
                 isFetch: false,
                 error: null,
+                isCreateFetch: false,
                 entities: {visit: {...state.entities.visit, [action.payload.id]: action.payload}, offline},
                 needSync: (action.offline === true),
                 result: [action.payload.id, ...state.result],
@@ -120,6 +126,12 @@ export default (state = init, action) => {
 
         case "SYNC_PHOTO_END":
             return {...state, isSync: false};
+
+        case SYNC_VISIT_START:
+            return {...state, syncProcess: true};
+
+        case SYNC_VISIT_END:
+            return {...state, syncProcess: false};
 
         case GET_VISIT_DETAILS_RESPONSE:
             return {

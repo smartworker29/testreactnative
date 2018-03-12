@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {addNavigationHelpers, StackNavigator, NavigationActions} from 'react-navigation';
 import {BackHandler, AsyncStorage} from "react-native";
 import {addListener} from '../utils/redux';
-import {clearPhoto, syncPhoto} from '../actions/photo'
+import { clearPhoto, photoInit, syncPhoto } from '../actions/photo'
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import MainScene from '../scenes/MainScene';
@@ -17,6 +17,7 @@ import {appInit, setSyncTime} from "../actions/app";
 import I18n from "react-native-i18n";
 import {resetToProfile} from "../actions/navigation";
 import {authInit} from "../actions/auth";
+import { loadData } from "../actions/profile";
 
 export const AppNavigator = StackNavigator({
     Main: {screen: MainScene},
@@ -56,8 +57,10 @@ class AppWithNavigationState extends Component {
     async componentWillMount() {
         await this.props.dispatch(appInit());
         await this.props.dispatch(authInit());
+        await this.props.dispatch(photoInit());
+        await this.props.dispatch(loadData());
 
-        if (this.props.authId === null) {
+        if (this.props.authId === null || this.props.pathNumber.length === 0) {
             this.props.dispatch(resetToProfile());
         }
     }
@@ -85,7 +88,7 @@ class AppWithNavigationState extends Component {
 
             setInterval(async () => {
                 await this.sync();
-            }, 15000)
+            }, 5000)
         }
 
 
@@ -131,7 +134,8 @@ AppWithNavigationState.propTypes = {
 const mapStateToProps = state => ({
     nav: state.nav,
     error: state.app.error,
-    authId: state.auth.id
+    authId: state.auth.id,
+    pathNumber: state.profile.pathNumber,
 });
 
 export default connect(mapStateToProps)(AppWithNavigationState);

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {ActivityIndicator, Button, ImageBackground, Modal, StyleSheet, View} from 'react-native';
-import {CameraKitCameraScreen} from 'react-native-camera-kit';
 import {addPhoto, uploadPhoto} from '../actions/photo'
 
 class MainScene extends Component {
@@ -64,24 +63,6 @@ class MainScene extends Component {
                     visible={this.state.modalVisible}
                     onRequestClose={() => this.showCamera(false)}
                 >
-                    <CameraKitCameraScreen
-                        ref={(camera) => {
-                            this.camera = camera;
-                        }}
-                        actions={{
-                            rightButtonText: 'Готово'
-                            ,
-                            leftButtonText: 'Закрыть'
-                        }}
-                        onBottomButtonPressed={(event) => this.onBottomButtonPressed(event)}
-                        flashImages={{
-                            on: require('../../assets/images/flashOn.png'),
-                            off: require('../../assets/images/flashOff.png'),
-                            auto: require('../../assets/images/flashAuto.png')
-                        }}
-                        cameraFlipImage={require('../../assets/images/cameraFlipIcon.png')}
-                        captureButtonImage={require('../../assets/images/cameraButton.png')}
-                    />
 
                 </Modal>
 

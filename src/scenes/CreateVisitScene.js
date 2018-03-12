@@ -1,12 +1,13 @@
-import React, {Component} from 'react';
-import {View, StyleSheet, KeyboardAvoidingView, Text, Platform} from 'react-native';
-import {Item, Input, Label} from 'native-base';
-import {connect} from 'react-redux';
-import {back, goToVisitDetails} from '../actions/navigation'
-import {createVisit} from '../actions/visist'
+import React, { Component } from 'react';
+import { View, StyleSheet, KeyboardAvoidingView, Text, Platform } from 'react-native';
+import { Item, Input, Label } from 'native-base';
+import { connect } from 'react-redux';
+import { back, goToVisitDetails } from '../actions/navigation'
+import { createVisit } from '../actions/visist'
 import I18n from 'react-native-i18n'
-import {createVisitsNavigationOptions} from "../navigators/options";
+import { createVisitsNavigationOptions } from "../navigators/options";
 import GradientButton from "../component/GradientButton";
+import { allowAction } from "../utils/util";
 
 export class CreateVisitScene extends Component {
 
@@ -26,10 +27,12 @@ export class CreateVisitScene extends Component {
     }
 
     createVisit = () => {
-        if (this.state.text.length === 0) {
+        if (this.state.text.length === 0 || this.props.isFetch === true) {
             return;
         }
-        this.props.createVisit(this.state.text)
+        if (allowAction("create_visit_process")) {
+            this.props.createVisit(this.state.text)
+        }
     }
 
     render() {
@@ -41,6 +44,7 @@ export class CreateVisitScene extends Component {
                         <Item floatingLabel>
                             <Label>{I18n.t('CreateVisit.label')}</Label>
                             <Input onChangeText={(text) => this.setState({text: text.replace(/[^0-9]/g, '')})}
+                                   maxLength={9}
                                    keyboardType="numeric"
                                    value={this.state.text}
                                 // disable = {this.props.isFetch}
@@ -48,7 +52,7 @@ export class CreateVisitScene extends Component {
                         </Item>
                     </View>
                     <View style={{marginTop: 10}}>
-                        <GradientButton disable={this.state.text.length === 0}
+                        <GradientButton disable={this.state.text.length === 0 || this.props.isFetch === true}
                                         text={I18n.t('CreateVisit.createAction')}
                                         onPress={this.createVisit}/>
                     </View>

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     ActivityIndicator,
     RefreshControl,
@@ -8,17 +8,19 @@ import {
     Text,
     StyleSheet, ScrollView, Image, SectionList,
 } from 'react-native';
-import {Container, Header, Left, Body, Right, Icon, Title, Button, Fab, Toast} from 'native-base';
+import { Container, Header, Left, Body, Right, Icon, Title, Button, Fab, Toast } from 'native-base';
 import ListItem from '../component/ListItem'
-import {connect} from 'react-redux';
-import {goToCreateVisit, goToProfile, goToVisitDetails} from '../actions/navigation'
-import {syncPhoto} from '../actions/photo'
-import {getVisitsList, initVisits, refreshVisitsList, syncVisitList} from '../actions/visist'
+import { connect } from 'react-redux';
+import { goToCreateVisit, goToProfile, goToVisitDetails } from '../actions/navigation'
+import { syncPhoto } from '../actions/photo'
+import { getVisitsList, initVisits, refreshVisitsList, syncVisitList } from '../actions/visist'
 import I18n from 'react-native-i18n'
-import {visitsNavigationOptions} from "../navigators/options";
-import {photoSyncIcon, shopImage} from "../utils/images";
+import { visitsNavigationOptions } from "../navigators/options";
+import { photoSyncIcon, shopImage } from "../utils/images";
 import GradientButton from "../component/GradientButton";
+import Orientation from 'react-native-orientation';
 import moment from "moment"
+import { allowAction } from "../utils/util";
 
 const heightCenter = Dimensions.get('window').height * 0.5;
 
@@ -74,13 +76,19 @@ export class VisitListScene extends Component {
         }
     };
 
+    createVisit = () => {
+        if (allowAction("create_visit")) {
+            this.props.goToCreateVisit();
+        }
+    }
+
     /**
      * Button to create new visit
      * @returns {*}
      */
     renderNewVisit() {
         return <GradientButton style={styles.newVisitBtn} text={I18n.t("visits_list.newVisit")}
-                               onPress={this.props.goToCreateVisit}/>
+                               onPress={this.createVisit}/>
     }
 
     /**
@@ -104,6 +112,9 @@ export class VisitListScene extends Component {
         const beforeSection = {data: [], title: I18n.t("visits_list.before")}
 
         for (const id of result) {
+            if (!visits[id]) {
+                continue;
+            }
             const days = Math.abs(moment(visits[id].started_date).startOf('day').diff(moment(new Date()).startOf('day'), 'days'));
             if (days < 1) {
                 todaySection.data.push(visits[id]);
@@ -165,7 +176,7 @@ export class VisitListScene extends Component {
                     <SectionList
                         sections={sections}
                         initialNumToRender={10}
-                         // ListHeaderComponent={() => this.renderLastSyncDate()}
+                        // ListHeaderComponent={() => this.renderLastSyncDate()}
                         renderSectionHeader={({section}) => this.renderSectionHeader(section.title)}
                         renderSectionFooter={() => <View style={{height: 7}}/>}
                         renderItem={({item}) => <ListItem visit={item}

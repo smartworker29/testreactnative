@@ -19,6 +19,12 @@ export const clearPhoto = () => (dispatch) => dispatch({type: CLEAR_PHOTO});
 export const UPLOAD_PHOTO_REQUEST = 'UPLOAD_PHOTO_REQUEST';
 export const UPLOAD_PHOTO_RESPONSE = 'UPLOAD_PHOTO_RESPONSE';
 export const UPLOAD_PHOTO_ERROR = 'UPLOAD_PHOTO_ERROR';
+export const SET_PHOTO_CACHE = 'SET_PHOTO_CACHE';
+
+export const photoInit = () => async (dispatch, getState) => {
+    const cache = JSON.parse(await AsyncStorage.getItem('@photo_cache'));
+    dispatch({type: SET_PHOTO_CACHE, payload: cache});
+}
 
 export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getState) => {
     dispatch({type: UPLOAD_PHOTO_REQUEST, payload: {uri, id}});
@@ -34,6 +40,7 @@ export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getStat
         }
 
         dispatch({type: UPLOAD_PHOTO_RESPONSE, payload: {id, uri, tmpId: visitId}});
+        await AsyncStorage.setItem('@photo_cache', JSON.stringify(getState().photo.cache.toObject()));
         await dispatch(getVisitDetails(id));
 
     } catch (error) {
@@ -47,6 +54,11 @@ export const SYNC_PHOTO_START = 'SYNC_PHOTO_START';
 export const SYNC_PHOTO_END = 'SYNC_PHOTO_END';
 
 export const syncPhoto = () => async (dispatch, getState) => {
+
+    if (getState().photo.syncProcess === true) {
+        return;
+    }
+
     dispatch({type: SYNC_PHOTO_START});
     const sync = JSON.parse(await AsyncStorage.getItem('@visits_sync')) || {};
     let beenSyncPhoto = false;

@@ -6,17 +6,21 @@ import {
     SET_PROFILE_PATRONYMIC,
     SET_PROFILE_SURMANE
 } from "../utils/constants";
-import {AsyncStorage} from "react-native";
-import {resetToList} from "./navigation";
+import { AsyncStorage } from "react-native";
+import { resetToList } from "./navigation";
 import * as API from "../api";
 
-export const saveData = () => async (dispatch, getState) => {
+export const saveData = (action) => async (dispatch, getState) => {
 
     const data = getState().profile;
     const authId = getState().auth.id;
 
     if (data.name.length === 0) {
         return alert("Введите имя");
+    }
+
+    if (data.pathNumber.length === 0) {
+        return alert("Введите Номер маршрута");
     }
 
     data.hasChanges = false;
@@ -29,8 +33,12 @@ export const saveData = () => async (dispatch, getState) => {
         if (result !== null) {
             await AsyncStorage.setItem("@auth_id", String(result.data.id))
             dispatch({type: SET_AUTH_ID, payload: String(result.data.id)})
-            dispatch(resetToList())
+            return dispatch(resetToList());
         }
+    }
+
+    if (action) {
+        dispatch(action);
     }
 }
 

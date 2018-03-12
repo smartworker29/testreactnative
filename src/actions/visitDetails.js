@@ -5,7 +5,7 @@ import {
     GET_VISIT_DETAILS_RESPONSE, SHOW_TOAST
 } from "../utils/constants";
 
-export const getVisitDetails = (id) => async (dispatch) => {
+export const getVisitDetails = (id) => async (dispatch, getState) => {
     dispatch({type: GET_VISIT_DETAILS_REQUEST});
 
     try {
@@ -17,14 +17,23 @@ export const getVisitDetails = (id) => async (dispatch) => {
 
         const visit = response.data;
 
-        let updates = await API.getAgentUpdates();
+        let updates = await API.getAgentUpdates(getState().auth.id);
         updates = updates.data;
 
-        let lastVisitUpdate = _.orderBy(_.filter(updates, {visit: id}), ['id'], ['desc']).pop();
+        let lastVisitUpdate = _.orderBy(_.filter(updates, {
+            visit: id,
+            update_type: "VISIT RESULTS"
+        }), ['id'], ['ASC']).pop();
+        let lastModerateUpdate = _.orderBy(_.filter(updates, {
+            visit: id,
+            update_type: "VISIT MODERATION"
+        }), ['id'], ['ASC']).pop();
         if (lastVisitUpdate && lastVisitUpdate.message) {
             visit.detail = lastVisitUpdate.message;
         }
-
+        if (lastModerateUpdate && lastModerateUpdate.message) {
+            visit.lastModerationMessage = lastModerateUpdate.message;
+        }
         if (response.status === 200) {
             dispatch({type: GET_VISIT_DETAILS_RESPONSE, payload: visit})
         }

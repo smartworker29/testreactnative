@@ -14,6 +14,8 @@ import {
 import GradientButton from '../component/GradientButton'
 import moment from 'moment'
 import _ from "lodash"
+import ru from "moment/locale/ru";
+import { allowAction } from "../utils/util";
 
 export class VisitDetailScene extends Component {
 
@@ -23,11 +25,16 @@ export class VisitDetailScene extends Component {
         super()
 
         this.moment = moment
-        this.moment.locale(I18n.currentLocale())
+        this.moment.updateLocale("ru", ru);
+
+        if (I18n.currentLocale().includes("ru")) {
+            this.moment.locale("ru");
+        } else {
+            this.moment.locale("en");
+        }
 
         this.state = {
-            date: undefined,
-            allowPhoto: true
+            date: undefined
         }
     }
 
@@ -38,6 +45,8 @@ export class VisitDetailScene extends Component {
         if (visit && visit.tmp) {
             return
         }
+
+        await this.props.getVisitDetails(id)
 
         this.timer = setInterval(async () => {
             await this.props.getVisitDetails(id)
@@ -77,7 +86,7 @@ export class VisitDetailScene extends Component {
         )
     }
 
-    renderResultsBlock(results) {
+    renderResultsBlock(results, id) {
 
         let resultRow = (
             <View style={styles.infoStatusRow}>
@@ -118,15 +127,19 @@ export class VisitDetailScene extends Component {
 
         const date = this.moment(results.created_date).format('D MMMM, HH:mm')
 
+        const lastMessage = (this.props.detail.id === id) ? (
+            <View style={styles.statusBlock}>
+                <Text style={styles.statusBlockText}>{this.props.detail.detail}</Text>
+                <Text style={styles.statusBlockDate}>{date}</Text>
+            </View>
+        ) : null;
+
         return (
             <View syle={styles.result}>
                 <View style={styles.delimiter}/>
                 <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
                 {resultRow}
-                <View style={styles.statusBlock}>
-                    <Text style={styles.statusBlockText}>{results.message}</Text>
-                    <Text style={styles.statusBlockDate}>{date}</Text>
-                </View>
+                {lastMessage}
             </View>
         )
     }
@@ -140,7 +153,7 @@ export class VisitDetailScene extends Component {
             </View>
         )
 
-        if (moderation === null) {
+        if (moderation === null || !this.props.detail.lastModerationMessage) {
             return (
                 <View syle={styles.result}>
                     <View style={styles.delimiter}/>
@@ -178,7 +191,7 @@ export class VisitDetailScene extends Component {
                 {moderationRow}
                 <View style={styles.statusBlock}>
                     <Text style={styles.statusBlockComment}>{I18n.t('visitDetail.moderationComment')}</Text>
-                    <Text style={styles.statusBlockText}>{moderation.message}</Text>
+                    <Text style={styles.statusBlockText}>{this.props.detail.lastModerationMessage}</Text>
                     <Text style={styles.statusBlockDate}>{date}</Text>
                 </View>
             </View>
@@ -192,6 +205,10 @@ export class VisitDetailScene extends Component {
         if (sync && sync[id]) {
             return this.props.navigation.dispatch(visitDetailsAndReset(sync[id]))
         }
+    }
+
+    getFilename(path) {
+        return path.replace(/^.*[\\\/]/, '');
     }
 
     renderPhotoArea(visit) {
@@ -216,8 +233,10 @@ export class VisitDetailScene extends Component {
         const imageBlocks = []
 
         for (const image of images) {
+            const filename = this.getFilename(image);
+            const imagePath = this.props.photosCache.get(filename) || image;
             imageBlocks.push(
-                <ImageView key={image} photo={{uri: image, isUpload: true}}/>
+                <ImageView key={image} photo={{uri: imagePath, isUpload: true}}/>
             )
         }
 
@@ -241,25 +260,22 @@ export class VisitDetailScene extends Component {
     }
 
     goToPhoto = (id) => {
-        if (this.state.allowPhoto) {
-            this.setState({
-                allowPhoto: false
-            }, () => {
-                this.props.goToPhoto(id);
-                setTimeout(() => this.setState({allowPhoto: true}), 1000)
-            })
+        if(allowAction("goToPhoto")) {
+            this.props.goToPhoto(id);
         }
     }
 
     render() {
         const {id} = this.props.navigation.state.params
         const visit = this.props.visits[id]
+        const {photos} = this.props;
 
         if (!visit) {
             return null
         }
 
-        const sync_icon = (visit.tmp || this.props.needSync) ? unsyncIcon : syncIcon
+        const needPhotoSync = photos.find(photo => photo.visit === id && photo.isUpload === false);
+        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon
         const shopId = (visit.shop !== null) ? visit.shop : '- - -'
         const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'))
         const maxId = _.max(this.props.result);
@@ -278,7 +294,7 @@ export class VisitDetailScene extends Component {
                             </View>
                             {this.renderShopDetail(visit)}
                             <Text style={styles.id}>{`ID ${shopId}`}</Text>
-                            {this.renderResultsBlock(visit.results)}
+                            {this.renderResultsBlock(visit.results, visit.id)}
                             {!visit.tmp ? this.renderModerationBlock(visit.moderation) : null}
                         </View>
                         {this.renderPhotoArea(visit)}
@@ -300,7 +316,9 @@ const mapStateToProps = (state) => {
         offline: visits.entities.offline,
         result: visits.result,
         photos: photo.photos,
+        photosCache: photo.cache,
         sync: visits.sync,
+        detail: visitDetails.visit,
         needSync: photo.needSync || visits.needSync,
     }
 }
@@ -434,6 +452,7 @@ const styles = StyleSheet.create({
     photoArea: {
         flex: 1,
         flexDirection: 'row',
+        justifyContent: "space-around",
         flexWrap: 'wrap',
         marginTop: 10
     },
