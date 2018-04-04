@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     backIcon: {marginLeft: 10, height: 21},
@@ -14,6 +14,21 @@ const styles = StyleSheet.create({
         color: "#000000"
     },
     navBarIconArea: {width: 48, height: 48, justifyContent: "center", alignItems: "center"},
+    navBarIconAreaLeft: {
+        width: 100,
+        height: 48,
+        paddingLeft: 14,
+        justifyContent: "center",
+        alignItems: "flex-start"
+    },
+    navBarIconAreaRight: {
+        width: 100,
+        height: 48,
+        paddingRight: 14,
+        justifyContent: "center",
+        alignItems: "flex-end"
+
+    },
 
     pd16: {
         paddingHorizontal: 16

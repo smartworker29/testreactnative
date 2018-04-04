@@ -1,15 +1,16 @@
-import React, {PureComponent} from 'react';
-import {StyleSheet, ImageBackground, TouchableOpacity, View, Image,} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, ImageBackground, TouchableOpacity, View, Image, } from 'react-native';
 import PropTypes from 'prop-types';
-import {photoUnsyncIcon} from "../utils/images";
+import { photoUnsyncIcon } from "../utils/images";
 
-export default class ImageView extends PureComponent {
+export default class ImageView extends Component {
+
     render() {
-        const {photo} = this.props
+        const {photo} = this.props;
         return (
             <TouchableOpacity {...this.props} onPress={this.props.onPress}>
                 <View style={styles.item}>
-                    {photo.isUpload ? null : <Image source={photoUnsyncIcon} style={styles.indicator}/>}
+                    {photo.isUploaded ? null : <Image source={photoUnsyncIcon} style={styles.indicator}/>}
                     <ImageBackground style={styles.image} source={{uri: photo.uri}}/>
                 </View>
             </TouchableOpacity>

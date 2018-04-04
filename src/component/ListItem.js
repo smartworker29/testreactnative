@@ -9,6 +9,7 @@ import {
 import moment from 'moment'
 import { connect } from 'react-redux';
 import ru from 'moment/locale/ru';
+import _ from "lodash";
 
 class ListItem extends PureComponent {
     constructor() {
@@ -72,7 +73,7 @@ class ListItem extends PureComponent {
         let resultView = resultBlock(unknownIcon, '- - -')
         let moderationView = (!visit.tmp) ? moderationBlock(timeIcon, I18n.t('visits_list.OnModeration')) : null
 
-        if (results !== null) {
+        if (results && results.status) {
             switch (results.status) {
                 case 'NEGATIVE' :
                     resultView = resultBlock(dislikeIcon, I18n.t('visits_list.resultBad'), styles.red)
@@ -106,11 +107,18 @@ class ListItem extends PureComponent {
     }
 
     render() {
-        const {visit, photos} = this.props
-        const currentPhotosCount = photos.filter(photo => photo.id === visit.id).count();
-        let needPhotoSync = photos.find(photo => photo.visit === visit.id && photo.isUpload === false);
+        const {visit, photos, route, sync} = this.props
 
-        const sync_icon = (visit.tmp || needPhotoSync !== undefined) ? unsyncIcon : syncIcon
+        const reverseSync = _.reverse(sync);
+        const needPhotoSync = photos.find(photo => {
+            return (
+                (photo.visit === visit.id || photo.tmpId === visit.id || sync[photo.visit] === visit.id) &&
+                (photo.isUploaded === false || photo.isUploading === true))
+        });
+
+        //Reactotron.log(`visit ${visit.id} needPhotoSync=${needPhotoSync}`);
+
+        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon
         const shopId = (visit.shop !== null) ? visit.shop : '- - -'
         const id = (!visit.id || visit.tmp === true) ? '- - -' : visit.id;
 
@@ -125,7 +133,7 @@ class ListItem extends PureComponent {
                     <View style={styles.delimiter}/>
                     {this.renderResultBlock(visit)}
                     <View style={styles.numberRow}>
-                        <Text style={styles.shopNumber}>{`ID ${shopId}`}</Text>
+                        <Text style={styles.shopNumber}>{`ID ${shopId} ${I18n.t("visits_list.route")} ${route}`}</Text>
                         <Text style={styles.number}>{`№ ${id}`}</Text>
                     </View>
                 </View>
@@ -259,6 +267,8 @@ const styles = StyleSheet.create({
 
 export default connect(state => {
     return {
-        photos: state.photo.photos
+        photos: state.photo.photos,
+        route: state.profile.pathNumber,
+        sync: state.visits.sync,
     }
 })(ListItem)

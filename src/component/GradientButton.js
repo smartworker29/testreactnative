@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 });
 
 export default (props) => {
-    const icon = (props.icon) ? <Image style={styles.icon} source={cameraIcon}/> : null;
+    const icon = (props.icon) ? <Image style={styles.icon} source={props.icon}/> : null;
     let colors = ['#ff415f', '#c40010']
     if (props.disable === true) {
         colors = ["#b4b4b4", "#b4b4b4"]

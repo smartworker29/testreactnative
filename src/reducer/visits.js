@@ -1,8 +1,9 @@
 import _ from "lodash"
 import {
     CREATE_VISIT_ERROR,
-    CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, GET_VISIT_DETAILS_RESPONSE,
+    CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, DELETE_OFFLINE_VISIT, GET_VISIT_DETAILS_RESPONSE,
     GET_VISIT_REQUEST, GET_VISIT_RESPONSE, REFRESH_VISIT_ERROR, REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE,
+    SET_LAST_CREATED_ID,
     SET_SYNC_VISIT,
     SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
 } from "../utils/constants";
@@ -17,6 +18,7 @@ export const init = {
     hasMore: false,
     needSync: false,
     syncProcess: false,
+    lastCreatedId: null,
     error: null,
     count: 0,
     page: '1',
@@ -33,7 +35,7 @@ export default (state = init, action) => {
         case GET_VISIT_REQUEST:
             return {...state, isFetch: true, error: null};
         case GET_VISIT_RESPONSE:
-            const getVisits = Map(action.payload.entities.visit).take(30).toObject();
+            const getVisits = Map(action.payload.entities.visit).toObject();
             return {
                 ...state, isFetch: false,
                 error: null,
@@ -54,6 +56,9 @@ export default (state = init, action) => {
             const nState = _.cloneDeep(state);
             nState.entities.offline = {...action.payload, ...nState.entities.offline}
             return nState;
+
+        case SET_LAST_CREATED_ID:
+            return {...state, lastCreatedId: action.payload}
 
         case REFRESH_VISIT_RESPONSE:
             const refreshVisits = Map(action.payload.entities.visit).take(30).toObject();
@@ -90,14 +95,27 @@ export default (state = init, action) => {
                 offline = {...offline, [action.payload.id]: action.payload}
             }
 
+            if (!action.payload.local_started_date) {
+                action.payload.local_started_date = (new Date()).toJSON();
+            }
+
             return {
                 ...state,
                 isFetch: false,
                 error: null,
                 isCreateFetch: false,
+                lastCreatedId: action.payload.id,
                 entities: {visit: {...state.entities.visit, [action.payload.id]: action.payload}, offline},
                 needSync: (action.offline === true),
                 result: [action.payload.id, ...state.result],
+            };
+
+        case DELETE_OFFLINE_VISIT:
+            let newOffline = {...state.entities.offline};
+            delete newOffline[action.payload]
+            return {
+                ...state,
+                entities: {visit: {...state.entities.visit}, offline: {...newOffline}}
             };
 
         case SYNC_VISIT_REQUEST:
@@ -105,7 +123,7 @@ export default (state = init, action) => {
 
         case SYNC_VISIT_RESPONSE:
 
-            const needSync = (Object.keys(action.offline).length > 0);
+            const needSync = (Object.keys(state.entities.offline).length > 0);
 
             const visit = _.cloneDeep(state.entities.visit)
             visit[action.payload.id] = action.payload;
@@ -115,7 +133,7 @@ export default (state = init, action) => {
                 ...state,
                 isFetch: false,
                 error: null,
-                entities: {visit: visit, offline: action.offline},
+                entities: {visit, offline: {...state.entities.offline}},
                 sync: {...state.sync, [action.syncId]: action.payload.id},
                 needSync,
                 result: Object.keys(visit).reverse(),

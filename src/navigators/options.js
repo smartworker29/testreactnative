@@ -18,7 +18,7 @@ export const visitsNavigationOptions = (navigation) => {
 
         headerRight: (
             <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity style={Styles.navBarIconArea} onPress={() => {
+                <TouchableOpacity style={Styles.navBarIconAreaRight} onPress={() => {
                     if (allowAction("profile")) {
                         navigation.state.params.handleProfile()
                     }
@@ -32,29 +32,34 @@ export const visitsNavigationOptions = (navigation) => {
     }
 }
 
+export const pinNavigationOptions = (navigation) => {
+    return {
+        header: null
+    }
+}
+
 export const profileNavigationOptions = (navigation) => {
 
-    let hasChanges = false
     let isLock = false
 
     if (navigation.state.params) {
-        hasChanges = navigation.state.params.hasChanges
         isLock = navigation.state.params.lock
     }
 
-    const headerLeft = (!isLock) ? (
-        <TouchableOpacity style={Styles.navBarIconArea} onPress={() => navigation.dispatch(NavigationActions.back())}>
+    const headerLeft = (isLock === true) ? null : (
+        <TouchableOpacity style={Styles.navBarIconAreaLeft}
+                          onPress={() => navigation.dispatch(NavigationActions.back())}>
             <Image resizeMode="contain" source={closeIcon}/>
         </TouchableOpacity>
-    ) : null
+    );
 
-    const headerRight = (hasChanges) ? (
-        <TouchableOpacity style={Styles.navBarIconArea} onPress={() => {
+    const headerRight = (
+        <TouchableOpacity style={Styles.navBarIconAreaRight} onPress={() => {
             navigation.state.params.saveData(NavigationActions.back())
         }}>
             <Image resizeMode="contain" source={doneIcon}/>
         </TouchableOpacity>
-    ) : null
+    )
 
     return {
         title: I18n.t('user_profile.title'),
@@ -67,14 +72,18 @@ export const profileNavigationOptions = (navigation) => {
 }
 
 export const visitNavigationOptions = (navigation) => {
-    const tmp = navigation.state.params.tmp;
+    const {tmp, sync} = navigation.state.params;
     let id = (!navigation.state.params.id || tmp === true) ? '- - -' : navigation.state.params.id;
+    if (sync && sync[navigation.state.params.id] !== undefined) {
+        id = sync[navigation.state.params.id];
+    }
     return {
         title: `${I18n.t('visitDetail.title')} № ${id}`,
         headerStyle: Styles.headerStyle,
         headerLeft: (
-            <TouchableOpacity style={Styles.navBarIconArea}
-                              onPress={() => navigation.dispatch(NavigationActions.back())}>
+            <TouchableOpacity
+                style={Styles.navBarIconAreaLeft}
+                onPress={() => navigation.dispatch(NavigationActions.back())}>
                 <Image resizeMode="contain" source={backIcon}/>
             </TouchableOpacity>
         ),
@@ -87,9 +96,11 @@ export const createVisitsNavigationOptions = (navigation) => {
     return {
         title: I18n.t('CreateVisit.title'),
         headerStyle: Styles.headerStyle,
+        headerBackImage: {closeIcon},
         headerLeft: (
-            <TouchableOpacity style={Styles.navBarIconArea}
-                              onPress={() => navigation.dispatch(NavigationActions.back())}>
+            <TouchableOpacity
+                style={Styles.navBarIconAreaLeft}
+                onPress={() => navigation.dispatch(NavigationActions.back())}>
                 <Image resizeMode="contain" source={closeIcon}/>
             </TouchableOpacity>
         ),

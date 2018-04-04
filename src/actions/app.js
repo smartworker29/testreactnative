@@ -1,5 +1,11 @@
-import {CHANGE_CONNECTION_STATUS, SET_APP_DATA, SET_SYNC_TIME, SET_SYNC_VISIT} from "../utils/constants";
-import {AsyncStorage} from "react-native";
+import {
+    CHANGE_CONNECTION_STATUS,
+    SET_APP_DATA,
+    SET_SYNC_TIME,
+    SET_SYNC_VISIT, SYNC_VISIT_REQUEST,
+    SYNC_VISIT_START
+} from "../utils/constants";
+import { AsyncStorage } from "react-native";
 
 export default changeConnectionStatus = (connected) => (dispatch) => {
     dispatch({type: CHANGE_CONNECTION_STATUS, payload: connected});
@@ -14,7 +20,6 @@ export const appInit = () => async (dispatch) => {
         await AsyncStorage.setItem("@last_sync_time", newDate);
         dispatch({type: SET_SYNC_TIME, payload: newDate});
     }
-    await AsyncStorage.removeItem("@photo");
 }
 export const setSyncTime = () => (dispatch, getStore) => {
     if (getStore().app.beenSyncVisit === true || getStore().app.beenSyncPhoto === true) {
@@ -24,4 +29,3 @@ export const setSyncTime = () => (dispatch, getStore) => {
         AsyncStorage.setItem("@last_sync_time", date);
     }
 }
-

@@ -1,19 +1,17 @@
-import { normalize } from 'normalizr'
-import { base_url, Schemas, getParameterByName } from '../utils/api'
 import { visitDetailsAndReset } from './navigation'
 import { AsyncStorage } from 'react-native'
-import axios from 'axios'
 import API from '../api/index'
 import {
-    CREATE_VISIT_ERROR, CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, GET_VISIT_ERROR, GET_VISIT_RESPONSE,
+    CREATE_VISIT_ERROR, CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, DELETE_OFFLINE_VISIT,
     REFRESH_VISIT_ERROR,
-    REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE, SET_APP_DATA, SET_SYNC_VISIT,
+    REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE, SET_APP_DATA, SET_LAST_CREATED_ID,
+    SET_SYNC_VISIT,
     SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
 } from '../utils/constants'
-import { SYNC_PHOTO_START } from "./photo";
-import visits from "../reducer/visits";
+import _ from "lodash";
+import { Map } from "immutable";
 
-export const createVisit = (shop) => async (dispatch, getState) => {
+export const createVisit = (shop, timeout) => async (dispatch, getState) => {
 
     dispatch({type: CREATE_VISIT_REQUEST})
 
@@ -28,22 +26,25 @@ export const createVisit = (shop) => async (dispatch, getState) => {
     }
 
     // const data = {...coordinates, route: "PSHD12", customer_id: 12345};
-    const data = {...coordinates, route: getState().profile.pathNumber, customer_id: shop}
+    const data = {...coordinates, route: getState().profile.pathNumber, customer_id: shop};
+    const pin = getState().auth.pin;
 
     try {
 
-        const response = await API.makeVisit(getState().auth.id, data)
+        const response = await API.makeVisit(getState().auth.id, data, timeout);
 
         if (response.status !== 200) {
             return dispatch({type: CREATE_VISIT_ERROR})
         }
 
-        await AsyncStorage.setItem('@visits', JSON.stringify({
+        await AsyncStorage.setItem(`@${pin}_visits`, JSON.stringify({
             entities: {visit: {...getState().visits.entities.visit, [response.data.id]: response.data}},
             result: [response.data.id, ...getState().visits.result]
         }))
 
-        dispatch({type: CREATE_VISIT_RESPONSE, payload: response.data})
+        dispatch({type: CREATE_VISIT_RESPONSE, payload: response.data});
+        await AsyncStorage.setItem(`@${pin}_last_created_id`, JSON.stringify(getState().visits.lastCreatedId));
+        await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
         dispatch(visitDetailsAndReset(response.data.id))
 
     } catch (error) {
@@ -55,14 +56,12 @@ export const createVisit = (shop) => async (dispatch, getState) => {
         const id = new Date().getTime()
 
         const local_date = new Date().toJSON();
-        const payload = {id, tmp: true, shop, results: false, moderation: false, local_date, data}
+        const payload = {id, tmp: true, shop, results: null, moderation: null, local_date, data}
 
-        await AsyncStorage.setItem('@visits_offline', JSON.stringify({
-            ...getState().visits.entities.offline,
-            [payload.id]: payload
-        }))
+        dispatch({type: CREATE_VISIT_RESPONSE, payload, offline: true});
+        await AsyncStorage.setItem(`@${pin}_last_created_id`, JSON.stringify(id));
 
-        dispatch({type: CREATE_VISIT_RESPONSE, payload, offline: true})
+        await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
         dispatch(visitDetailsAndReset(payload.id, true))
     }
 }
@@ -75,55 +74,22 @@ const getCoordinates = async () => {
     })
 }
 
-export const initVisits = () => async (dispatch) => {
-    const offline = JSON.parse(await AsyncStorage.getItem('@visits_offline')) || {}
-    dispatch({type: SET_VISIT_OFFLINE, payload: offline})
-}
+export const initVisits = () => async (dispatch, getState) => {
+    const pin = getState().auth.pin;
+    const cache = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits`)) || {}
 
-export const getVisitsList = () => async (dispatch, getState) => {
-
-    if (getState().visits.isFetch) {
-        return
+    if (!cache) {
+        dispatch({type: REFRESH_VISIT_RESPONSE, payload: cache})
     }
 
-    try {
-        let response = await axios({
-            method: 'get',
-            timeout: 10000,
-            url: `${base_url}/visits/?page=${getState().visits.page}`,
-            headers: {
-                'Authorization': `Token ${getState().auth.token}`,
-                'Content-Type': 'application/json'
-            },
-        })
+    const offline = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits_offline`)) || {}
+    dispatch({type: SET_VISIT_OFFLINE, payload: offline});
 
-        let page = 1
-        let hasMore = false
-        if (response.data.next != null) {
-            page = getParameterByName('page', response.data.next)
-            hasMore = true
-        }
+    const lastCreatedId = parseInt(await AsyncStorage.getItem(`@${pin}_last_created_id`)) || null;
+    dispatch({type: SET_LAST_CREATED_ID, payload: lastCreatedId});
 
-        let payload = normalize(response.data.results, Schemas.VISIT_ARRAY)
-        payload.page = page
-        payload.count = response.data.length
-        payload.hasMore = hasMore
-
-        await AsyncStorage.setItem('@visits', JSON.stringify({
-            result: [...getState().visits.result, ...payload.result],
-            entities: {visit: {...getState().visits.entities.visit, ...payload.entities.visit}},
-            count: payload.count,
-            page: payload.page,
-            hasMore: payload.hasMore
-        }))
-
-        dispatch({type: GET_VISIT_RESPONSE, payload})
-
-    } catch (error) {
-
-        console.log(error)
-        dispatch({type: GET_VISIT_ERROR, payload: error})
-    }
+    const visitSync = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits_sync`)) || {};
+    dispatch({type: SET_SYNC_VISIT, payload: visitSync});
 }
 
 export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
@@ -132,29 +98,27 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
         return
     }
 
-    dispatch({type: REFRESH_VISIT_REQUEST, payload: {isInit: isInit === undefined ? false : isInit}})
+    dispatch({type: REFRESH_VISIT_REQUEST, payload: {isInit: isInit === undefined ? false : isInit}});
+    const pin = getState().auth.pin;
 
     try {
 
-        const response = await API.getVisitsByAgent(getState().auth.id)
+        const response = await API.getVisitsByAgent(getState().auth.id);
 
         if (response.status !== 200) {
             return dispatch({type: REFRESH_VISIT_ERROR})
         }
 
-        /*let page = 1;
-        let hasMore = false;
-        if (response.data.next != null) {
-            page = getParameterByName('page', response.data.next);
-            hasMore = true
-        }*/
+        const slicedData = _.take(response.data, 30);
 
-        let payload = normalize(response.data, Schemas.VISIT_ARRAY)
-        payload.page = 1
+        const payload = {}
+        payload.entities = {visit: _.keyBy(slicedData, 'id')}
+        payload.result = slicedData.map(visit => visit.id);
+        payload.page = 1;
         payload.count = response.data.length
         payload.hasMore = false
 
-        await AsyncStorage.setItem('@visits', JSON.stringify(payload))
+        await AsyncStorage.setItem(`@${pin}_visits`, JSON.stringify(payload))
         dispatch({type: REFRESH_VISIT_RESPONSE, payload: payload})
 
     } catch (error) {
@@ -165,16 +129,16 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
             return dispatch({type: 'SHOW_TOAST', payload: 'Ошибка авторизации'})
         }
 
-        //dispatch({type: "SHOW_TOAST", payload: "Данные из кэша"});
-        const cash = JSON.parse(await AsyncStorage.getItem('@visits')) || {}
-        dispatch({type: REFRESH_VISIT_RESPONSE, payload: cash})
+        if (isInit === true) {
+            const cash = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits`)) || {}
+            dispatch({type: REFRESH_VISIT_RESPONSE, payload: cash})
+        }
 
         if (error.status === undefined) {
             return dispatch({type: REFRESH_VISIT_ERROR, payload: {connection: false}})
         } else return dispatch({type: REFRESH_VISIT_ERROR, payload: error})
     }
 }
-
 
 export const syncVisitList = () => async (dispatch, getState) => {
 
@@ -184,31 +148,30 @@ export const syncVisitList = () => async (dispatch, getState) => {
 
     dispatch({type: SYNC_VISIT_START});
     dispatch({type: SYNC_VISIT_REQUEST})
-    const offline = JSON.parse(await AsyncStorage.getItem('@visits_offline')) || {}
-    const sync = JSON.parse(await AsyncStorage.getItem('@visits_sync')) || {}
+    const offline = Map(getState().visits.entities.offline);
+    const sync = getState().visits.sync || {}
     let beenSyncVisit = false
+    const item = offline.first();
 
-    for (const item of Object.values(offline)) {
-        if (await API.getVisitDetail(item.id) === null) {
-            const created = await API.makeVisit(getState().auth.id, item.data)
+    if (item && sync[item.id] === undefined) {
+        const existVisit = await API.getVisitDetails(item.id);
+        if (existVisit && existVisit.status === 404) {
+            const created = await API.makeVisit(getState().auth.id, item.data);
             if (created !== null) {
                 sync[item.id] = created.data.id
-                delete offline[item.id]
+                dispatch({type: DELETE_OFFLINE_VISIT, payload: item.id})
                 beenSyncVisit = true
-                dispatch({type: SYNC_VISIT_RESPONSE, payload: created.data, syncId: item.id, offline})
+                dispatch({type: SYNC_VISIT_RESPONSE, payload: created.data, syncId: item.id})
             }
         }
+    } else if (item && sync[item.id] !== undefined) {
+        dispatch({type: DELETE_OFFLINE_VISIT, payload: item.id})
     }
 
-    dispatch({type: SET_APP_DATA, payload: {beenSyncVisit}})
-    await AsyncStorage.setItem('@visits_offline', JSON.stringify(offline))
-    await AsyncStorage.setItem('@visits_sync', JSON.stringify(sync))
+    dispatch({type: SET_APP_DATA, payload: {beenSyncVisit}});
+    dispatch({type: SET_SYNC_VISIT, payload: sync});
     dispatch({type: SYNC_VISIT_END});
-
-    if (Object.keys(sync) > 0) {
-        //dispatch({type: "SHOW_TOAST", payload: "Синхронизированно"});
-    }
-
-    //console.log(offline);
-    //return dispatch({type: REFRESH_VISIT_RESPONSE, payload: JSON.parse(visit)})
+    const pin = getState().auth.pin;
+    AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
+    AsyncStorage.setItem(`@${pin}_visits_sync`, JSON.stringify(sync));
 }

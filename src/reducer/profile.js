@@ -11,7 +11,6 @@ export const init = {
   surname: '',
   patronymic: '',
   pathNumber: '',
-  contactNumber: '',
   hasChanges: false
 }
 
@@ -27,8 +26,6 @@ export default (state = init, action) => {
       return {...state, patronymic: action.payload, hasChanges: true}
     case SET_PROFILE_PATH_NUMBER :
       return {...state, pathNumber: action.payload, hasChanges: true}
-    case SET_PROFILE_CONTACT_NUMBER :
-      return {...state, contactNumber: action.payload, hasChanges: true}
     default:
       return state
   }

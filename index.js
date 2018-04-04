@@ -1,4 +1,6 @@
-import { AppRegistry } from 'react-native';
-import App from './src/App';
+import { AppRegistry } from 'react-native'
+import App from './src/App'
+import bugsnag from './src/bugsnag'
 
-AppRegistry.registerComponent('Papsi', () => App);
+// let e = undefined.length
+AppRegistry.registerComponent('Papsi', () => App)

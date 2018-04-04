@@ -13,10 +13,10 @@ import ListItem from '../component/ListItem'
 import { connect } from 'react-redux';
 import { goToCreateVisit, goToProfile, goToVisitDetails } from '../actions/navigation'
 import { syncPhoto } from '../actions/photo'
-import { getVisitsList, initVisits, refreshVisitsList, syncVisitList } from '../actions/visist'
+import { initVisits, refreshVisitsList, syncVisitList } from '../actions/visist'
 import I18n from 'react-native-i18n'
 import { visitsNavigationOptions } from "../navigators/options";
-import { photoSyncIcon, shopImage } from "../utils/images";
+import { addIcon, photoSyncIcon, shopImage } from "../utils/images";
 import GradientButton from "../component/GradientButton";
 import Orientation from 'react-native-orientation';
 import moment from "moment"
@@ -70,12 +70,6 @@ export class VisitListScene extends Component {
         );
     };
 
-    _loadMore = () => {
-        if (this.props.hasMore) {
-            this.props.getVisitsList()
-        }
-    };
-
     createVisit = () => {
         if (allowAction("create_visit")) {
             this.props.goToCreateVisit();
@@ -87,7 +81,7 @@ export class VisitListScene extends Component {
      * @returns {*}
      */
     renderNewVisit() {
-        return <GradientButton style={styles.newVisitBtn} text={I18n.t("visits_list.newVisit")}
+        return <GradientButton icon={addIcon} style={styles.newVisitBtn} text={I18n.t("visits_list.newVisit")}
                                onPress={this.createVisit}/>
     }
 
@@ -113,6 +107,7 @@ export class VisitListScene extends Component {
 
         for (const id of result) {
             if (!visits[id]) {
+                //console.log("not visit", id, visits[id]);
                 continue;
             }
             const days = Math.abs(moment(visits[id].started_date).startOf('day').diff(moment(new Date()).startOf('day'), 'days'));
@@ -169,6 +164,9 @@ export class VisitListScene extends Component {
 
         const sections = this.formatData(result, visits);
 
+        //console.log("sections", sections);
+        //console.log("visits", visits);
+
         return (
             <View style={{flex: 1}}>
                 {this.renderNewVisit()}
@@ -184,8 +182,6 @@ export class VisitListScene extends Component {
                         ListFooterComponent={() => <View style={{height: 70}}/>}
                         keyExtractor={item => item.id}
                         ListEmptyComponent={() => this.renderEmptyComponent()}
-                        onEndReached={this._loadMore}
-                        onEndReachedThreshold={0.5}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.props.refresh}
@@ -220,12 +216,10 @@ export default connect(state => {
 }, {
     goToProfile,
     goToCreateVisit,
-    getVisitsList,
     refreshVisitsList,
     goToVisitDetails,
     syncVisitList,
-    syncPhoto,
-    initVisits
+    syncPhoto
 })(VisitListScene)
 
 

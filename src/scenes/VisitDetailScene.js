@@ -1,12 +1,12 @@
-import React, { Component, Fragment } from 'react'
-import { StyleSheet, Text, View, FlatList, ScrollView, Image } from 'react-native'
-import { Button, Container, Icon, ListItem, Title } from 'native-base'
-import { connect } from 'react-redux'
-import { goToPhoto, backTo, visitDetailsAndReset } from '../actions/navigation'
-import { clearVisitDetails, getVisitDetails, } from '../actions/visitDetails'
+import React, {Component, Fragment} from 'react'
+import {StyleSheet, Text, View, ScrollView, Image,} from 'react-native'
+import {Button, Container, Icon, ListItem, Title} from 'native-base'
+import {connect} from 'react-redux'
+import {goToPhoto, backTo, visitDetailsAndReset, gotToPhotoView} from '../actions/navigation'
+import {clearVisitDetails, getVisitDetails,} from '../actions/visitDetails'
 import I18n from 'react-native-i18n'
 import ImageView from '../component/ImageView'
-import { visitNavigationOptions } from '../navigators/options'
+import {visitNavigationOptions} from '../navigators/options'
 import {
     badIcon, cameraIcon, dislikeIcon, foodImage, goodIcon, likeIcon, pinIcon, syncIcon, timeIcon, unknownIcon,
     unsyncIcon
@@ -15,7 +15,8 @@ import GradientButton from '../component/GradientButton'
 import moment from 'moment'
 import _ from "lodash"
 import ru from "moment/locale/ru";
-import { allowAction } from "../utils/util";
+import {allowAction} from "../utils/util";
+import Permissions from 'react-native-permissions';
 
 export class VisitDetailScene extends Component {
 
@@ -34,28 +35,19 @@ export class VisitDetailScene extends Component {
         }
 
         this.state = {
-            date: undefined
+            date: undefined,
+            showBtn: true
         }
     }
 
-    async componentWillMount() {
-        const id = this.props.navigation.state.params.id
-        const visit = this.props.visits[id]
+    componentWillMount() {
 
-        if (visit && visit.tmp) {
-            return
-        }
-
-        await this.props.getVisitDetails(id)
-
-        this.timer = setInterval(async () => {
-            await this.props.getVisitDetails(id)
-        }, 6000)
+        //this.props.navigation.setParams({tmpId: "fg"});
     }
 
     componentWillUnmount() {
         clearInterval(this.timer)
-        this.props.clearVisitDetails()
+        //this.props.clearVisitDetails()
     }
 
     renderInfoBlock(title, icon, status) {
@@ -127,12 +119,12 @@ export class VisitDetailScene extends Component {
 
         const date = this.moment(results.created_date).format('D MMMM, HH:mm')
 
-        const lastMessage = (this.props.detail.id === id) ? (
+        const lastMessage = (
             <View style={styles.statusBlock}>
-                <Text style={styles.statusBlockText}>{this.props.detail.detail}</Text>
+                <Text style={styles.statusBlockText}>{results.message}</Text>
                 <Text style={styles.statusBlockDate}>{date}</Text>
             </View>
-        ) : null;
+        );
 
         return (
             <View syle={styles.result}>
@@ -153,7 +145,7 @@ export class VisitDetailScene extends Component {
             </View>
         )
 
-        if (moderation === null || !this.props.detail.lastModerationMessage) {
+        if (moderation === null) {
             return (
                 <View syle={styles.result}>
                     <View style={styles.delimiter}/>
@@ -191,7 +183,7 @@ export class VisitDetailScene extends Component {
                 {moderationRow}
                 <View style={styles.statusBlock}>
                     <Text style={styles.statusBlockComment}>{I18n.t('visitDetail.moderationComment')}</Text>
-                    <Text style={styles.statusBlockText}>{this.props.detail.lastModerationMessage}</Text>
+                    <Text style={styles.statusBlockText}>{moderation.message}</Text>
                     <Text style={styles.statusBlockDate}>{date}</Text>
                 </View>
             </View>
@@ -199,28 +191,49 @@ export class VisitDetailScene extends Component {
     }
 
     componentWillReceiveProps(props) {
-        const {sync} = this.props
-        const {id} = this.props.navigation.state.params
+        const {sync} = this.props;
+        const {id} = this.props.navigation.state.params;
 
-        if (sync && sync[id]) {
-            return this.props.navigation.dispatch(visitDetailsAndReset(sync[id]))
+        if (this.props.sync !== props.sync) {
+            this.props.navigation.setParams({sync});
         }
+
+        /*if (sync && sync[id]) {
+            return this.props.navigation.dispatch(visitDetailsAndReset(sync[id]))
+        }*/
     }
 
-    getFilename(path) {
-        return path.replace(/^.*[\\\/]/, '');
-    }
-
-    renderPhotoArea(visit) {
-
-        const images = visit.images || []
+    renderPhotoArea(visit, isLast) {
+        // const images = visit.images || []
+        const {sync} = this.props;
         const {id} = this.props.navigation.state.params
-        const photos = this.props.photos.filter(photo => photo.visit === id).toList()
-        const cachePhotos = this.props.photosCache.filter(photo => photo.visit === id).toList()
+        const reverseSync = _.reverse(sync);
+        const photos = this.props.photos.filter(photo => {
+            return photo.visit === id || photo.tmpId === id || sync[photo.visit] === id;
+        }).toList()
+        const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'));
 
-        console.log("cachePhotos", cachePhotos.toObject());
+        let photosCount = photos.count();
 
-        if (cachePhotos.count() === 0 && photos.count() === 0) {
+        if (visit && visit.images) {
+            photosCount += visit.images.length;
+        }
+
+        /*
+        if (hours >= 1 && photosCount === 0) {
+            return (
+                <View style={styles.emptyPhotoContainer}>
+                    <View style={styles.delimiter}/>
+                    <View style={styles.emptyPhotoImageArea}>
+                        <Image style={styles.emptyPhotoImage} source={foodImage}/>
+                    </View>
+                    <Text style={styles.emptyPhotoTitle}>{I18n.t('photo.expiredVisit')}</Text>
+                    <Text style={styles.emptyPhotoDescription}>{I18n.t('photo.noPhotoExpiredVisit')}</Text>
+                </View>
+            )
+        }
+*/
+        if (photosCount === 0) {
             return (
                 <View style={styles.emptyPhotoContainer}>
                     <View style={styles.delimiter}/>
@@ -233,18 +246,22 @@ export class VisitDetailScene extends Component {
             )
         }
 
-        const imageBlocks = []
-
-        for (const image of cachePhotos) {
-            imageBlocks.push(
-                <ImageView key={image.uri} photo={{uri: image.uri, isUpload: true}}/>
-            )
-        }
+        const imageBlocks = [];
 
         for (const image of photos) {
             imageBlocks.push(
-                <ImageView key={image.uri} photo={image}/>
+                <ImageView   style={styles.imageView} key={image.uri} photo={image}/>
             )
+        }
+
+        if (imageBlocks.length === 0) {
+            for (const uri of visit.images) {
+
+                imageBlocks.push(
+                    <ImageView    style={styles.imageView} key={uri}
+                               photo={{isUploaded: true, uri}}/>
+                )
+            }
         }
 
         return (
@@ -260,31 +277,62 @@ export class VisitDetailScene extends Component {
         )
     }
 
-    goToPhoto = (id) => {
+    backHandler = () => {
+        setTimeout(() => {
+            this.setState({showBtn: true})
+        }, 1500);
+    }
+
+    goToPhoto = async (id) => {
+        if (await Permissions.request('camera') === "denied") {
+            return alert(I18n.t("photo.allowAccess"));
+        }
         if (allowAction("goToPhoto")) {
-            this.props.goToPhoto(id);
+            this.setState({showBtn: false}, () => {
+                this.props.goToPhoto(id, this.backHandler);
+            })
         }
     }
 
     render() {
         const {id} = this.props.navigation.state.params
-        const visit = this.props.visits[id]
-        const {photos} = this.props;
+        const visit = this.props.visits[id] || this.props.visits[this.props.sync[id]];
+        const {photos, sync, lastCreatedId} = this.props;
 
         if (!visit) {
             return null
         }
 
-        const needPhotoSync = photos.find(photo => photo.visit === id && photo.isUpload === false);
+        const needPhotoSync = photos.find(photo => {
+            return (
+                (photo.visit === id || photo.tmpId === id || sync[photo.visit]) &&
+                (photo.isUploaded === false || photo.isUploading === true))
+        });
+
         const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon
         const shopId = (visit.shop !== null) ? visit.shop : '- - -'
         const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'))
         const maxId = _.max(this.props.result);
+
+        let isLast = false;
+        if (lastCreatedId === id) {
+            isLast = true;
+        } else if (id === sync[lastCreatedId]) {
+            isLast = true;
+        }
+        const notExpired = (hours < 1 && isLast);
+
+        const _photos = this.props.photos.filter(photo => photo.visit === id || photo.tmpId === id || sync[photo.visit]).toList();
+        let photosCount = _photos.count();
+
+        if (visit && visit.images) {
+            photosCount += visit.images.length;
+        }
+
         return (
             <View style={{flex: 1}}>
-                {hours < 1 && parseInt(id) === parseInt(maxId) ?
-                    <GradientButton icon={cameraIcon} style={styles.takePhotoBtn} text={I18n.t('photo.makePhoto')}
-                                    onPress={() => this.goToPhoto(id)}/> : null}
+                <GradientButton icon={cameraIcon} style={styles.takePhotoBtn} text={I18n.t('photo.makePhoto')}
+                                onPress={() => this.goToPhoto(id)}/>
                 <ScrollView style={styles.container}>
                     <View style={{paddingVertical: 16}}>
                         <View style={styles.pd16}>
@@ -295,10 +343,10 @@ export class VisitDetailScene extends Component {
                             </View>
                             {this.renderShopDetail(visit)}
                             <Text style={styles.id}>{`ID ${shopId}`}</Text>
-                            {this.renderResultsBlock(visit.results, visit.id)}
-                            {!visit.tmp ? this.renderModerationBlock(visit.moderation) : null}
+                            {(photosCount > 0 && !visit.tmp) && this.renderResultsBlock(visit.results, visit.id)}
+                            {(photosCount > 0 && !visit.tmp) && this.renderModerationBlock(visit.moderation)}
                         </View>
-                        {this.renderPhotoArea(visit)}
+                        {this.renderPhotoArea(visit, isLast)}
                         <View style={{flex: 1, height: 80}}/>
                     </View>
                 </ScrollView>
@@ -317,14 +365,14 @@ const mapStateToProps = (state) => {
         offline: visits.entities.offline,
         result: visits.result,
         photos: photo.photos,
-        photosCache: photo.cache,
         sync: visits.sync,
+        lastCreatedId: visits.lastCreatedId,
         detail: visitDetails.visit,
         needSync: photo.needSync || visits.needSync,
     }
 }
 
-export default connect(mapStateToProps, {getVisitDetails, goToPhoto, backTo, clearVisitDetails})(VisitDetailScene)
+export default connect(mapStateToProps, {goToPhoto, backTo, clearVisitDetails, gotToPhotoView})(VisitDetailScene)
 
 const styles = StyleSheet.create({
     container: {
@@ -442,6 +490,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
         color: '#000',
     },
+    imageView: {
+        marginTop: 10
+    },
     innerContainer: {
         alignItems: 'center',
     },
@@ -454,8 +505,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: "space-around",
-        flexWrap: 'wrap',
-        marginTop: 10
+        flexWrap: 'wrap'
     },
     emptyPhotoContainer: {
         flexDirection: 'column',

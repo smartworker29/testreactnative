@@ -26,6 +26,12 @@ export const resetToList = () => NavigationActions.reset({
     ]
 });
 
+export const resetToPin = () => NavigationActions.reset({
+    index: 0,
+    actions: [
+        NavigationActions.navigate({routeName: 'Pin'})
+    ]
+});
 
 export const resetToProfile = () => NavigationActions.reset({
     index: 0,
@@ -52,7 +58,15 @@ export const goToVisitDetails = (id, isOffline) => dispatch => dispatch(visitDet
  * Got to photo scene
  * @param id visit's id
  */
-export const goToPhoto = (id) => dispatch => dispatch(NavigationActions.navigate({
+export const goToPhoto = (id, backHandler) => dispatch => dispatch(NavigationActions.navigate({
     routeName: 'Photo',
-    params: {id}
+    params: {
+        id,
+        backHandler
+    }
 }));
+
+export const gotToPhotoView = (uri) => NavigationActions.navigate({
+    routeName: 'PhotoView',
+    params: {uri}
+});

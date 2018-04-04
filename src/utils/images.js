@@ -16,3 +16,5 @@ export const badIcon = require('../assets/images/icBad.png');
 export const goodIcon = require('../assets/images/icGood.png');
 export const likeIcon = require('../assets/images/icLike.png');
 export const dislikeIcon = require('../assets/images/icDislike.png');
+export const addIcon = require('../assets/images/circle-add.png');
+export const logo = require('../assets/images/logo.png');

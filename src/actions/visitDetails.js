@@ -30,16 +30,17 @@ export const getVisitDetails = (id) => async (dispatch, getState) => {
         }), ['id'], ['ASC']).pop();
         if (lastVisitUpdate && lastVisitUpdate.message) {
             visit.detail = lastVisitUpdate.message;
+            visit.detailTime = lastVisitUpdate.created_date;
         }
         if (lastModerateUpdate && lastModerateUpdate.message) {
             visit.lastModerationMessage = lastModerateUpdate.message;
+            visit.lastModerationTime = lastModerateUpdate.created_date;
         }
         if (response.status === 200) {
             dispatch({type: GET_VISIT_DETAILS_RESPONSE, payload: visit})
         }
 
     } catch (error) {
-        dispatch({type: SHOW_TOAST, payload: "Проверьте соедениение"});
         dispatch({type: GET_VISIT_DETAILS_ERROR, payload: error})
     }
 };

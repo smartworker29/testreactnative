@@ -31,7 +31,7 @@ export class CreateVisitScene extends Component {
             return;
         }
         if (allowAction("create_visit_process")) {
-            this.props.createVisit(this.state.text)
+            this.props.createVisit(this.state.text, 3000)
         }
     }
 
@@ -46,6 +46,7 @@ export class CreateVisitScene extends Component {
                             <Input onChangeText={(text) => this.setState({text: text.replace(/[^0-9]/g, '')})}
                                    maxLength={9}
                                    keyboardType="numeric"
+                                   autoFocus={true}
                                    value={this.state.text}
                                 // disable = {this.props.isFetch}
                             />
