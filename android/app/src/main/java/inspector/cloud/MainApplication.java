@@ -4,16 +4,21 @@ import android.app.Application;
 
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
-import com.apsl.versionnumber.RNVersionNumberPackage;
 import com.bugsnag.BugsnagReactNative;
 import com.facebook.react.ReactApplication;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
+import com.sensors.RNSensorsPackage;
+import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
+import com.rnfs.RNFSPackage;
+import com.github.yamill.orientation.OrientationPackage;
+import org.reactnative.camera.RNCameraPackage;
+import com.bugsnag.BugsnagReactNative;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.github.yamill.orientation.OrientationPackage;
 
-import org.reactnative.camera.RNCameraPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,13 +36,16 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
-                    new RNVersionNumberPackage(),
-                    new OrientationPackage(),
-                    new LinearGradientPackage(),
-                    new RNI18nPackage(),
-                    new RNCameraPackage(),
-                    BugsnagReactNative.getPackage()
-
+            new OrientationPackage(),
+            new ImageResizerPackage(),
+            new RNSensorsPackage(),
+            new ReactNativeDialogsPackage(),
+            new RNDeviceInfo(),
+            new LinearGradientPackage(),
+            new RNI18nPackage(),
+            new RNFSPackage(),
+            new RNCameraPackage(),
+            BugsnagReactNative.getPackage()
             );
         }
 

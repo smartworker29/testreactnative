@@ -5,13 +5,14 @@ const styles = StyleSheet.create({
     headerLeft: {width: 50, height: 44, justifyContent: "center"},
     headerRight: {width: 50, height: 44, flexDirection: "row", justifyContent: "center", alignItems: "center"},
     headerStyle: {backgroundColor: "#F9F9F9"},
+    headerStyleDark: {backgroundColor: "#141414", borderBottomColor: "transparent"},
     headerTitleStyle: {
         fontSize: 17,
         fontWeight: "600",
         fontStyle: "normal",
         lineHeight: 22,
         letterSpacing: -0.41,
-        color: "#000000"
+        color: "#000000",
     },
     navBarIconArea: {width: 48, height: 48, justifyContent: "center", alignItems: "center"},
     navBarIconAreaLeft: {
@@ -27,7 +28,6 @@ const styles = StyleSheet.create({
         paddingRight: 14,
         justifyContent: "center",
         alignItems: "flex-end"
-
     },
 
     pd16: {

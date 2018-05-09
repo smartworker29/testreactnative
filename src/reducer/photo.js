@@ -1,7 +1,10 @@
 import * as types from '../actions/photo'
 import _ from "lodash"
-import { Map } from "immutable";
-import { SET_PHOTO } from "../actions/photo";
+import {Map} from "immutable";
+import {SET_PHOTO} from "../actions/photo";
+import {DELETE_IMAGE} from "../actions/photo";
+import {DELETE_IMAGE_REQUEST} from "../actions/photo";
+import {DELETE_IMAGE_ERROR} from "../actions/photo";
 
 export const init = {
     isFetch: false,
@@ -9,6 +12,8 @@ export const init = {
     uri: null,
     syncProcess: false,
     needSync: false,
+    deleteFetch: false,
+    deleteError: null,
     photos: Map()
 };
 
@@ -19,7 +24,7 @@ const checkNeedSync = (photos) => {
 
 const getFilename = (path) => {
     return path.replace(/^.*[\\\/]/, '');
-}
+};
 
 export default (state = init, action) => {
     let photos = state.photos;
@@ -27,9 +32,9 @@ export default (state = init, action) => {
         case types.UPLOAD_PHOTO_REQUEST:
             photos = photos.updateIn([action.payload.uri], photo => {
                 photo.isUploading = true;
-                photo.visit = action.payload.id
+                photo.visit = action.payload.id;
                 return photo;
-            })
+            });
             return {...state, isFetch: true, error: null, photos};
 
         case types.UPLOAD_PHOTO_RESPONSE:
@@ -60,7 +65,7 @@ export default (state = init, action) => {
                 photo.isUploading = false;
                 photo.isUploaded = false;
                 return photo;
-            })
+            });
             return {...state, photos, isFetch: false, error: action.payload.error};
 
         case types.SYNC_PHOTO_START:
@@ -74,6 +79,7 @@ export default (state = init, action) => {
                 isUploaded: false,
                 isUploading: false,
                 uri: action.payload.uri,
+                timestamp: Date.now(),
                 visit: action.payload.id,
                 tmpId: null,
                 error: null
@@ -83,6 +89,13 @@ export default (state = init, action) => {
                 needSync: true,
                 photos
             };
+        case DELETE_IMAGE_REQUEST:
+            return {...state, deleteFetch: true, deleteError: null};
+        case DELETE_IMAGE_ERROR:
+            return {...state, deleteError: action.payload, deleteFetch: false};
+        case DELETE_IMAGE:
+            photos = photos.delete(action.payload);
+            return {...state, photos, deleteFetch: false};
         default:
             return state
     }

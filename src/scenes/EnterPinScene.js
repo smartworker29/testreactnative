@@ -71,7 +71,6 @@ class EnterPinScene extends Component {
     componentWillReceiveProps(props) {
         if (props.wrongPin === true) {
             this.setState({pin: ""});
-            this.input.clear();
         }
     }
 
@@ -90,6 +89,7 @@ class EnterPinScene extends Component {
                 {indicator}
                 <Text style={styles.description}>{I18n.t("pin.description")}</Text>
                 <TextInput ref={(ref) => this.input = ref}
+                           value={this.state.pin}
                            onChangeText={this.enterPin}
                            autoFocus={true}
                            keyboardType="numeric"
@@ -114,11 +114,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-start",
+        paddingTop:30,
         alignItems: "center",
         backgroundColor: "white"
     },
     logo: {
-        marginTop: 22,
+        marginTop: 42,
         width: 244,
         height: 35
     },

@@ -1,6 +1,6 @@
 // import { base_url } from '../utils/api'
 import axios from 'axios'
-import { AsyncStorage } from "react-native";
+import {AsyncStorage} from "react-native";
 
 // DEVELOP
 //export const base_url = 'https://mobile-app.inspector-cloud-staging.ru/api/v1.5'
@@ -18,7 +18,7 @@ getAuth = async () => {
     const url = await AsyncStorage.getItem("@url");
     const token = await AsyncStorage.getItem("@token");
     return {url, token}
-}
+};
 
 export const getPins = async () => {
     try {
@@ -29,12 +29,59 @@ export const getPins = async () => {
                 'user-Agent': 'okhttp/3.6.0'
             },
             // url: `https://cloud-inspector-dev.firebaseio.com/instance.json`,
+            timeout: 5000
+        })
+    } catch (error) {
+        return null
+    }
+};
+
+export const getRatioExceptions = async () => {
+    try {
+        return await axios({
+            method: 'get',
+            url: `https://app.inspector-cloud.ru/befda61b-95be-4f1e-8297-ae5ed7c8b3ce/app_models.json`,
             timeout: 10000
         })
     } catch (error) {
         return null
     }
-}
+};
+
+export const getStats = async (id) => {
+    try {
+        const {url, token} = await getAuth();
+        return await axios({
+            method: 'get',
+            validateStatus: null,
+            url: `${url}/agents/${id}/stats/`,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: 10000
+        })
+    } catch (error) {
+        return null
+    }
+};
+
+export const getTasks = async () => {
+    try {
+        const {url, token} = await getAuth();
+        return await axios({
+            method: 'get',
+            url: `${url}/visit_task/`,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: 10000
+        })
+    } catch (error) {
+        return null
+    }
+};
 
 export const createAgent = async (data) => {
     try {
@@ -52,7 +99,25 @@ export const createAgent = async (data) => {
     } catch (error) {
         return null
     }
-}
+};
+
+export const updateVisit = async (id, data) => {
+    try {
+        const {url, token} = await getAuth();
+        return await axios({
+            method: 'patch',
+            url: `${url}/visits/${id}/`,
+            timeout: 10000,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data
+        })
+    } catch (error) {
+        return null
+    }
+};
 
 export const makeVisit = async (id = 1, data, timeout) => {
 
@@ -65,7 +130,7 @@ export const makeVisit = async (id = 1, data, timeout) => {
             'Content-Type': 'application/json'
         },
         data
-    }
+    };
 
     if (timeout) {
         options.timeout = timeout;
@@ -78,7 +143,7 @@ export const makeVisit = async (id = 1, data, timeout) => {
         console.log(error);
         return null
     }
-}
+};
 
 export const getVisitDetails = async (id) => {
     try {
@@ -86,7 +151,7 @@ export const getVisitDetails = async (id) => {
         return await axios({
             method: 'get',
             url: `${url}/visits/${id}/`,
-            //validateStatus: null,
+            validateStatus: null,
             timeout: 10000,
             headers: {
                 'Authorization': `Token ${token}`,
@@ -98,7 +163,7 @@ export const getVisitDetails = async (id) => {
         console.log(error);
         return null
     }
-}
+};
 
 export const getAgents = async (id) => {
     try {
@@ -117,7 +182,7 @@ export const getAgents = async (id) => {
         console.log(error);
         return null
     }
-}
+};
 
 export const updateAgent = async (id, name) => {
     try {
@@ -136,7 +201,7 @@ export const updateAgent = async (id, name) => {
         console.log(error);
         return null
     }
-}
+};
 
 export const getAgentUpdates = async (id = 1) => {
     try {
@@ -155,7 +220,7 @@ export const getAgentUpdates = async (id = 1) => {
         console.log(error);
         return null
     }
-}
+};
 
 export const getVisitsByAgent = async (id = 1) => {
     try {
@@ -174,7 +239,7 @@ export const getVisitsByAgent = async (id = 1) => {
         console.log("getVisitsByAgent");
         throw error
     }
-}
+};
 
 export const uploadPhoto = async (id, data) => {
     try {
@@ -190,8 +255,50 @@ export const uploadPhoto = async (id, data) => {
         console.log("uploadPhoto error");
         throw error
     }
-}
+};
+
+export const deleteImage = async (id) => {
+    try {
+        let {url, token} = await getAuth();
+        url = url.substr(0, url.length - 5);
+        return await axios({
+            method: 'delete',
+            url: `${url}/internal/images/${id}/`,
+            headers: {
+                'Authorization': `Token ${token}`
+            }
+        })
+    } catch (error) {
+        console.log("deleteImage error");
+        return null;
+    }
+};
+
+export const sendFeedback = async (id, data) => {
+    try {
+        let {url, token} = await getAuth();
+        return await axios({
+            method: 'post',
+            url: `${url}/agents/${id}/helpdesk/`,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data
+        })
+    } catch (error) {
+        console.log("deleteImage error");
+        return null;
+    }
+};
 
 export default {
-    makeVisit, getVisitDetails, getAgents, getAgentUpdates, uploadPhoto, getVisitsByAgent
+    makeVisit,
+    getVisitDetails,
+    getAgents,
+    getAgentUpdates,
+    uploadPhoto,
+    getVisitsByAgent,
+    deleteImage,
+    sendFeedback
 }

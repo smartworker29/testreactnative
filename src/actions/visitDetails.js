@@ -1,6 +1,7 @@
-import API from "../api"
+import API, {updateId, updateVisit} from "../api"
 import _ from "lodash";
 import {
+    CHANGE_VISIT_ID_REQUEST, CHANGE_VISIT_ID_RESPONSE, CHANGE_VISIT_ROUTE_REQUEST, CHANGE_VISIT_ROUTE_RESPONSE,
     CLEAR_VISIT_DETAILS, GET_VISIT_DETAILS_ERROR, GET_VISIT_DETAILS_REQUEST,
     GET_VISIT_DETAILS_RESPONSE, SHOW_TOAST
 } from "../utils/constants";
@@ -47,6 +48,25 @@ export const getVisitDetails = (id) => async (dispatch, getState) => {
 
 export const clearVisitDetails = () => async (dispatch) => {
     dispatch({type: CLEAR_VISIT_DETAILS});
-}
+};
 
+
+export const changeId = (id, data) => async (dispatch) => {
+    dispatch({type: CHANGE_VISIT_ID_REQUEST});
+    const result = await updateId(id, data);
+    if (result === null) {
+        return;
+    }
+    dispatch({type: CHANGE_VISIT_ID_RESPONSE, payload: result.data});
+};
+
+export const changeRoute = (id, route) => async (dispatch) => {
+    dispatch({type: CHANGE_VISIT_ROUTE_REQUEST});
+    const result = await updateVisit(id, {current_agent_route: route});
+    console.log(result);
+    if (result === null) {
+        return;
+    }
+    dispatch({type: CHANGE_VISIT_ID_RESPONSE, payload: result.data});
+};
 

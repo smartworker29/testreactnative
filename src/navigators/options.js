@@ -1,75 +1,109 @@
-import React, { Component } from 'react'
-import { backIcon, closeIcon, doneIcon, profileIcon } from '../utils/images'
+import React, {Component} from 'react'
+import {Keyboard, Alert} from 'react-native';
+import {
+    backIcon,
+    closeIcon, deleteIcon,
+    doneIcon, profileActiveIcon,
+    profileIcon, reportsActiveIcon,
+    reportsIcon, resultsActiveIcon,
+    resultsIcon,
+    tasksActiveIcon,
+    tasksIcon
+} from '../utils/images'
 import Styles from '../utils/styles'
 import I18n from 'react-native-i18n'
-import { ActivityIndicator, Image, TouchableOpacity, View } from 'react-native'
+import {Image, TouchableOpacity, View} from 'react-native'
 import * as NavigationActions from '../actions/navigation'
-import { backToList } from '../actions/navigation'
-import { allowAction } from "../utils/util";
 
 const getNavParam = (navigation, param) => {
     return (navigation.state.params === undefined) ? false : navigation.state.params[param]
-}
+};
 
 export const visitsNavigationOptions = (navigation) => {
     return {
         title: I18n.t('visits_list.title'),
         headerStyle: Styles.headerStyle,
 
-        headerRight: (
-            <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity style={Styles.navBarIconAreaRight} onPress={() => {
-                    if (allowAction("profile")) {
-                        navigation.state.params.handleProfile()
-                    }
-                }}>
-                    <Image resizeMode="contain" source={profileIcon}/>
-                </TouchableOpacity>
-            </View>
-        ),
+        tabBarLabel: I18n.t("tabBar.reports"),
         headerTitleStyle: Styles.headerTitleStyle,
-        drawerLockMode: 'unlocked'
+        drawerLockMode: 'unlocked',
+        tabBarIcon: (args) => {
+            const icon = (args.focused === true) ? reportsActiveIcon : reportsIcon;
+            return <Image source={icon}/>
+        },
     }
-}
+};
 
 export const pinNavigationOptions = (navigation) => {
     return {
         header: null
     }
-}
+};
+
+export const tasksNavigationOptions = (navigation) => {
+    return {
+        title: I18n.t('tabBar.tasks'),
+        headerTitleStyle: Styles.headerTitleStyle,
+        tabBarLabel: I18n.t('tabBar.tasks'),
+        tabBarIcon: (args) => {
+            const icon = (args.focused === true) ? tasksActiveIcon : tasksIcon;
+            return <Image source={icon}/>
+        },
+    }
+};
+
+export const taskNavigationOptions = (navigation) => {
+    const headerLeft = (
+        <TouchableOpacity style={Styles.navBarIconAreaLeft} onPress={() => {
+            navigation.dispatch(NavigationActions.back())
+        }}>
+            <Image resizeMode="contain" source={backIcon}/>
+        </TouchableOpacity>
+    );
+    return {
+        title: I18n.t('task.title'),
+        headerTitleStyle: Styles.headerTitleStyle,
+        headerLeft,
+        backTitle: null
+    }
+};
+
+export const resultsNavigationOptions = (navigation) => {
+    return {
+        title: I18n.t('tabBar.results'),
+        header: null,
+        tabBarLabel: I18n.t('tabBar.results'),
+        tabBarIcon: (args) => {
+            const icon = (args.focused === true) ? resultsActiveIcon : resultsIcon;
+            return <Image source={icon}/>
+        },
+    }
+};
 
 export const profileNavigationOptions = (navigation) => {
 
-    let isLock = false
-
-    if (navigation.state.params) {
-        isLock = navigation.state.params.lock
-    }
-
-    const headerLeft = (isLock === true) ? null : (
-        <TouchableOpacity style={Styles.navBarIconAreaLeft}
-                          onPress={() => navigation.dispatch(NavigationActions.back())}>
-            <Image resizeMode="contain" source={closeIcon}/>
-        </TouchableOpacity>
-    );
-
     const headerRight = (
         <TouchableOpacity style={Styles.navBarIconAreaRight} onPress={() => {
+            Keyboard.dismiss();
             navigation.state.params.saveData(NavigationActions.back())
         }}>
             <Image resizeMode="contain" source={doneIcon}/>
         </TouchableOpacity>
-    )
+    );
 
     return {
         title: I18n.t('user_profile.title'),
         headerStyle: Styles.headerStyle,
-        headerLeft,
+        tabBarLabel: I18n.t('tabBar.profile'),
         headerTitleStyle: Styles.headerTitleStyle,
         drawerLockMode: 'unlocked',
-        headerRight
+        headerRight,
+        tabBarIcon: (args) => {
+            const icon = (args.focused === true) ? profileActiveIcon : profileIcon;
+            return <Image source={icon}/>
+        },
     }
-}
+};
 
 export const visitNavigationOptions = (navigation) => {
     const {tmp, sync} = navigation.state.params;
@@ -90,7 +124,7 @@ export const visitNavigationOptions = (navigation) => {
         headerTitleStyle: Styles.headerTitleStyle,
         drawerLockMode: 'unlocked',
     }
-}
+};
 
 export const createVisitsNavigationOptions = (navigation) => {
     return {
@@ -107,6 +141,65 @@ export const createVisitsNavigationOptions = (navigation) => {
         headerTitleStyle: Styles.headerTitleStyle,
         drawerLockMode: 'unlocked',
     }
-}
+};
+
+const alertQuestion = (deleteHandler, currentPhotoUri, photoId) => {
+    Alert.alert(
+        'Внимание',
+        'Удалить фотографию?',
+        [
+            {
+                text: 'Да', onPress: () => {
+                    deleteHandler(currentPhotoUri, photoId);
+                }
+            },
+            {
+                text: 'Нет', onPress: () => {
+                }
+            },
+        ],
+        {cancelable: false}
+    )
+};
+
+export const previewNavigationOptions = (navigation) => {
+    const {deleteHandler, count, index, currentPhotoUri, photoId} = navigation.state.params;
+    return {
+        title: `${index + 1} из ${count}`,
+        headerStyle: Styles.headerStyleDark,
+        headerLeft: (
+            <TouchableOpacity
+                style={Styles.navBarIconAreaLeft}
+                onPress={() => navigation.dispatch(NavigationActions.back())}>
+                <Image resizeMode="contain" source={backIcon} style={{tintColor: "white"}}/>
+            </TouchableOpacity>
+        ),
+        headerRight: (
+            deleteHandler !== undefined ?
+                <TouchableOpacity
+                    style={Styles.navBarIconAreaRight}
+                    onPress={() => {
+                        alertQuestion(deleteHandler, currentPhotoUri, photoId)
+                    }}>
+                    <Image resizeMode="contain" source={deleteIcon} style={{tintColor: "white"}}/>
+                </TouchableOpacity> : null
+        ),
+        headerTitleStyle: [Styles.headerTitleStyle, {color: "white"}],
+    }
+};
+
+export const feedbackNavigationOptions = (navigation) => {
+    return {
+        title: I18n.t('feedback.title'),
+        headerLeft: (
+            <TouchableOpacity
+                style={Styles.navBarIconAreaLeft}
+                onPress={() => navigation.dispatch(NavigationActions.back())}>
+                <Image resizeMode="contain" source={backIcon}/>
+            </TouchableOpacity>
+        ),
+        headerTitleStyle: Styles.headerTitleStyle,
+    }
+};
 
 

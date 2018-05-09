@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import { addNavigationHelpers, StackNavigator, NavigationActions } from 'react-navigation';
-import { BackHandler, YellowBox } from "react-native";
-import { addListener } from '../utils/redux';
-import { clearPhoto, photoInit, syncPhoto } from '../actions/photo'
+import React, {Component} from 'react';
+import {addNavigationHelpers, StackNavigator, NavigationActions, TabNavigator} from 'react-navigation';
+import {BackHandler, YellowBox} from "react-native";
+import {addListener} from '../utils/redux';
+import {clearPhoto, photoInit, syncPhoto} from '../actions/photo'
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
+
 import MainScene from '../scenes/MainScene';
 import VisitListScene from '../scenes/VisitListScene';
 import VisitDetailScene from '../scenes/VisitDetailScene';
@@ -13,14 +14,20 @@ import PhotoScene from '../scenes/PhotoScene';
 import ProfileScene from '../scenes/ProfileScene';
 import PhotoViewScene from '../scenes/PhotoViewScene';
 import EnterPinScene from '../scenes/EnterPinScene';
-import { Toast } from "native-base";
-import { initVisits, refreshVisitsList, syncVisitList } from "../actions/visist";
-import { appInit, setSyncTime } from "../actions/app";
-import I18n from "react-native-i18n";
-import { resetToList, resetToPin, resetToProfile } from "../actions/navigation";
-import { authInit, initPins, setFetchPin, syncPins } from "../actions/auth";
-import { loadData } from "../actions/profile";
-import { AsyncStorage } from "react-native";
+import TasksScene from '../scenes/TasksScene';
+import ResultsScene from "../scenes/ResultsScene";
+
+import {Toast} from "native-base";
+import {initVisits, refreshVisitsList, syncVisitList} from "../actions/visist";
+import {appInit, initFolders, updateRatioExceptions} from "../actions/app";
+import {resetToList, resetToProfile} from "../actions/navigation";
+import {authInit, initPins, setFetchPin, syncPins} from "../actions/auth";
+import {loadData} from "../actions/profile";
+import {getTasksList, initTasks} from "../actions/tasks";
+import TaskScene from "../scenes/TaskScene";
+import {getStatistics} from "../actions/stats";
+import PreviewScene from "../scenes/PreviewScene";
+import FeedbackScene from "../scenes/FeedbackScene";
 
 YellowBox.ignoreWarnings([
     'Warning: componentWillMount is deprecated',
@@ -28,19 +35,55 @@ YellowBox.ignoreWarnings([
     'Warning: componentWillUpdate is deprecated',
 ]);
 
-export const AppNavigator = StackNavigator({
-    Main: {screen: MainScene},
+const AppTabNavigator = TabNavigator({
+    Tasks: {
+        screen: TasksScene
+    },
+    Results: {
+        screen: ResultsScene
+    },
     VisitList: {
         screen: VisitListScene,
+        key: "list",
+    },
+    Profile: {
+        screen: ProfileScene,
+        mode: 'modal'
+    },
+}, {
+    tabBarPosition: "bottom",
+    tabBarOptions: {
+        renderIndicator: () => null,
+        activeTintColor: '#C2071B',
+        inactiveTintColor: "#8e8e93",
+        upperCaseLabel: false,
+        animationEnabled: false,
+        showIcon: true,
+        labelStyle: {
+            fontSize: 9,
+        },
+        style: {
+            borderTopWidth: 0.5,
+            borderColor: "#B3B3B6",
+            backgroundColor: "#F5F5F6",
+        },
+    }
+});
+
+export const AppNavigator = StackNavigator({
+    VisitList: {
+        screen: AppTabNavigator,
         key: "list"
     },
     VisitDetails: {
-        screen: VisitDetailScene,
-
+        screen: VisitDetailScene
     },
     CreateVisit: {
         screen: CreateVisitScene,
         mode: 'modal'
+    },
+    Task: {
+        screen: TaskScene
     },
     Pin: {
         screen: EnterPinScene,
@@ -58,6 +101,12 @@ export const AppNavigator = StackNavigator({
         screen: ProfileScene,
         mode: 'modal'
     },
+    Preview: {
+        screen: PreviewScene
+    },
+    Feedback: {
+        screen: FeedbackScene
+    }
 }, {
     // mode: 'modal',
 });
@@ -66,13 +115,13 @@ export const AppNavigator = StackNavigator({
 class AppWithNavigationState extends Component {
 
     constructor() {
-        super()
+        super();
     }
-
 
     async init() {
         await this.props.dispatch(appInit());
         await this.props.dispatch(authInit());
+        await this.props.dispatch(initTasks());
         await this.props.dispatch(initVisits());
         await this.props.dispatch(photoInit());
         await this.props.dispatch(loadData());
@@ -84,21 +133,24 @@ class AppWithNavigationState extends Component {
         }
     }
 
-
     async componentDidMount() {
+        await this.props.dispatch(initFolders());
         await this.props.dispatch(initPins());
-        if (this.props.pin === null) {
-            return this.props.dispatch(resetToPin());
-        }
+        await this.props.dispatch(updateRatioExceptions());
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
+
+        this.intervalSyncPins = setInterval(async () => {
+            await this.props.dispatch(syncPins());
+        }, 7000)
     }
 
     async sync() {
         await this.props.dispatch(syncVisitList());
         await this.props.dispatch(syncPhoto());
         await this.props.dispatch(refreshVisitsList(false));
+        await this.props.dispatch(getTasksList());
+        await this.props.dispatch(getStatistics());
         await this.props.dispatch(syncPins());
-        this.props.dispatch(setSyncTime());
     }
 
     async componentWillUnmount() {
@@ -113,10 +165,14 @@ class AppWithNavigationState extends Component {
         }
 
         if (this.props.authId !== props.authId && this.props.dispatch) {
+            clearInterval(this.intervalSyncPins);
             await this.props.dispatch(refreshVisitsList(true));
             setInterval(async () => {
                 await this.sync();
-            }, 2000)
+            }, 2000);
+            setInterval(async () => {
+                await this.props.dispatch(updateRatioExceptions());
+            }, 20000);
         }
 
         if (this.props.error !== props.error || this.props.seed !== props.seed) {

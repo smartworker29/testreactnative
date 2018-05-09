@@ -17,7 +17,7 @@ const init = {
     wrongPin: false,
     isFetchPin: false,
     syncProcess: false
-}
+};
 
 export default (state = init, action) => {
     switch (action.type) {

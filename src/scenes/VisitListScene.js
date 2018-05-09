@@ -33,7 +33,7 @@ export class VisitListScene extends Component {
         super();
     }
 
-    async componentWillMount() {
+    async componentDidMount() {
 
         /* this.props.navigation.setParams({
              handleSettings: this.openSettingsPage,
@@ -103,7 +103,7 @@ export class VisitListScene extends Component {
     formatData(result, visits) {
         const sections = [];
         const todaySection = {data: [], title: I18n.t("visits_list.today")};
-        const beforeSection = {data: [], title: I18n.t("visits_list.before")}
+        const beforeSection = {data: [], title: I18n.t("visits_list.before")};
 
         for (const id of result) {
             if (!visits[id]) {
@@ -145,6 +145,12 @@ export class VisitListScene extends Component {
         )
     }
 
+    itemClick = (item) => {
+        if (allowAction("goToVisitDetails")) {
+            this.props.goToVisitDetails(item.id, item.tmp)
+        }
+    };
+
     /**
      *
      * @returns {*}
@@ -155,21 +161,16 @@ export class VisitListScene extends Component {
             return (
                 <View style={styles.empty}>
                     <Image source={shopImage}/>
-                    <Text style={styles.emptyTitle}>Пока нет визитов</Text>
-                    <Text style={styles.emptyDetail}>Чтобы добавить свой первый визит нажмите кнопку ниже</Text>
-                    {this.renderNewVisit()}
+                    <Text style={styles.emptyTitle}>{I18n.t('visits_list.emptyListMessageTitle')}</Text>
+                    <Text style={styles.emptyDetail}>{I18n.t('visits_list.emptyListMessageDetail')}</Text>
                 </View>
             )
         }
 
         const sections = this.formatData(result, visits);
 
-        //console.log("sections", sections);
-        //console.log("visits", visits);
-
         return (
             <View style={{flex: 1}}>
-                {this.renderNewVisit()}
                 <ScrollView>
                     <SectionList
                         sections={sections}
@@ -178,7 +179,7 @@ export class VisitListScene extends Component {
                         renderSectionHeader={({section}) => this.renderSectionHeader(section.title)}
                         renderSectionFooter={() => <View style={{height: 7}}/>}
                         renderItem={({item}) => <ListItem visit={item}
-                                                          onPress={() => this.props.goToVisitDetails(item.id, item.tmp)}/>}
+                                                          onPress={() => this.itemClick(item)}/>}
                         ListFooterComponent={() => <View style={{height: 70}}/>}
                         keyExtractor={item => item.id}
                         ListEmptyComponent={() => this.renderEmptyComponent()}

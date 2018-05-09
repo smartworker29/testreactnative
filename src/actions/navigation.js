@@ -40,11 +40,11 @@ export const resetToProfile = () => NavigationActions.reset({
     ]
 });
 
-export const visitDetailsAndReset = (id, tmp) => NavigationActions.reset({
+export const visitDetailsAndReset = (id, tmp, openCamera) => NavigationActions.reset({
     index: 1,
     actions: [
         NavigationActions.navigate({routeName: 'VisitList'}),
-        NavigationActions.navigate({routeName: 'VisitDetails', params: {id, tmp}})
+        NavigationActions.navigate({routeName: 'VisitDetails', params: {id, tmp, openCamera}})
     ]
 });
 /**
@@ -63,6 +63,13 @@ export const goToPhoto = (id, backHandler) => dispatch => dispatch(NavigationAct
     params: {
         id,
         backHandler
+    }
+}));
+
+export const goToFeedback = (visitId) => dispatch => dispatch(NavigationActions.navigate({
+    routeName: 'Feedback',
+    params: {
+        id: visitId
     }
 }));
 

@@ -5,7 +5,7 @@ import ImageZoom from 'react-native-image-pan-zoom'
 
 class PhotoViewScene extends Component {
     render () {
-        const {uri} = this.props.navigation.state.params
+        const {uri} = this.props.navigation.state.params;
 
         return (
             <ImageZoom cropWidth={Dimensions.get('window').width}

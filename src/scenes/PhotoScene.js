@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import {
     ActivityIndicator,
     ImageBackground,
@@ -9,82 +9,100 @@ import {
     View,
     Dimensions, TouchableOpacity, Image, Text, Platform
 } from 'react-native'
-import { addPhoto, uploadPhoto, clearPhoto } from '../actions/photo'
-import { isIphoneX } from '../utils/util'
-import { goToSettings, back } from '../actions/navigation'
-import { Container, Header, Left, Right, Icon, Title, ListItem, Button, Footer } from 'native-base'
+import {addPhoto, uploadPhoto, clearPhoto} from '../actions/photo'
+import {getPhotoPath, isIphoneX} from '../utils/util'
+import {goToSettings, back} from '../actions/navigation'
+import {Container, Header, Left, Right, Icon, Title, ListItem, Button, Footer} from 'native-base'
 import I18n from 'react-native-i18n'
-import { NavigationActions } from 'react-navigation'
+import {NavigationActions} from 'react-navigation'
 import _ from 'lodash'
-import { RNCamera } from 'react-native-camera';
-import { cameraIcon } from "../utils/images";
+import {RNCamera} from 'react-native-camera';
+import {backIcon, cameraButton} from "../utils/images";
+import {copyFile, unlink, stat} from 'react-native-fs';
+import DeviceInfo from 'react-native-device-info';
+import {decorator as sensors} from "react-native-sensors";
+import ImageResizer from 'react-native-image-resizer';
 import Orientation from "react-native-orientation";
-import ImageZoom from 'react-native-image-pan-zoom';
 
 class PhotoScene extends Component {
 
     takePictureStatus = false;
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             // modalVisible: false,
             modalVisible: true,
             pressedBack: false,
             isSend: false,
             status: false,
-            orientation: null
+            photoCount: 0,
+            processPhoto: false
         }
     }
+
     prepareRatio = async () => {
         if (Platform.OS === 'android' && this.camera) {
             const ratios = await this.camera.getSupportedRatiosAsync();
-
-            const ratio =  ratios[ratios.length - 1];
-
-            this.setState({ ratio });
+            let ratio = ratios[ratios.length - 1];
+            // if (ratio === "35:26" && ratios.includes("16:9")) {
+            //     ratio = "16:9"
+            // }
+            this.setState({ratio});
         }
-    }
+    };
 
     onBackPress = () => {
         this.props.navigation.dispatch(NavigationActions.back());
-    }
-
-    async componentDidMount() {
-        Orientation.addOrientationListener(() => {
-            console.log(333)
-        });
-    }
-
-    componentWillMount() {
-        Orientation.unlockAllOrientations();
-    }
+    };
 
     componentWillUnmount() {
-        Orientation.lockToPortrait();
         const {backHandler} = this.props.navigation.state.params;
         backHandler();
     }
 
     uploadPhoto = () => {
         this.props.dispatch(NavigationActions.back())
-    }
+    };
 
     addPhoto = () => {
         this.props.dispatch(NavigationActions.back())
+    };
+
+    async changeLayout() {
     }
 
-    // componentDidMount() {
-    //     NetInfo.isConnected.addEventListener('change', this._handleConnectionChange);
-    // }
-    //
-    // componentWillUnmount() {
-    //     NetInfo.isConnected.removeEventListener('change', this._handleConnectionChange);
-    // }
-    //
-    // _handleConnectionChange = (isConnected) => {
-    //     this.setState({ isConnected: isConnected });
-    // };
+    getRotate() {
+        const {Accelerometer} = this.props;
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        if (Accelerometer) {
+            x = Accelerometer.x;
+            y = Accelerometer.y;
+            z = Accelerometer.z;
+        }
+
+        let rotate = 0;
+
+        if (Platform.OS === 'ios') {
+            if (x > 0.60 && z > -0.80 && Math.abs(y) < 0.60) {
+                rotate = 90
+            }
+            if (x < -0.60 && z > -0.80 && Math.abs(y) < 0.60) {
+                rotate = -90
+            }
+        } else {
+            if (x > 6 && z < 8 && y < 6) {
+                rotate = -90
+            }
+            if (x < -6 && z < 8 && y < 6) {
+                rotate = 90
+            }
+        }
+
+        return rotate;
+    }
 
     getOrientation() {
         return new Promise((resolve, reject) => {
@@ -94,23 +112,6 @@ class PhotoScene extends Component {
         })
     }
 
-    showCamera(val, back) {
-
-        this.setState({
-            modalVisible: val,
-            pressedBack: true
-        })
-
-        if (back !== undefined) {
-            this.props.back()
-        }
-    }
-
-    async changeLayout() {
-        const initial = await this.getOrientation();
-        this.setState({orientation: initial})
-    }
-
     takePicture = async () => {
 
         if (this.takePictureStatus === true) {
@@ -118,105 +119,82 @@ class PhotoScene extends Component {
         }
 
         this.takePictureStatus = true;
+        this.setState({processPhoto: true});
 
-        if (!this.camera) {
-            return this.takePictureStatus = false;
-        }
+        const options = {quality: 0.9, base64: true, exif: true, width: 1500, skipProcessing: true};
+        let rotate = this.getRotate();
 
-        const options = {quality: 0.95, base64: true, exif: true, fixOrientation: true};
         const initial = await this.getOrientation();
-        if (initial === 'PORTRAIT') {
-            options.width = 720
-        } else {
-            options.width = 1000
+        if (Platform.OS === 'ios' && initial !== 'PORTRAIT') {
+            rotate = 0
         }
 
         const data = await this.camera.takePictureAsync(options);
-        this.setState({
-            uri: data.uri
-        }, () => {
-            this.showCamera(false);
+
+        const result = await ImageResizer.createResizedImage(data.uri, 1500, 1500, 'JPEG', 90, rotate);
+        await unlink(data.uri);
+        const path = getPhotoPath(result.path);
+        await copyFile(result.uri, path);
+        await unlink(result.uri);
+        const finalUri = "file://" + path;
+        const {id} = this.props.navigation.state.params;
+        await this.props.addPhoto(finalUri, id);
+        this.props.uploadPhoto(finalUri, id);
+        this.setState(state => (
+            {photoCount: state.photoCount + 1, processPhoto: false}
+        ), () => {
             this.takePictureStatus = false;
-        })
+        });
+    };
 
-    }
+    selectCamera() {
 
-    renderPreview() {
-
-        const {isFetch, uri, error, uploadPhoto} = this.props
-        const {id, backHandler} = this.props.navigation.state.params
-        if (this.state.modalVisible === false && !this.state.uri) {
-            return null
+        let ratioProps = {};
+        if (!this.props.ratios.includes(DeviceInfo.getModel())) {
+            ratioProps = {
+                onCameraReady: this.prepareRatio,
+                ratio: this.state.ratio
+            }
         }
+        return <RNCamera
+            ref={ref => {
+                this.camera = ref;
+            }}
 
-        return (
-            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black'}}>
-                {this.state.uri ? <ImageBackground style={styles.image}
-                                                   source={{uri: this.state.uri}}>
-                </ImageBackground> : null}
-                {isFetch ? <ActivityIndicator color="white" style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}/> : null}
-
-
-                {!this.state.modalVisible ? <View style={styles.footer}>
-                    <Button block transparent style={styles.button} onPress={() => this.showCamera(true)}>
-                        <Text
-                            style={styles.text}>{this.state.uri ? I18n.t('photo.reship') : I18n.t('photo.makePhoto')}</Text>
-                    </Button>
-                    <Button block transparent style={styles.button}
-                            disabled={this.state.uri === null}
-                            onPress={async () => {
-                                if (this.state.uri !== null) {                                   
-                                    await this.props.addPhoto(this.state.uri, id);
-                                    this.props.uploadPhoto(this.state.uri, id);
-                                    this.props.back();
-                                    backHandler();
-                                }
-                            }}>
-                        <Text style={styles.text}>{I18n.t('photo.send')}</Text>
-                    </Button>
-                </View> : null}
-            </View>
-        )
-
+            zoom={0.0}
+            style={[styles.preview,]}
+            type={RNCamera.Constants.Type.back}
+            flashMode={RNCamera.Constants.FlashMode.off}
+            permissionDialogTitle={'Permission to use camera'}
+            permissionDialogMessage={'We need your permission to use your camera phone'}
+            {...ratioProps}
+        />
     }
 
     renderCamera() {
-
+        let rowStyle = styles.bottomRow;
+        let itemStyle = styles.bottomRowItem;
+        const rotate = this.getRotate();
+        const buttonTint = (this.state.processPhoto === true) ? {tintColor: "#555"} : {tintColor: "white"};
+        const overButton = (this.state.processPhoto === true) ?
+            <View style={styles.photoWait}><ActivityIndicator/></View> :
+            (this.state.photoCount > 0) ? <Text style={styles.photoCount}>{this.state.photoCount}</Text> : null;
         return (
             <View style={{flex: 1}}>
-            {/*<View style={{flex: 1, alignItems: "center"}}>*/}
-                <RNCamera
-                    ref={ref => {
-                        this.camera = ref;
-                    }}
-
-                    zoom={0.0}
-                    style={[styles.preview,]}
-                    type={RNCamera.Constants.Type.back}
-                    flashMode={RNCamera.Constants.FlashMode.off}
-                    onCameraReady={this.prepareRatio} // You can only get the supported ratios when the camera is mounted
-                    ratio={this.state.ratio}
-                    permissionDialogTitle={'Permission to use camera'}
-                    permissionDialogMessage={'We need your permission to use your camera phone'}
-                />
-                <View style={styles.bottomRow}>
-                    <View style={styles.bottomRowItem}>
-                        <TouchableOpacity onPress={this.onBackPress}>
-                            <Text style={styles.backText}>{I18n.t('photo.back')}</Text>
+                {this.selectCamera()}
+                <View style={rowStyle}>
+                    <View style={itemStyle}>
+                        <TouchableOpacity onPress={this.onBackPress} style={{padding: 30}}
+                                          hitSlop={{top: 200, left: 100, bottom: 200, right: 10}}>
+                            <Image source={backIcon}
+                                   style={{tintColor: "white", transform: [{rotate: -1 * rotate + 'deg'}]}}/>
                         </TouchableOpacity>
                     </View>
                     <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
-                        <Image style={styles.cameraImage} source={cameraIcon}/>
+                        {overButton}
+                        <Image style={[styles.cameraImage, buttonTint]} source={cameraButton}/>
                     </TouchableOpacity>
-                    <View style={styles.bottomRowItem}/>
+                    <View style={itemStyle}/>
                 </View>
             </View>
         )
@@ -230,9 +208,7 @@ class PhotoScene extends Component {
 
         return (
             <Container
-                onLayout={() => this.changeLayout()}
                 style={{backgroundColor: "black"}}>
-
                 {this.state.modalVisible ? this.renderCamera() : this.renderPreview()}
             </Container>
         )
@@ -243,17 +219,19 @@ PhotoScene.propTypes = {
     uri: PropTypes.string,
     isFetch: PropTypes.bool,
     error: PropTypes.object
-}
+};
 export default connect((state) => {
-        const {photo} = state
+        const {photo, app} = state;
         return {
             uri: photo.uri,
             isFetch: photo.isFetch,
-            error: photo.error
+            error: photo.error,
+            ratios: app.ratioExceptions
         }
     },
     {uploadPhoto, addPhoto, back, clearPhoto}
-)(PhotoScene)
+)(sensors({Accelerometer: {updateInterval: 300}})(PhotoScene))
+
 
 const styles = StyleSheet.create({
     footer: {
@@ -273,11 +251,24 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center'
     },
+    leftRow: {
+        position: "absolute",
+        left: 10,
+        height: "100%",
+        flexDirection: 'column',
+        alignItems: "center",
+        justifyContent: 'space-between'
+    },
     bottomRow: {
         position: "absolute",
-        bottom: 30,
+        bottom: 10,
         flexDirection: 'row',
         justifyContent: 'space-between'
+    },
+    leftRowItem: {
+        flex: 1,
+        justifyContent: 'center',
+        alignSelf: 'center'
     },
     bottomRowItem: {
         flex: 1,
@@ -286,28 +277,41 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     backText: {
+        width: "100%",
         color: "white",
         fontWeight: "bold"
     },
     capture: {
+        padding: 30,
         flexDirection: "row",
         justifyContent: 'center',
-        alignSelf: 'center',
-        backgroundColor: 'transparent'
+        alignItems: "center",
+        alignSelf: 'center'
     },
     cameraImage: {
-        width: 36,
-        height: 36
+        width: 65,
+        height: 65
     },
     button: {
         flex: 1,
         backgroundColor: 'black'
     },
+    photoWait: {
+        position: "absolute",
+        zIndex: 9
+    },
+    photoCount: {
+        position: "absolute",
+        color: "black",
+        fontSize: 15,
+        zIndex: 9,
+        fontWeight: "bold"
+    },
     image: {
         flex: 1,
         justifyContent: 'flex-start',
-        width: Dimensions.get('window').width
+        width: "100%"
     },
     text: {color: 'white'}
-})
+});
 

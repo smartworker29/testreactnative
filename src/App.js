@@ -8,13 +8,13 @@ import en from '../locales/en'
 import ru from '../locales/ru'
 import Orientation from "react-native-orientation";
 
-const currentLocale = I18n.currentLocale()
+const currentLocale = I18n.currentLocale();
 
-const store = configureStore()
+const store = configureStore();
 
 export default class App extends Component {
 
-    componentWillMount() {
+    componentDidMount() {
         Orientation.lockToPortrait();
     }
 
@@ -30,10 +30,10 @@ export default class App extends Component {
 }
 
 // Should the app fallback to English if user locale doesn't exists
-I18n.fallbacks = true
+I18n.fallbacks = true;
 
 // Define the supported locales
 I18n.translations = {
     en,
     ru
-}
+};

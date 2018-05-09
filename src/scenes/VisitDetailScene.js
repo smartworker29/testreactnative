@@ -1,14 +1,14 @@
 import React, {Component, Fragment} from 'react'
-import {StyleSheet, Text, View, ScrollView, Image,} from 'react-native'
+import {StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Platform, AlertIOS} from 'react-native'
 import {Button, Container, Icon, ListItem, Title} from 'native-base'
 import {connect} from 'react-redux'
-import {goToPhoto, backTo, visitDetailsAndReset, gotToPhotoView} from '../actions/navigation'
-import {clearVisitDetails, getVisitDetails,} from '../actions/visitDetails'
+import {goToPhoto, backTo, gotToPhotoView, goToFeedback} from '../actions/navigation'
+import {changeRoute, clearVisitDetails} from '../actions/visitDetails'
 import I18n from 'react-native-i18n'
 import ImageView from '../component/ImageView'
 import {visitNavigationOptions} from '../navigators/options'
 import {
-    badIcon, cameraIcon, dislikeIcon, foodImage, goodIcon, likeIcon, pinIcon, syncIcon, timeIcon, unknownIcon,
+    badIcon, cameraIcon, dislikeIcon, editIcon, foodImage, goodIcon, likeIcon, pinIcon, syncIcon, timeIcon, unknownIcon,
     unsyncIcon
 } from '../utils/images'
 import GradientButton from '../component/GradientButton'
@@ -17,16 +17,19 @@ import _ from "lodash"
 import ru from "moment/locale/ru";
 import {allowAction} from "../utils/util";
 import Permissions from 'react-native-permissions';
+import DialogAndroid from 'react-native-dialogs';
+import HTMLView from 'react-native-htmlview';
 
 export class VisitDetailScene extends Component {
 
-    static navigationOptions = ({navigation}) => visitNavigationOptions(navigation)
+    static navigationOptions = ({navigation}) => visitNavigationOptions(navigation);
 
     constructor() {
-        super()
+        super();
 
-        this.moment = moment
+        this.moment = moment;
         this.moment.updateLocale("ru", ru);
+        this.id = null;
 
         if (I18n.currentLocale().includes("ru")) {
             this.moment.locale("ru");
@@ -40,27 +43,16 @@ export class VisitDetailScene extends Component {
         }
     }
 
-    componentWillMount() {
-
-        //this.props.navigation.setParams({tmpId: "fg"});
-    }
-
     componentWillUnmount() {
         clearInterval(this.timer)
         //this.props.clearVisitDetails()
     }
 
-    renderInfoBlock(title, icon, status) {
-        return (
-            <View syle={styles.result}>
-                <View style={styles.delimiter}/>
-                <Text style={styles.infoTitle}>{title}</Text>
-                <View style={styles.infoStatusRow}>
-                    <Image style={styles.statusIcon} source={icon}/>
-                    <Text style={styles.statusText}>{status}</Text>
-                </View>
-            </View>
-        )
+    componentDidMount() {
+        const {openCamera, id} = this.props.navigation.state.params;
+        if (openCamera === true) {
+            this.goToPhoto(id);
+        }
     }
 
     renderShopDetail(visit) {
@@ -68,7 +60,7 @@ export class VisitDetailScene extends Component {
             return null
         }
         return (
-            <View syle={styles.shop}>
+            <View style={styles.shop}>
                 <Text style={styles.shopName}>{visit.shop_name}</Text>
                 <View style={styles.shopPositionRow}>
                     <Image source={pinIcon}/>
@@ -85,11 +77,11 @@ export class VisitDetailScene extends Component {
                 <Image style={styles.statusIcon} source={unknownIcon}/>
                 <Text style={styles.statusText}>- - -</Text>
             </View>
-        )
+        );
 
         if (!results) {
             return (
-                <View syle={styles.result}>
+                <View style={styles.result}>
                     <View style={styles.delimiter}/>
                     <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
                     {resultRow}
@@ -104,8 +96,8 @@ export class VisitDetailScene extends Component {
                         <Image style={styles.statusIcon} source={dislikeIcon}/>
                         <Text style={[styles.statusText, styles.red]}>{I18n.t('visitDetail.visitReject')}</Text>
                     </View>
-                )
-                break
+                );
+                break;
             case 'NEUTRAL':
             case 'POSITIVE' :
                 resultRow = (
@@ -113,21 +105,21 @@ export class VisitDetailScene extends Component {
                         <Image style={styles.statusIcon} source={likeIcon}/>
                         <Text style={[styles.statusText, styles.green]}>{I18n.t('visitDetail.visitAccept')}</Text>
                     </View>
-                )
+                );
                 break
         }
 
-        const date = this.moment(results.created_date).format('D MMMM, HH:mm')
+        const date = this.moment(results.created_date).format('D MMMM, HH:mm');
 
         const lastMessage = (
             <View style={styles.statusBlock}>
-                <Text style={styles.statusBlockText}>{results.message}</Text>
                 <Text style={styles.statusBlockDate}>{date}</Text>
+                <HTMLView value={results.message}/>
             </View>
         );
 
         return (
-            <View syle={styles.result}>
+            <View style={styles.result}>
                 <View style={styles.delimiter}/>
                 <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
                 {resultRow}
@@ -138,16 +130,20 @@ export class VisitDetailScene extends Component {
 
     renderModerationBlock(moderation) {
 
+        if (!moderation) {
+            return null;
+        }
+
         let moderationRow = (
             <View style={styles.infoStatusRow}>
                 <Image style={styles.statusIcon} source={timeIcon}/>
                 <Text style={styles.statusText}>{I18n.t('visits_list.moderation')}</Text>
             </View>
-        )
+        );
 
         if (moderation === null) {
             return (
-                <View syle={styles.result}>
+                <View style={styles.result}>
                     <View style={styles.delimiter}/>
                     <Text style={styles.infoTitle}>{I18n.t('visitDetail.moderationResult')}</Text>
                     {moderationRow}
@@ -162,29 +158,51 @@ export class VisitDetailScene extends Component {
                         <Image style={styles.statusIcon} source={badIcon}/>
                         <Text style={[styles.statusText, styles.red]}>{I18n.t('visitDetail.moderationReject')}</Text>
                     </View>
-                )
-                break
+                );
+                break;
             case 'POSITIVE' :
                 moderationRow = (
                     <View style={styles.infoStatusRow}>
                         <Image style={styles.statusIcon} source={goodIcon}/>
                         <Text style={[styles.statusText, styles.green]}>{I18n.t('visitDetail.moderationDone')}</Text>
                     </View>
-                )
+                );
                 break
         }
 
-        const date = this.moment(moderation.created_date).format('D MMMM, HH:mm')
+        const date = this.moment(moderation.created_date).format('D MMMM, HH:mm');
 
         return (
-            <View syle={styles.result}>
+            <View style={styles.result}>
                 <View style={styles.delimiter}/>
                 <Text style={styles.infoTitle}>{I18n.t('visitDetail.moderationResult')}</Text>
                 {moderationRow}
                 <View style={styles.statusBlock}>
                     <Text style={styles.statusBlockComment}>{I18n.t('visitDetail.moderationComment')}</Text>
-                    <Text style={styles.statusBlockText}>{moderation.message}</Text>
                     <Text style={styles.statusBlockDate}>{date}</Text>
+                    <HTMLView value={moderation.message}/>
+                </View>
+            </View>
+        )
+    }
+
+    renderFeedbackAnswer(helpdesk) {
+
+        if (!helpdesk) {
+            return null;
+        }
+
+        const date = this.moment(helpdesk.created_date).format('D MMMM, HH:mm');
+
+        return (
+            <View style={{paddingHorizontal: 16}}>
+                <View style={styles.delimiter}/>
+                <Text style={styles.infoTitle}>{I18n.t('feedback.support')}</Text>
+                <View style={styles.statusBlock}>
+                    <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
+                        <Text style={styles.statusBlockComment}>{date}</Text>
+                    </View>
+                    <HTMLView value={helpdesk.message}/>
                 </View>
             </View>
         )
@@ -192,35 +210,39 @@ export class VisitDetailScene extends Component {
 
     componentWillReceiveProps(props) {
         const {sync} = this.props;
-        const {id} = this.props.navigation.state.params;
 
         if (this.props.sync !== props.sync) {
             this.props.navigation.setParams({sync});
         }
-
-        /*if (sync && sync[id]) {
-            return this.props.navigation.dispatch(visitDetailsAndReset(sync[id]))
-        }*/
     }
 
+    goToPreview(uri, photos, index, count, photoId) {
+        if (allowAction("goToPreview")) {
+            this.props.navigation.navigate("Preview", {uri, photos, index, count, photoId});
+        }
+    };
+
     renderPhotoArea(visit, isLast) {
-        // const images = visit.images || []
         const {sync} = this.props;
-        const {id} = this.props.navigation.state.params
-        const reverseSync = _.reverse(sync);
+        const {id} = this.props.navigation.state.params;
         const photos = this.props.photos.filter(photo => {
             return photo.visit === id || photo.tmpId === id || sync[photo.visit] === id;
-        }).toList()
+        }).sort((a, b) => {
+            if (a.timestamp < b.timestamp) {
+                return -1;
+            }
+            if (a.timestamp > b.timestamp) {
+                return 1;
+            }
+            if (a.timestamp === b.timestamp) {
+                return 0;
+            }
+        }).toList();
         const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'));
 
         let photosCount = photos.count();
 
-        if (visit && visit.images) {
-            photosCount += visit.images.length;
-        }
-
-        /*
-        if (hours >= 1 && photosCount === 0) {
+        if (isLast !== true && photosCount === 0) {
             return (
                 <View style={styles.emptyPhotoContainer}>
                     <View style={styles.delimiter}/>
@@ -232,7 +254,7 @@ export class VisitDetailScene extends Component {
                 </View>
             )
         }
-*/
+
         if (photosCount === 0) {
             return (
                 <View style={styles.emptyPhotoContainer}>
@@ -249,19 +271,12 @@ export class VisitDetailScene extends Component {
         const imageBlocks = [];
 
         for (const image of photos) {
+            const index = photos.findIndex(photo => photo.uri === image.uri);
+            const count = photos.count();
             imageBlocks.push(
-                <ImageView   style={styles.imageView} key={image.uri} photo={image}/>
+                <ImageView style={styles.imageView} key={image.uri} photo={image}
+                           onPress={() => this.goToPreview(image.uri, photos, index, count, image.id)}/>
             )
-        }
-
-        if (imageBlocks.length === 0) {
-            for (const uri of visit.images) {
-
-                imageBlocks.push(
-                    <ImageView    style={styles.imageView} key={uri}
-                               photo={{isUploaded: true, uri}}/>
-                )
-            }
         }
 
         return (
@@ -281,10 +296,12 @@ export class VisitDetailScene extends Component {
         setTimeout(() => {
             this.setState({showBtn: true})
         }, 1500);
-    }
+    };
 
     goToPhoto = async (id) => {
-        if (await Permissions.request('camera') === "denied") {
+
+        const perm = await Permissions.request('camera');
+        if (perm === "denied") {
             return alert(I18n.t("photo.allowAccess"));
         }
         if (allowAction("goToPhoto")) {
@@ -292,10 +309,55 @@ export class VisitDetailScene extends Component {
                 this.props.goToPhoto(id, this.backHandler);
             })
         }
+    };
+
+    editRoute = () => {
+
+        if (Platform.OS === "ios") {
+            AlertIOS.prompt(
+                'Изменение маршрута',
+                null,
+                text => {
+                    const {id} = this.props.navigation.state.params;
+                    this.props.changeRoute(id, text);
+                }
+            );
+        } else {
+            const dialog = new DialogAndroid();
+            dialog.set({
+                title: 'Изменение маршрута',
+                input: {
+                    callback: (routeId) => {
+                        const {id} = this.props.navigation.state.params;
+                        this.props.changeRoute(id, routeId);
+                    }
+                },
+                allowEmptyInput: false,
+                positiveText: 'Изменить',
+                negativeText: 'Отмена',
+            });
+            dialog.show();
+        }
+
+    };
+
+    goToFeedback = () => {
+        if (allowAction("goToFeedback")) {
+            const {id} = this.props.navigation.state.params;
+            this.props.goToFeedback(id);
+        }
+    };
+
+    renderFeedbackButton() {
+        return (
+            <TouchableOpacity style={styles.feedbackButton} onPress={this.goToFeedback}>
+                <Text style={styles.feedbackText}>Пожаловаться</Text>
+            </TouchableOpacity>
+        )
     }
 
     render() {
-        const {id} = this.props.navigation.state.params
+        const {id} = this.props.navigation.state.params;
         const visit = this.props.visits[id] || this.props.visits[this.props.sync[id]];
         const {photos, sync, lastCreatedId} = this.props;
 
@@ -309,10 +371,11 @@ export class VisitDetailScene extends Component {
                 (photo.isUploaded === false || photo.isUploading === true))
         });
 
-        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon
-        const shopId = (visit.shop !== null) ? visit.shop : '- - -'
-        const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'))
-        const maxId = _.max(this.props.result);
+        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon;
+        const shopId = (visit.shop !== null) ? visit.shop : '- - -';
+        const route = visit.current_agent_route;
+        const task = this.props.tasks.find(task => task.id === visit.task);
+        const taskName = (task) ? task.name : "";
 
         let isLast = false;
         if (lastCreatedId === id) {
@@ -320,7 +383,6 @@ export class VisitDetailScene extends Component {
         } else if (id === sync[lastCreatedId]) {
             isLast = true;
         }
-        const notExpired = (hours < 1 && isLast);
 
         const _photos = this.props.photos.filter(photo => photo.visit === id || photo.tmpId === id || sync[photo.visit]).toList();
         let photosCount = _photos.count();
@@ -329,25 +391,46 @@ export class VisitDetailScene extends Component {
             photosCount += visit.images.length;
         }
 
+        this.id = id;
+
+        const time = (visit.started_date) ? visit.started_date : visit.local_date;
+
         return (
             <View style={{flex: 1}}>
-                <GradientButton icon={cameraIcon} style={styles.takePhotoBtn} text={I18n.t('photo.makePhoto')}
-                                onPress={() => this.goToPhoto(id)}/>
+                {isLast && this.state.showBtn ?
+                    <GradientButton icon={cameraIcon} style={styles.takePhotoBtn} text={I18n.t('photo.makePhoto')}
+                                    onPress={() => this.goToPhoto(id)}/> : null}
                 <ScrollView style={styles.container}>
                     <View style={{paddingVertical: 16}}>
                         <View style={styles.pd16}>
                             <View style={styles.row}>
                                 <Text
-                                    style={styles.dateColor}>{this.moment(visit.started_date).format('D MMMM, HH:mm')}</Text>
+                                    style={styles.dateColor}>{this.moment(time).format('D MMMM, HH:mm')}</Text>
                                 <Image source={sync_icon}/>
                             </View>
+                            <Text style={styles.taskName}>{taskName}</Text>
                             {this.renderShopDetail(visit)}
-                            <Text style={styles.id}>{`ID ${shopId}`}</Text>
+                            <View style={styles.updateRow}>
+                                <Text style={styles.titleValue}>{`ID торговой точки: `}</Text>
+                                <Text style={styles.value}>{shopId}</Text>
+                            </View>
+                            <View style={styles.updateRow}>
+                                <Text style={styles.titleValue}>{`Номер маршрута: `}</Text>
+                                <Text style={styles.value}>{route}</Text>
+                                <TouchableOpacity style={styles.updateArea}
+                                                  hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}
+                                                  onPress={this.editRoute}>
+                                    <Image source={editIcon}/>
+                                </TouchableOpacity>
+                            </View>
                             {(photosCount > 0 && !visit.tmp) && this.renderResultsBlock(visit.results, visit.id)}
                             {(photosCount > 0 && !visit.tmp) && this.renderModerationBlock(visit.moderation)}
                         </View>
                         {this.renderPhotoArea(visit, isLast)}
-                        <View style={{flex: 1, height: 80}}/>
+                        {this.renderFeedbackAnswer(visit.helpdesk)}
+                        {this.renderFeedbackButton()}
+                        {isLast && this.state.showBtn ?
+                            <View style={{flex: 1, height: 80}}/> : null}
                     </View>
                 </ScrollView>
             </View>
@@ -357,7 +440,7 @@ export class VisitDetailScene extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const {nav, visitDetails, photo, visits} = state
+    const {nav, visitDetails, photo, visits, tasks} = state;
     return {
         nav: nav,
         isFetch: visitDetails.isFetch,
@@ -368,11 +451,19 @@ const mapStateToProps = (state) => {
         sync: visits.sync,
         lastCreatedId: visits.lastCreatedId,
         detail: visitDetails.visit,
+        tasks: tasks.list,
         needSync: photo.needSync || visits.needSync,
     }
-}
+};
 
-export default connect(mapStateToProps, {goToPhoto, backTo, clearVisitDetails, gotToPhotoView})(VisitDetailScene)
+export default connect(mapStateToProps, {
+    goToPhoto,
+    goToFeedback,
+    backTo,
+    clearVisitDetails,
+    gotToPhotoView,
+    changeRoute
+})(VisitDetailScene)
 
 const styles = StyleSheet.create({
     container: {
@@ -388,6 +479,14 @@ const styles = StyleSheet.create({
         fontStyle: 'normal',
         letterSpacing: 0,
     },
+    taskName: {
+        marginTop: 16,
+        fontSize: 24,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        color: "#000000"
+    },
     shop: {},
     shopName: {
         marginTop: 11,
@@ -397,6 +496,7 @@ const styles = StyleSheet.create({
         fontStyle: 'normal',
         color: '#000000'
     },
+
     shopPositionRow: {
         marginTop: 8,
         flexDirection: 'row',
@@ -404,15 +504,29 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     addressText: {color: '#b4b4b4', marginLeft: 5},
+    updateRow: {
+        flexDirection: 'row',
+        justifyContent: "flex-start",
+        alignItems: "center",
+        marginTop: 15,
+    },
+    updateText: {
+        color: "blue"
+    },
+    updateArea: {
+        paddingHorizontal: 15
+    },
     row: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
-    id: {
+    titleValue: {
         fontSize: 16,
-        marginTop: 20,
         color: '#000',
         fontWeight: '500',
+    },
+    value: {
+        fontSize: 16,
     },
     modalContainer: {
         flex: 1,
@@ -420,7 +534,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'grey',
     },
     delimiter: {
-        marginTop: 20,
+        marginVertical: 20,
         borderStyle: 'solid',
         borderBottomWidth: 1,
         borderColor: '#d8d8d8'
@@ -429,8 +543,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         fontStyle: 'normal',
-        color: '#000000',
-        marginTop: 15
+        color: '#000000'
     },
     infoStatusRow: {
         marginTop: 15,
@@ -454,7 +567,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 19,
         borderRadius: 4,
-        backgroundColor: '#f5f5f7'
+        backgroundColor: '#f5f5f7',
     },
     statusBlockComment: {
         opacity: 0.6,
@@ -472,11 +585,11 @@ const styles = StyleSheet.create({
     },
     statusBlockDate: {
         opacity: 0.6,
-        marginTop: 10,
         fontSize: 12,
         fontWeight: 'normal',
         fontStyle: 'normal',
-        color: '#000000'
+        color: '#000000',
+        textAlign: "right"
     },
     red: {
         color: '#c40010'
@@ -487,7 +600,6 @@ const styles = StyleSheet.create({
     photo: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 20,
         color: '#000',
     },
     imageView: {
@@ -503,6 +615,7 @@ const styles = StyleSheet.create({
     },
     photoArea: {
         flex: 1,
+        marginTop: 10,
         flexDirection: 'row',
         justifyContent: "space-around",
         flexWrap: 'wrap'
@@ -546,5 +659,22 @@ const styles = StyleSheet.create({
         bottom: 10,
         zIndex: 1
     },
+    feedbackButton: {
+        height: 44,
+        borderRadius: 22,
+        borderWidth: 2,
+        borderColor: "#cfcfcf",
+        marginTop: 20,
+        marginHorizontal: 16,
+        justifyContent: "center"
+    },
+    feedbackText: {
+        fontSize: 16,
+        fontWeight: "600",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        textAlign: "center",
+        color: "#b4b4b4"
+    },
     empty: {flex: 1, justifyContent: 'center', alignItems: 'center'}
-})
+});

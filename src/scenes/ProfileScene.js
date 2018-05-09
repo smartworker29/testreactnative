@@ -1,29 +1,12 @@
-import React, { Component } from 'react'
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native'
-import {
-    Button,
-    Container,
-    Fab,
-    Header,
-    Icon,
-    Left,
-    ListItem,
-    Right,
-    Title,
-    Text,
-    Item,
-    Label,
-    Input
-} from 'native-base'
+import React, {Component} from 'react'
+import {View, StyleSheet, TouchableOpacity} from 'react-native'
+import {Item, Text, Label, Input} from 'native-base'
 import I18n from 'react-native-i18n'
-import { connect } from 'react-redux'
-import { profileNavigationOptions } from '../navigators/options'
-import {
-    loadData, saveData, setContactNumber, setName, setPathNumber, setPatronymic,
-    setSurname
-} from '../actions/profile'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import VersionNumber from 'react-native-version-number';
+import {connect} from 'react-redux'
+import {profileNavigationOptions} from '../navigators/options'
+import {loadData, saveData, setName, setPathNumber, setPatronymic, setSurname} from '../actions/profile'
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
+import DeviceInfo from 'react-native-device-info';
 
 const styles = StyleSheet.create({
     item: {
@@ -41,11 +24,11 @@ const styles = StyleSheet.create({
     placeholder: {
         color: '#b4b4b4'
     }
-})
+});
 
 class ProfileScene extends Component {
 
-    static navigationOptions = ({navigation}) => profileNavigationOptions(navigation)
+    static navigationOptions = ({navigation}) => profileNavigationOptions(navigation);
 
     constructor() {
         super()
@@ -63,12 +46,11 @@ class ProfileScene extends Component {
     // }
 
     async componentDidMount() {
-        console.log('profile componentDidMount')
 
         this.props.navigation.setParams({
             saveData: this.props.saveData,
             hasChanges: this.props.hasChanges
-        })
+        });
 
         await this.props.loadData();
     }
@@ -83,24 +65,28 @@ class ProfileScene extends Component {
 
     onChangeSurname = (text) => {
         this.props.setSurname(text)
-    }
+    };
 
     onChangeName = (text) => {
         this.props.setName(text)
-    }
+    };
 
     onChangePatronymic = (text) => {
         this.props.setPatronymic(text)
-    }
+    };
 
     onChangePathNumber = (text) => {
         this.props.setPathNumber(text)
-    }
+    };
+
+    showAgentId = () => {
+        alert(this.props.agentId);
+    };
 
     render() {
 
         const {pins, pin} = this.props;
-        const name = pins[pin].name
+        const name = pins[pin].name;
 
         return (
             <KeyboardAwareScrollView extraScrollHeight={100} style={styles.container} enableOnAndroid={true}>
@@ -126,10 +112,12 @@ class ProfileScene extends Component {
                         <Input style={styles.input} onChangeText={this.onChangePathNumber}
                                value={this.props.pathNumber}/>
                     </Item>
-                    <Text style={{
-                        color: '#b4b4b4',
-                        marginTop: 16
-                    }}>{`${I18n.t('settings.build')} ${VersionNumber.buildVersion}`}</Text>
+                    <TouchableOpacity onLongPress={this.showAgentId}>
+                        <Text style={{
+                            color: '#b4b4b4',
+                            marginTop: 16
+                        }}>{`${I18n.t('settings.build')} ${DeviceInfo.getBuildNumber()}`}</Text>
+                    </TouchableOpacity>
                     <Text style={{
                         color: '#b4b4b4',
                         marginTop: 16
@@ -148,8 +136,9 @@ const mapStateToProps = state => ({
     patronymic: state.profile.patronymic,
     pathNumber: state.profile.pathNumber,
     contactNumber: state.profile.contactNumber,
-    hasChanges: state.profile.hasChanges
-})
+    hasChanges: state.profile.hasChanges,
+    agentId: state.auth.id
+});
 
 export default connect(mapStateToProps, {
     saveData,
@@ -157,8 +146,7 @@ export default connect(mapStateToProps, {
     setName,
     setSurname,
     setPatronymic,
-    setPathNumber,
-    setContactNumber
+    setPathNumber
 })(ProfileScene)
 
 

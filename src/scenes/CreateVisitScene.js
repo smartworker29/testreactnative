@@ -1,28 +1,46 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Text, Platform } from 'react-native';
-import { Item, Input, Label } from 'native-base';
-import { connect } from 'react-redux';
-import { back, goToVisitDetails } from '../actions/navigation'
-import { createVisit } from '../actions/visist'
+import React, {Component} from 'react';
+import {View, StyleSheet, KeyboardAvoidingView, Text, Platform, Alert} from 'react-native';
+import {Item, Input, Label} from 'native-base';
+import {connect} from 'react-redux';
+import {back, backToTasks, goToVisitDetails} from '../actions/navigation'
+import {createVisit} from '../actions/visist'
 import I18n from 'react-native-i18n'
-import { createVisitsNavigationOptions } from "../navigators/options";
+import {createVisitsNavigationOptions} from "../navigators/options";
 import GradientButton from "../component/GradientButton";
-import { allowAction } from "../utils/util";
+import {allowAction} from "../utils/util";
+import bugsnag from "../bugsnag";
 
 export class CreateVisitScene extends Component {
 
     static navigationOptions = ({navigation}) => createVisitsNavigationOptions(navigation);
 
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             text: '',
         }
     }
 
-    componentWillMount() {
+    getCoordinates = async () => {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(data => {
+                resolve(data.coords)
+            }, error => reject(error), {
+                timeout: 1000,
+                maxAge: 0
+            })
+        })
+    };
+
+    async componentDidMount() {
         if (Platform.OS === 'ios') {
             navigator.geolocation.requestAuthorization();
+            try {
+                await this.getCoordinates();
+            } catch (error) {
+                Alert.alert(I18n.t("error.attention"), I18n.t("error.geoDeny"));
+                bugsnag.notify(error);
+            }
         }
     }
 
@@ -30,10 +48,13 @@ export class CreateVisitScene extends Component {
         if (this.state.text.length === 0 || this.props.isFetch === true) {
             return;
         }
+        const taskId = this.props.navigation.state.params.taskId;
         if (allowAction("create_visit_process")) {
-            this.props.createVisit(this.state.text, 3000)
+            this.props.navigation.dispatch(back());
+            this.props.navigation.dispatch(back());
+            this.props.createVisit(this.state.text, taskId, 3000);
         }
-    }
+    };
 
     render() {
         return (
@@ -66,7 +87,7 @@ export class CreateVisitScene extends Component {
 }
 
 export default connect(state => {
-    const {nav, visits} = state
+    const {nav, visits} = state;
     return {
         nav: nav,
         error: visits.error,
@@ -109,4 +130,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-})
+});

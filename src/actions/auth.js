@@ -35,11 +35,8 @@ export const setFetchPin = (val) => async (dispatch, getState) => {
 
 export const initPins = () => async (dispatch, getState) => {
     const pins = JSON.parse(await AsyncStorage.getItem(`@pins`)) || {};
-    if (Object.keys(pins).length === 0) {
-        await dispatch(syncPins());
-    } else {
-        dispatch({type: SET_PINS, payload: pins});
-    }
+    dispatch({type: SET_PINS, payload: pins});
+    dispatch(syncPins());
 }
 
 export const syncPins = () => async (dispatch, getState) => {

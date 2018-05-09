@@ -104,7 +104,7 @@ android {
         applicationId "inspector.cloud"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
+        versionCode 27
         versionName "1.0"
 
         ndk {
@@ -117,10 +117,10 @@ android {
         signingConfigs {
             release {
     //            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
-                    storeFile file('debug.keystore')
-                    storePassword 'android'
-                    keyAlias 'androiddebugkey'
-                    keyPassword 'android'
+                    storeFile file('cloudinspector.keystore')
+                    storePassword 'cloudinspector'
+                    keyAlias 'cloudinspector'
+                    keyPassword 'cloudinspector'
     //            }
             }
         }
@@ -156,10 +156,14 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-version-number')
     compile project(':react-native-orientation')
+    compile project(':react-native-image-resizer')
+    compile project(':react-native-sensors')
+    compile project(':react-native-dialogs')
+    compile project(':react-native-device-info')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-i18n')
+    compile project(':react-native-fs')
     compile project(':react-native-camera')
     compile project(':bugsnag-react-native')
     compile fileTree(dir: "libs", include: ["*.jar"])

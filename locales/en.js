@@ -1,89 +1,118 @@
-import I18n from "react-native-i18n";
-
 export default {
     login: {
-        login_button: "Login",
-        signup_button: "Sign Up"
+        login_button: 'Войти',
+        signup_button: 'Зарегестрироваться'
     },
     user_profile: {
-        title: "Profile",
-        instanceName: "Instance"
+        title: 'Профиль',
+        instanceName: "Раздел"
     },
     visits_list: {
-        title: "Visits",
-        emptyListMessage: "Press button «Start visit»",
-        newVisit: "New visit",
-        today: "Today",
-        before: "Before",
-        lastSync: "Last data synchronization",
-        moderation: "Moderation",
-        OnModeration: "Moderation",
-        resultBad: "Visit is not counted",
-        resultGood: "Visit counted",
-        route: "route"
+        title: 'Отчёты',
+        emptyListMessageTitle: 'Пока нет отчетов',
+        emptyListMessageDetail: 'Чтобы добавить свой первый отчет откройте вкладку задания',
+        newVisit: 'Новый отчёт',
+        today: 'Сегодня',
+        before: 'Ранее',
+        lastSync: 'Последняя синхронизация данных',
+        moderation: 'Модерация',
+        OnModeration: "На модерации",
+        resultBad: 'Не засчитан',
+        resultGood: 'Засчитан',
+        route: "маршрут"
     },
     visitDetail: {
-        title: 'Visit',
-        agent: 'Agent',
-        shop: 'Shop',
-        photo: "Photos",
-        started_date: 'Date of visit',
-        offline: `don't sync`,
-        message: 'detail',
-        moderationResult: "Moderation result",
-        moderationDone: "Moderation passed",
-        moderationReject: "Moderation not passed",
-        moderationComment: "Moderation comment:",
-        visitAccept: "Visit counted",
-        visitReject: "Visit not counted",
-        visitResult: "Visits result"
+        title: 'Отчёт',
+        agent: 'Агент',
+        shop: 'Магазин',
+        photo: 'Фотографии',
+        started_date: 'Дата отчёта',
+        offline: 'не синхронизированно',
+        message: 'Отчёт',
+        moderationResult: 'Результат модерации',
+        moderationDone: 'Модерация пройдена',
+        moderationReject: 'Модерация не пройдена',
+        moderationComment: 'Комментарий модератора:',
+        visitAccept: 'Засчитан',
+        visitReject: 'Не засчитан',
+        visitResult: 'Результаты отчёта'
     },
     CreateVisit: {
-        title: "Start visit",
-        photo: 'Photos',
-        createAction: 'Start',
-        backAction: 'back',
-        label: "Trade point ID ",
-        description: "To start a new visit, enter the store ID below"
+        title: 'Новый отчёт',
+        photo: 'Фотографии',
+        createAction: 'Начать',
+        backAction: 'назвд',
+        label: 'ID  Торговой точки',
+        description: 'Чтобы начать новый отчёт, укажите ниже ID магазина'
     },
     settings: {
-        title: "Settings",
-        surname: "Second Name",
-        name: "First Name",
-        patronymic: "Patronymic Name",
-        path_number: "Path Number",
-        contact_number: "Contact Number",
-        build: 'Build version'
-
+        title: 'Настройки',
+        surname: 'Фамилия',
+        name: 'Имя',
+        patronymic: 'Отчество',
+        path_number: 'Номер маршрута',
+        contact_number: 'Контактный номер',
+        build: 'Версия сборки'
     },
     photo: {
-        title: 'Photo',
-        reship: 'Reship',
-        makePhoto: 'Make photo',
-        noPhotoTitle: "No photos yet",
-        expiredVisit: "The visit is over",
-        noPhotoDescription: "To take your first picture, click the button below",
-        noPhotoExpiredVisit: "To take photos, start a new visit",
-        send: 'Send',
-        back: 'Back',
-        cancel: 'Cancel',
-        ok: 'Ok',
-        sync: 'Syncing in progress',
-        allowAccess: "Allow access to the camera"
+        title: 'Фото',
+        reship: 'Переснять',
+        makePhoto: 'Сделать фото',
+        noPhotoTitle: 'Пока нет фотографий',
+        expiredVisit: "Отчёт завершен",
+        noPhotoDescription: 'Чтобы сделать свой первый снимок нажмите кнопку ниже',
+        noPhotoExpiredVisit: "Чтобы сделать фотографии начните новый отчёт",
+        send: 'Отправить',
+        back: 'Завершить',
+        cancel: 'Отмена',
+        ok: 'Готово',
+        sync: 'Идет синхронизация',
+        allowAccess: "Разрешите доступ к камере"
     },
     error: {
-        emptyName: "Enter name",
-        emptySurname: "Enter surname",
-        emptyPathNumber: "Enter path number",
-        emptyPatronymic: "Enter patronymic",
-        agentCreation: "Failed to create agent, try again"
+        attention: "Внимание",
+        emptyName: "Введите имя",
+        emptySurname: "Введите фамилию",
+        emptyPathNumber: "Введите Номер маршрута",
+        emptyPatronymic: "Введите отчество",
+        agentCreation: "Неудалось создать агента, попробуйте ещё раз",
+        geoDeny: "Вы отключили геолокацию"
     },
     pin: {
-        enter: "Enter pin code",
-        enterAgain: "Re-enter the PIN",
-        error: "Invalid pin code",
-        description: "If you have any problem, please contact us at 8 (800) 550-27-78 (call free)",
+        enter: "Введите пин-код",
+        enterAgain: "Укажите пин-код повторно",
+        error: "Неверный пин-код",
+        description: "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
+    },
+    task: {
+        title: "Задачи",
+        instruction: "Подробная инструкция",
+
+    },
+    tasks: {
+        emptyTitle: "Пока нет заданий",
+        emptyDescription: "Мы уведомим вас при поступлении новых заданий"
+    },
+    tabBar: {
+        tasks: "Задания",
+        results: "Результат ",
+        reports: "Отчёты",
+        profile: "Профиль"
+    },
+    reports: {
+        underNum: "Успешно засчитанных отчетов",
+        unassigned: "Незасчитанных отчетов",
+        moderationPass: "Модерация пройдена",
+        moderationUnPass: "Модерация не пройдена",
+        onModeration: "На модерации"
+    },
+    preview: {
+        title: "Предпросмотр"
+    },
+    feedback: {
+        support: "Служба поддержки",
+        title: "Жалоба",
+        send: "Отправить",
+        answer: "Ответ на жалобу"
     }
-
-
 }

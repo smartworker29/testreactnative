@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, {PureComponent} from 'react'
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import I18n from 'react-native-i18n'
 import PropTypes from 'prop-types'
 import {
@@ -7,7 +7,7 @@ import {
     unsyncIcon
 } from '../utils/images'
 import moment from 'moment'
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import ru from 'moment/locale/ru';
 import _ from "lodash";
 
@@ -50,7 +50,7 @@ class ListItem extends PureComponent {
      * @returns {*}
      */
     renderResultBlock(visit) {
-        const {moderation, results} = visit
+        const {moderation, results} = visit;
 
         const resultBlock = (icon, text, color) => {
             return (
@@ -59,7 +59,7 @@ class ListItem extends PureComponent {
                     <Text style={[styles.statusText, color]}>{text}</Text>
                 </View>
             )
-        }
+        };
 
         const moderationBlock = (icon, text, color) => {
             return (
@@ -68,19 +68,20 @@ class ListItem extends PureComponent {
                     <Text style={[styles.statusText, color]}>{text}</Text>
                 </View>
             )
-        }
+        };
 
-        let resultView = resultBlock(unknownIcon, '- - -')
-        let moderationView = (!visit.tmp) ? moderationBlock(timeIcon, I18n.t('visits_list.OnModeration')) : null
+        let resultView = resultBlock(unknownIcon, '- - -');
+        let moderationView = (!visit.tmp && moderation !== null) ? moderationBlock(timeIcon, I18n.t('visits_list.OnModeration')) : null;
+        //moderationView = (!moderation === null) ? moderation : null;
 
         if (results && results.status) {
             switch (results.status) {
                 case 'NEGATIVE' :
-                    resultView = resultBlock(dislikeIcon, I18n.t('visits_list.resultBad'), styles.red)
-                    break
+                    resultView = resultBlock(dislikeIcon, I18n.t('visits_list.resultBad'), styles.red);
+                    break;
                 case 'NEUTRAL':
                 case 'POSITIVE' :
-                    resultView = resultBlock(likeIcon, I18n.t('visits_list.resultGood'), styles.green)
+                    resultView = resultBlock(likeIcon, I18n.t('visits_list.resultGood'), styles.green);
                     break
             }
         }
@@ -88,10 +89,10 @@ class ListItem extends PureComponent {
         if (moderation !== null) {
             switch (moderation.status) {
                 case 'NEGATIVE' :
-                    moderationView = moderationBlock(badIcon, I18n.t('visits_list.moderation'), styles.red)
-                    break
+                    moderationView = moderationBlock(badIcon, I18n.t('visits_list.moderation'), styles.red);
+                    break;
                 case 'POSITIVE' :
-                    moderationView = moderationBlock(goodIcon, I18n.t('visits_list.moderation'), styles.green)
+                    moderationView = moderationBlock(goodIcon, I18n.t('visits_list.moderation'), styles.green);
                     break
             }
         }
@@ -107,9 +108,8 @@ class ListItem extends PureComponent {
     }
 
     render() {
-        const {visit, photos, route, sync} = this.props
-
-        const reverseSync = _.reverse(sync);
+        const {visit, photos, pathNumber, sync} = this.props;
+        const route = (visit.current_agent_route !== undefined) ? visit.current_agent_route : pathNumber;
         const needPhotoSync = photos.find(photo => {
             return (
                 (photo.visit === visit.id || photo.tmpId === visit.id || sync[photo.visit] === visit.id) &&
@@ -118,15 +118,17 @@ class ListItem extends PureComponent {
 
         //Reactotron.log(`visit ${visit.id} needPhotoSync=${needPhotoSync}`);
 
-        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon
-        const shopId = (visit.shop !== null) ? visit.shop : '- - -'
+        const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon;
+        const shopId = (visit.shop !== null) ? visit.shop : '- - -';
         const id = (!visit.id || visit.tmp === true) ? '- - -' : visit.id;
+
+        const time = (visit.started_date) ? visit.started_date : visit.local_date;
 
         return (
             <TouchableOpacity {...this.props} onPress={this.props.onPress} style={{padding: 5}}>
                 <View style={styles.item}>
                     <View style={styles.row}>
-                        <Text style={styles.dateColor}>{this.moment(visit.started_date).format('D MMMM, HH:mm')}</Text>
+                        <Text style={styles.dateColor}>{this.moment(time).format('D MMMM, HH:mm')}</Text>
                         <Image source={sync_icon}/>
                     </View>
                     {this.renderShopDetail(visit)}
@@ -268,7 +270,7 @@ const styles = StyleSheet.create({
 export default connect(state => {
     return {
         photos: state.photo.photos,
-        route: state.profile.pathNumber,
+        pathNumber: state.profile.pathNumber,
         sync: state.visits.sync,
     }
 })(ListItem)

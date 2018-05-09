@@ -8,7 +8,6 @@ import {
     SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
 } from "../utils/constants";
 import { Map } from "immutable";
-import * as types from "../actions/photo";
 
 export const init = {
     isFetch: false,
