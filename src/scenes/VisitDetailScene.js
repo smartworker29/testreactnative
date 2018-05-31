@@ -222,6 +222,13 @@ export class VisitDetailScene extends Component {
         }
     };
 
+    goToSync(id) {
+        return;
+        if (allowAction("goToSync")) {
+            this.props.navigation.navigate("Sync", {id});
+        }
+    }
+
     renderPhotoArea(visit, isLast) {
         const {sync} = this.props;
         const {id} = this.props.navigation.state.params;
@@ -406,7 +413,9 @@ export class VisitDetailScene extends Component {
                             <View style={styles.row}>
                                 <Text
                                     style={styles.dateColor}>{this.moment(time).format('D MMMM, HH:mm')}</Text>
-                                <Image source={sync_icon}/>
+                                <TouchableOpacity onPress={() => this.goToSync(id)}>
+                                    <Image source={sync_icon}/>
+                                </TouchableOpacity>
                             </View>
                             <Text style={styles.taskName}>{taskName}</Text>
                             {this.renderShopDetail(visit)}

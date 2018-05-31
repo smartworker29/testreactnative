@@ -13,6 +13,8 @@ export const init = {
     isFetch: false,
     isCreateFetch: false,
     isSync: false,
+    syncVisitId: null,
+    syncVisitError: "sdfsfsfs",
     refresh: false,
     hasMore: false,
     needSync: false,
@@ -136,19 +138,20 @@ export default (state = init, action) => {
                 sync: {...state.sync, [action.syncId]: action.payload.id},
                 needSync,
                 result: Object.keys(visit).reverse(),
+                syncVisitError: null
             };
 
         case SET_SYNC_VISIT:
-            return {...state, sync: action.payload}
+            return {...state, sync: action.payload};
 
         case "SYNC_PHOTO_END":
             return {...state, isSync: false};
 
         case SYNC_VISIT_START:
-            return {...state, syncProcess: true};
+            return {...state, syncProcess: true, syncVisitId: action.payload, syncVisitError: null};
 
         case SYNC_VISIT_END:
-            return {...state, syncProcess: false};
+            return {...state, syncProcess: false, syncVisitId: null};
 
         case GET_VISIT_DETAILS_RESPONSE:
             return {
@@ -156,7 +159,7 @@ export default (state = init, action) => {
                 isFetch: false,
                 error: null,
                 entities: {visit: {...state.entities.visit, [action.payload.id]: action.payload}}
-            }
+            };
 
 
         // case types.GET_VISIT_DETAILS_REQUEST:

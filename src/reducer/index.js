@@ -8,6 +8,7 @@ import app from "./app";
 import profile from "./profile";
 import tasks from "./tasks";
 import stats from "./stats";
+import feedback from "./feedback";
 
 export default combineReducers({
     app,
@@ -17,6 +18,7 @@ export default combineReducers({
     stats,
     photo,
     visits,
+    feedback,
     profile,
     visitDetails
 });

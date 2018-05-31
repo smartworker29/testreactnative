@@ -1,4 +1,5 @@
 import {
+    AGENT_FETCH,
     SET_AUTH_ID,
     SET_PROFILE_CONTACT_NUMBER, SET_PROFILE_DATA,
     SET_PROFILE_NAME,
@@ -63,19 +64,25 @@ export const saveData = (action) => async (dispatch, getState) => {
         total_memory: String(DeviceInfo.getTotalMemory())
     };
 
-    if (authId == null) {
-        const result = await API.createAgent({name, device_info});
-        if (result !== null) {
+    dispatch({type: AGENT_FETCH, payload: true});
 
+    if (authId == null) {
+        const result = await API.createAgent({name, device_info, route: data.pathNumber});
+        if (result !== null) {
             await AsyncStorage.setItem(`@${pin}_agent`, String(result.data.id));
             dispatch({type: SET_AUTH_ID, payload: String(result.data.id)});
+            dispatch({type: AGENT_FETCH, payload: false});
             return dispatch(resetToList());
         } else {
-            dispatch({type: SHOW_TOAST, payload: I18n.t("error.agentCreation"), errorSeed: genSeed()});
+            Alert.alert(I18n.t("error.attention"), I18n.t("error.createAgent"));
         }
     } else {
-        await API.updateAgent(authId, name);
+        if (await API.updateAgent(authId, name) === null) {
+            Alert.alert(I18n.t("error.attention"), I18n.t("error.updateAgent"));
+        }
     }
+
+    dispatch({type: AGENT_FETCH, payload: false});
     bugsnag.setUser(`${authId}`, data.pathNumber, 'example@example.com');
 
     if (action) {
@@ -87,20 +94,20 @@ export const loadData = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
     const data = JSON.parse(await AsyncStorage.getItem(`@${pin}_profile`)) || {};
     dispatch({type: SET_PROFILE_DATA, payload: data});
-}
+};
 
 export const setSurname = (text) => (dispatch) => {
-    dispatch({type: SET_PROFILE_SURMANE, payload: text});
+    dispatch({type: SET_PROFILE_SURMANE, payload: _.trim(text)});
 };
 
 export const setName = (text) => (dispatch) => {
-    dispatch({type: SET_PROFILE_NAME, payload: text});
+    dispatch({type: SET_PROFILE_NAME, payload: _.trim(text)});
 };
 
 export const setPatronymic = (text) => (dispatch) => {
-    dispatch({type: SET_PROFILE_PATRONYMIC, payload: text});
+    dispatch({type: SET_PROFILE_PATRONYMIC, payload: _.trim(text)});
 };
 
 export const setPathNumber = (text) => (dispatch) => {
-    dispatch({type: SET_PROFILE_PATH_NUMBER, payload: text});
+    dispatch({type: SET_PROFILE_PATH_NUMBER, payload: _.trim(text)});
 };

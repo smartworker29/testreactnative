@@ -26,6 +26,7 @@ allprojects {
                     resolutionStrategy {
 //                        force 'com.google.android.gms:play-services-gcm:10.0.1' // If you using fcm
 //                        force 'com.google.android.gms:play-services-vision:10.0.1'
+                          force 'com.google.android.gms:play-services-location:15.0.1'
                     }
         }
     }

@@ -19,7 +19,7 @@ import ResultsScene from "../scenes/ResultsScene";
 
 import {Toast} from "native-base";
 import {initVisits, refreshVisitsList, syncVisitList} from "../actions/visist";
-import {appInit, initFolders, updateRatioExceptions} from "../actions/app";
+import {appInit, initFolders, updateDeviceInfo, updateRatioExceptions} from "../actions/app";
 import {resetToList, resetToProfile} from "../actions/navigation";
 import {authInit, initPins, setFetchPin, syncPins} from "../actions/auth";
 import {loadData} from "../actions/profile";
@@ -28,6 +28,8 @@ import TaskScene from "../scenes/TaskScene";
 import {getStatistics} from "../actions/stats";
 import PreviewScene from "../scenes/PreviewScene";
 import FeedbackScene from "../scenes/FeedbackScene";
+import SyncScene from "../scenes/SyncScene";
+import ErrorLogging from "../utils/Errors";
 
 YellowBox.ignoreWarnings([
     'Warning: componentWillMount is deprecated',
@@ -106,6 +108,9 @@ export const AppNavigator = StackNavigator({
     },
     Feedback: {
         screen: FeedbackScene
+    },
+    Sync: {
+        screen: SyncScene
     }
 }, {
     // mode: 'modal',
@@ -125,6 +130,7 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(initVisits());
         await this.props.dispatch(photoInit());
         await this.props.dispatch(loadData());
+        await this.props.dispatch(updateDeviceInfo());
 
         if (this.props.authId === null || this.props.pathNumber.length === 0) {
             this.props.dispatch(resetToProfile());
@@ -136,15 +142,22 @@ class AppWithNavigationState extends Component {
     async componentDidMount() {
         await this.props.dispatch(initFolders());
         await this.props.dispatch(initPins());
-        await this.props.dispatch(updateRatioExceptions());
+        //await this.props.dispatch(updateRatioExceptions());
         BackHandler.addEventListener('hardwareBackPress', this.onBackPress);
 
         this.intervalSyncPins = setInterval(async () => {
             await this.props.dispatch(syncPins());
-        }, 7000)
+        }, 7000);
+
+        setInterval(() => {
+            ErrorLogging.save();
+        }, 5000);
     }
 
     async sync() {
+        if (this.props.isForceSync === true) {
+            return;
+        }
         await this.props.dispatch(syncVisitList());
         await this.props.dispatch(syncPhoto());
         await this.props.dispatch(refreshVisitsList(false));
@@ -170,9 +183,6 @@ class AppWithNavigationState extends Component {
             setInterval(async () => {
                 await this.sync();
             }, 2000);
-            setInterval(async () => {
-                await this.props.dispatch(updateRatioExceptions());
-            }, 20000);
         }
 
         if (this.props.error !== props.error || this.props.seed !== props.seed) {
@@ -221,6 +231,7 @@ const mapStateToProps = state => ({
     seed: state.app.errorSeed,
     authId: state.auth.id,
     pathNumber: state.profile.pathNumber,
+    isForceSync: state.app.isForceSync
 });
 
 export default connect(mapStateToProps)(AppWithNavigationState);

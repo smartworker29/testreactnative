@@ -103,8 +103,8 @@ android {
     defaultConfig {
         applicationId "inspector.cloud"
         minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 27
+        targetSdkVersion 23
+        versionCode 45
         versionName "1.0"
 
         ndk {
@@ -157,6 +157,7 @@ android {
 
 dependencies {
     compile project(':react-native-orientation')
+    compile project(':react-native-geolocation-service')
     compile project(':react-native-image-resizer')
     compile project(':react-native-sensors')
     compile project(':react-native-dialogs')

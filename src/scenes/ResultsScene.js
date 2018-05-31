@@ -1,17 +1,24 @@
 import React, {Component} from 'react';
-import {SafeAreaView} from 'react-navigation'
 import {resultsNavigationOptions} from "../navigators/options";
-import {View, StyleSheet, Text, Image, ScrollView, Platform} from "react-native";
+import {View, StyleSheet, Text, Image, ScrollView, Platform, TouchableWithoutFeedback, Button} from "react-native";
 import I18n from 'react-native-i18n'
 import {likeBigIcon, likeIcon} from "../utils/images";
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {connect} from "react-redux";
+import ErrorLogging from "../utils/Errors";
+import * as API from "../api";
 
 class ResultsScene extends Component {
     static navigationOptions = ({navigation}) => resultsNavigationOptions(navigation);
 
     constructor() {
-        super()
+        super();
+        this.state = {
+            debug: false,
+            data: null,
+            error: null,
+            text: null
+        }
     }
 
     renderItem(text, val) {
@@ -24,15 +31,31 @@ class ResultsScene extends Component {
         )
     }
 
+    onDebug = () => {
+        //this.setState({debug: true})
+    };
+
+    updateErrors = async () => {
+
+    };
+
     render() {
-
+        if (this.state.debug === true) {
+            return (
+                <ScrollView style={{marginTop: 10}}>
+                    <Button title="Update"
+                            onPress={this.updateErrors}/>
+                </ScrollView>
+            )
+        }
         return (
-
             <ScrollView>
                 <View style={styles.greenContainer}>
                     {Platform.OS === 'ios' ? <View style={{height: getStatusBarHeight()}}/> : null}
                     <Text style={styles.date}>{this.props.date}</Text>
-                    <Image style={styles.like} source={likeBigIcon}/>
+                    <TouchableWithoutFeedback onLongPress={this.onDebug}>
+                        <Image style={styles.like} source={likeBigIcon}/>
+                    </TouchableWithoutFeedback>
                     <Text style={styles.number}>{this.props.successVisits}</Text>
                     <Text style={styles.textUnderNum}>{I18n.t("reports.underNum")}</Text>
                 </View>

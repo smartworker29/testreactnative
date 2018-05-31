@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
-import { pinNavigationOptions } from "../navigators/options";
-import { Image, View, StyleSheet, Text, TextInput, Keyboard, ActivityIndicator, TouchableOpacity } from 'react-native'
-import { logo } from "../utils/images";
+import React, {Component} from 'react'
+import {pinNavigationOptions} from "../navigators/options";
+import {Image, View, StyleSheet, Text, TextInput, Keyboard, ActivityIndicator, TouchableOpacity} from 'react-native'
+import {logo} from "../utils/images";
 import I18n from "react-native-i18n";
-import { connect } from "react-redux";
-import { checkPin } from "../actions/auth";
+import {connect} from "react-redux";
+import {checkPin} from "../actions/auth";
+import AppLink from 'react-native-app-link';
 
 class EnterPinScene extends Component {
 
@@ -79,7 +80,7 @@ class EnterPinScene extends Component {
         const error = (this.props.wrongPin) ? I18n.t("pin.error") : " ";
         const message = (this.props.wrongPin) ? I18n.t("pin.enterAgain") : I18n.t("pin.enter");
         const indicator = (!this.props.isFetchPin) ? this.renderCircles() :
-            <ActivityIndicator style={styles.indicator}/>
+            <ActivityIndicator style={styles.indicator}/>;
 
         return (
             <View style={styles.container}>
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "flex-start",
-        paddingTop:30,
+        paddingTop: 30,
         alignItems: "center",
         backgroundColor: "white"
     },

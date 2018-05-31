@@ -5,7 +5,10 @@ export default {
     },
     user_profile: {
         title: 'Профиль',
-        instanceName: "Раздел"
+        instanceName: "Раздел",
+        createAgent: "Создание агента",
+        updateAgent: "Обновление агента",
+        sync: "Синхронизация"
     },
     visits_list: {
         title: 'Отчёты',
@@ -43,7 +46,10 @@ export default {
         createAction: 'Начать',
         backAction: 'назвд',
         label: 'ID  Торговой точки',
-        description: 'Чтобы начать новый отчёт, укажите ниже ID магазина'
+        description: 'Чтобы начать новый отчёт, укажите ниже ID магазина',
+        getGeo: "Получение геолокации",
+        okGeo: "Геопозиция полученна",
+        createVisit: "Создание отчёта"
     },
     settings: {
         title: 'Настройки',
@@ -76,7 +82,9 @@ export default {
         emptyPathNumber: "Введите Номер маршрута",
         emptyPatronymic: "Введите отчество",
         agentCreation: "Неудалось создать агента, попробуйте ещё раз",
-        geoDeny: "Вы отключили геолокацию"
+        geoDeny: "В телефоне отключенна геолокация",
+        createAgent: "Ошибка создания агента",
+        updateAgent: "Ошибка обновления агента"
     },
     pin: {
         enter: "Введите пин-код",
@@ -85,7 +93,7 @@ export default {
         description: "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
     },
     task: {
-        title: "Задания",
+        title: "Задачи",
         instruction: "Подробная инструкция",
 
     },
@@ -99,6 +107,9 @@ export default {
         reports: "Отчёты",
         profile: "Профиль"
     },
+    sync: {
+        title: "Состояние"
+    },
     reports: {
         underNum: "Успешно засчитанных отчетов",
         unassigned: "Незасчитанных отчетов",
@@ -107,12 +118,17 @@ export default {
         onModeration: "На модерации"
     },
     preview: {
-        title: "Предпросмотр"
+        title: "Предпросмотр",
+        remove: "Удаление фото"
     },
     feedback: {
         support: "Служба поддержки",
         title: "Жалоба",
         send: "Отправить",
-        answer: "Ответ на жалобу"
+        answer: "Ответ на жалобу",
+        request: "Отправка жалобы",
+        success: "Жалоба успешно отправлена",
+        error: "Жалоба не отправлена",
+        describe: "Опишите ситуацию"
     }
 }

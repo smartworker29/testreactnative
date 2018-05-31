@@ -36,24 +36,29 @@ export const getPhotoPath = (path) => {
 };
 
 export const getDeviceInfo = async () => {
-    return {
-        battery_level: String(await DeviceInfo.getBatteryLevel()),
-        brand: DeviceInfo.getBrand(),
-        model: DeviceInfo.getModel(),
-        build_number: DeviceInfo.getBuildNumber(),
-        carrier: DeviceInfo.getCarrier(),
-        uid: DeviceInfo.getUniqueID(),
-        manufacturer: DeviceInfo.getManufacturer(),
-        device_id: DeviceInfo.getDeviceId(),
-        system_name: DeviceInfo.getSystemName(),
-        system_version: DeviceInfo.getSystemVersion(),
-        version: DeviceInfo.getVersion(),
-        bundle_id: DeviceInfo.getBundleId(),
-        device_name: DeviceInfo.getDeviceName(),
-        user_agent: DeviceInfo.getUserAgent(),
-        device_location: DeviceInfo.getDeviceLocale(),
-        device_country: DeviceInfo.getDeviceCountry(),
-        timezone: DeviceInfo.getTimezone(),
-        total_memory: String(DeviceInfo.getTotalMemory())
-    };
+    try {
+        return {
+            battery_level: String(await DeviceInfo.getBatteryLevel()),
+            brand: DeviceInfo.getBrand(),
+            model: DeviceInfo.getModel(),
+            build_number: DeviceInfo.getBuildNumber(),
+            carrier: DeviceInfo.getCarrier(),
+            uid: DeviceInfo.getUniqueID(),
+            manufacturer: DeviceInfo.getManufacturer(),
+            device_id: DeviceInfo.getDeviceId(),
+            system_name: DeviceInfo.getSystemName(),
+            system_version: DeviceInfo.getSystemVersion(),
+            version: DeviceInfo.getVersion(),
+            bundle_id: DeviceInfo.getBundleId(),
+            device_name: DeviceInfo.getDeviceName(),
+            user_agent: DeviceInfo.getUserAgent(),
+            device_location: DeviceInfo.getDeviceLocale(),
+            device_country: DeviceInfo.getDeviceCountry(),
+            timezone: DeviceInfo.getTimezone(),
+            total_memory: String(DeviceInfo.getTotalMemory())
+        };
+    } catch (error) {
+        return {}
+    }
+
 };

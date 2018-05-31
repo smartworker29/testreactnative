@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { taskNavigationOptions } from "../navigators/options";
-import { FlatList, Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React, {Component} from 'react';
+import {taskNavigationOptions} from "../navigators/options";
+import {FlatList, Text, View, StyleSheet, TouchableOpacity, ScrollView} from "react-native";
 import I18n from 'react-native-i18n'
-import { connect } from "react-redux";
-import { addIcon } from "../utils/images";
+import {connect} from "react-redux";
+import {addIcon} from "../utils/images";
 import GradientButton from "../component/GradientButton";
 import HTMLView from 'react-native-htmlview';
+import {allowAction} from "../utils/util";
 
 class TaskScene extends Component {
     static navigationOptions = ({navigation}) => taskNavigationOptions(navigation);
@@ -15,9 +16,11 @@ class TaskScene extends Component {
     }
 
     goToCreateVisit = () => {
-        this.props.navigation.navigate("CreateVisit", {
-            taskId: this.props.navigation.state.params.id
-        });
+        if (allowAction("createVisitFromTask")) {
+            this.props.navigation.navigate("CreateVisit", {
+                taskId: this.props.navigation.state.params.id
+            });
+        }
     };
 
     renderNewVisit() {
@@ -28,6 +31,9 @@ class TaskScene extends Component {
     render() {
         const id = this.props.navigation.state.params.id;
         const item = this.props.list.find(obj => obj.id === id);
+        if (!item) {
+            return null;
+        }
         return (
             <View style={{flex: 1}}>
                 {this.renderNewVisit()}
@@ -48,7 +54,7 @@ const mapStateToProps = (state) => {
     return {
         list: state.tasks.list
     }
-}
+};
 
 export default connect(mapStateToProps)(TaskScene);
 

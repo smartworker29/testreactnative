@@ -44,11 +44,9 @@ class PhotoScene extends Component {
     prepareRatio = async () => {
         if (Platform.OS === 'android' && this.camera) {
             const ratios = await this.camera.getSupportedRatiosAsync();
-            let ratio = ratios[ratios.length - 1];
-            // if (ratio === "35:26" && ratios.includes("16:9")) {
-            //     ratio = "16:9"
-            // }
-            this.setState({ratio});
+            if (ratios.includes("16:9") && _.last(ratios) !== "16:9") {
+                this.setState({ratio: "16:9"});
+            }
         }
     };
 
@@ -121,7 +119,7 @@ class PhotoScene extends Component {
         this.takePictureStatus = true;
         this.setState({processPhoto: true});
 
-        const options = {quality: 0.9, base64: true, exif: true, width: 1500, skipProcessing: true};
+        const options = {quality: 0.9, exif: true, width: 1500, skipProcessing: true};
         let rotate = this.getRotate();
 
         const initial = await this.getOrientation();
@@ -130,6 +128,10 @@ class PhotoScene extends Component {
         }
 
         const data = await this.camera.takePictureAsync(options);
+
+        if (Platform.OS !== 'ios' && data.width > data.height) {
+            rotate = rotate + 90;
+        }
 
         const result = await ImageResizer.createResizedImage(data.uri, 1500, 1500, 'JPEG', 90, rotate);
         await unlink(data.uri);
@@ -148,13 +150,9 @@ class PhotoScene extends Component {
     };
 
     selectCamera() {
-
-        let ratioProps = {};
-        if (!this.props.ratios.includes(DeviceInfo.getModel())) {
-            ratioProps = {
-                onCameraReady: this.prepareRatio,
-                ratio: this.state.ratio
-            }
+        const props = {};
+        if (this.state.ratio) {
+            props.ratio = this.state.ratio
         }
         return <RNCamera
             ref={ref => {
@@ -167,7 +165,8 @@ class PhotoScene extends Component {
             flashMode={RNCamera.Constants.FlashMode.off}
             permissionDialogTitle={'Permission to use camera'}
             permissionDialogMessage={'We need your permission to use your camera phone'}
-            {...ratioProps}
+            onCameraReady={this.prepareRatio}
+            {...props}
         />
     }
 
@@ -209,7 +208,7 @@ class PhotoScene extends Component {
         return (
             <Container
                 style={{backgroundColor: "black"}}>
-                {this.state.modalVisible ? this.renderCamera() : this.renderPreview()}
+                {this.renderCamera()}
             </Container>
         )
     }

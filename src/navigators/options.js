@@ -14,6 +14,7 @@ import Styles from '../utils/styles'
 import I18n from 'react-native-i18n'
 import {Image, TouchableOpacity, View} from 'react-native'
 import * as NavigationActions from '../actions/navigation'
+import {allowAction} from "../utils/util";
 
 const getNavParam = (navigation, param) => {
     return (navigation.state.params === undefined) ? false : navigation.state.params[param]
@@ -69,6 +70,7 @@ export const taskNavigationOptions = (navigation) => {
 };
 
 export const resultsNavigationOptions = (navigation) => {
+
     return {
         title: I18n.t('tabBar.results'),
         header: null,
@@ -82,10 +84,18 @@ export const resultsNavigationOptions = (navigation) => {
 
 export const profileNavigationOptions = (navigation) => {
 
+    let isFetch = true;
+
+    if (navigation.state.params) {
+        isFetch = navigation.state.params.isFetch;
+    }
+
     const headerRight = (
         <TouchableOpacity style={Styles.navBarIconAreaRight} onPress={() => {
-            Keyboard.dismiss();
-            navigation.state.params.saveData(NavigationActions.back())
+            if (allowAction("saveProfileData")) {
+                Keyboard.dismiss();
+                navigation.state.params.saveData(NavigationActions.back())
+            }
         }}>
             <Image resizeMode="contain" source={doneIcon}/>
         </TouchableOpacity>
@@ -97,7 +107,7 @@ export const profileNavigationOptions = (navigation) => {
         tabBarLabel: I18n.t('tabBar.profile'),
         headerTitleStyle: Styles.headerTitleStyle,
         drawerLockMode: 'unlocked',
-        headerRight,
+        headerRight: (isFetch !== true) ? headerRight : null,
         tabBarIcon: (args) => {
             const icon = (args.focused === true) ? profileActiveIcon : profileIcon;
             return <Image source={icon}/>
@@ -199,6 +209,22 @@ export const feedbackNavigationOptions = (navigation) => {
             </TouchableOpacity>
         ),
         headerTitleStyle: Styles.headerTitleStyle,
+    }
+};
+
+export const syncNavigationOptions = (navigation) => {
+    return {
+        title: `${I18n.t('sync.title')}`,
+        headerLeft: (
+            <TouchableOpacity
+                style={Styles.navBarIconAreaLeft}
+                onPress={() => navigation.dispatch(NavigationActions.back())}>
+                <Image resizeMode="contain" source={backIcon}/>
+            </TouchableOpacity>
+        ),
+        headerStyle: Styles.headerStyle,
+        headerTitleStyle: Styles.headerTitleStyle,
+        drawerLockMode: 'unlocked',
     }
 };
 

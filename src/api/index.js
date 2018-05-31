@@ -1,6 +1,7 @@
 // import { base_url } from '../utils/api'
 import axios from 'axios'
 import {AsyncStorage} from "react-native";
+import ErrorLogging from "../utils/Errors";
 
 // DEVELOP
 //export const base_url = 'https://mobile-app.inspector-cloud-staging.ru/api/v1.5'
@@ -32,6 +33,7 @@ export const getPins = async () => {
             timeout: 5000
         })
     } catch (error) {
+        ErrorLogging.push("getPins", error);
         return null
     }
 };
@@ -44,6 +46,7 @@ export const getRatioExceptions = async () => {
             timeout: 10000
         })
     } catch (error) {
+        ErrorLogging.push("getRatioExceptions", error);
         return null
     }
 };
@@ -62,6 +65,7 @@ export const getStats = async (id) => {
             timeout: 10000
         })
     } catch (error) {
+        ErrorLogging.push("getStats", error);
         return null
     }
 };
@@ -79,7 +83,23 @@ export const getTasks = async () => {
             timeout: 10000
         })
     } catch (error) {
+        ErrorLogging.push("getTasks", error);
         return null
+    }
+};
+
+export const getTasksFetch = async (data) => {
+    const {url, token} = await getAuth();
+    try {
+        return await fetch(`${url}/visit_task/`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+    } catch (err) {
+        console.log(error)
     }
 };
 
@@ -97,6 +117,7 @@ export const createAgent = async (data) => {
             data
         })
     } catch (error) {
+        ErrorLogging.push("createAgent", error);
         return null
     }
 };
@@ -115,6 +136,30 @@ export const updateVisit = async (id, data) => {
             data
         })
     } catch (error) {
+        ErrorLogging.push("updateVisit", error);
+        return null
+    }
+};
+
+export const patchAgent = async (id, data) => {
+    try {
+        const {url, token} = await getAuth();
+        console.log(url, token);
+        console.log(data);
+        console.log("url", `${url}/agents/${id}/`);
+        return await axios({
+            method: 'patch',
+            url: `${url}/agents/${id}/`,
+            timeout: 10000,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data
+        })
+    } catch (error) {
+        ErrorLogging.push("patchAgent", error);
+        console.log(error);
         return null
     }
 };
@@ -125,6 +170,7 @@ export const makeVisit = async (id = 1, data, timeout) => {
     const options = {
         method: 'post',
         url: `${url}/agents/${id}/visits/`,
+        timeout: 10000,
         headers: {
             'Authorization': `Token ${token}`,
             'Content-Type': 'application/json'
@@ -141,6 +187,7 @@ export const makeVisit = async (id = 1, data, timeout) => {
     } catch (error) {
         console.log("makeVisit error");
         console.log(error);
+        ErrorLogging.push("makeVisit", error);
         return null
     }
 };
@@ -161,6 +208,7 @@ export const getVisitDetails = async (id) => {
     } catch (error) {
         console.log("getVisitDetails error");
         console.log(error);
+        ErrorLogging.push("getVisitDetails", error);
         return null
     }
 };
@@ -180,6 +228,7 @@ export const getAgents = async (id) => {
     } catch (error) {
         console.log("getAgents error");
         console.log(error);
+        ErrorLogging.push("getAgents", error);
         return null
     }
 };
@@ -199,6 +248,7 @@ export const updateAgent = async (id, name) => {
         })
     } catch (error) {
         console.log(error);
+        ErrorLogging.push("updateAgent", error);
         return null
     }
 };
@@ -218,6 +268,7 @@ export const getAgentUpdates = async (id = 1) => {
     } catch (error) {
         console.log("getAgentUpdates error");
         console.log(error);
+        ErrorLogging.push("getAgentUpdates", error);
         return null
     }
 };
@@ -237,6 +288,7 @@ export const getVisitsByAgent = async (id = 1) => {
     }
     catch (error) {
         console.log("getVisitsByAgent");
+        ErrorLogging.push("getVisitsByAgent", error);
         throw error
     }
 };
@@ -247,12 +299,14 @@ export const uploadPhoto = async (id, data) => {
         return await axios({
             method: 'post',
             url: `${url}/visits/${id}/scene/0/upload/`,
+            timeout: 10000,
             headers: {
                 'Authorization': `Token ${token}`
             }, data,
         })
     } catch (error) {
         console.log("uploadPhoto error");
+        ErrorLogging.push("uploadPhoto", error);
         throw error
     }
 };
@@ -263,6 +317,7 @@ export const deleteImage = async (id) => {
         url = url.substr(0, url.length - 5);
         return await axios({
             method: 'delete',
+            timeout: 10000,
             url: `${url}/internal/images/${id}/`,
             headers: {
                 'Authorization': `Token ${token}`
@@ -270,6 +325,7 @@ export const deleteImage = async (id) => {
         })
     } catch (error) {
         console.log("deleteImage error");
+        ErrorLogging.push("deleteImage", error);
         return null;
     }
 };
@@ -280,6 +336,7 @@ export const sendFeedback = async (id, data) => {
         return await axios({
             method: 'post',
             url: `${url}/agents/${id}/helpdesk/`,
+            timeout: 10000,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -288,6 +345,7 @@ export const sendFeedback = async (id, data) => {
         })
     } catch (error) {
         console.log("deleteImage error");
+        ErrorLogging.push("sendFeedback", error);
         return null;
     }
 };

@@ -1,16 +1,28 @@
 import React, {Component} from 'react'
-import {View, StyleSheet, TouchableOpacity} from 'react-native'
-import {Item, Text, Label, Input} from 'native-base'
+import {View, StyleSheet, TouchableOpacity, ActivityIndicator, Text} from 'react-native'
+import {Item, Label, Input} from 'native-base'
 import I18n from 'react-native-i18n'
 import {connect} from 'react-redux'
 import {profileNavigationOptions} from '../navigators/options'
 import {loadData, saveData, setName, setPathNumber, setPatronymic, setSurname} from '../actions/profile'
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import DeviceInfo from 'react-native-device-info';
+import {allowAction, getDeviceInfo} from "../utils/util";
+import {forceSync, setForceSync} from "../actions/app";
 
 const styles = StyleSheet.create({
     item: {
         marginTop: 15,
+    },
+    containerInfo: {
+        flex: 1,
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    infoText: {
+        color: "black",
+        marginTop: 20
     },
     input: {
         paddingLeft: 0,
@@ -23,6 +35,33 @@ const styles = StyleSheet.create({
     },
     placeholder: {
         color: '#b4b4b4'
+    },
+    feedbackButton: {
+        height: 44,
+        borderRadius: 22,
+        borderWidth: 2,
+        borderColor: "#cfcfcf",
+        marginTop: 20,
+        marginHorizontal: 16,
+        justifyContent: "center"
+    },
+    feedbackText: {
+        fontSize: 16,
+        fontWeight: "600",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        textAlign: "center",
+        color: "#b4b4b4"
+    },
+    statusRow: {
+        marginTop: 15,
+        alignItems: "center"
+    },
+    activity: {
+        marginRight: 10
+    },
+    text: {
+        textAlign: "center"
     }
 });
 
@@ -31,7 +70,8 @@ class ProfileScene extends Component {
     static navigationOptions = ({navigation}) => profileNavigationOptions(navigation);
 
     constructor() {
-        super()
+        super();
+        this.syncLock = false;
     }
 
     //
@@ -46,7 +86,6 @@ class ProfileScene extends Component {
     // }
 
     async componentDidMount() {
-
         this.props.navigation.setParams({
             saveData: this.props.saveData,
             hasChanges: this.props.hasChanges
@@ -56,9 +95,9 @@ class ProfileScene extends Component {
     }
 
     componentWillReceiveProps(props) {
-        if (this.props.hasChanges !== props.hasChanges) {
+        if (this.props.agentFetch !== props.agentFetch) {
             this.props.navigation.setParams({
-                hasChanges: props.hasChanges
+                isFetch: props.agentFetch
             })
         }
     }
@@ -83,10 +122,59 @@ class ProfileScene extends Component {
         alert(this.props.agentId);
     };
 
+    showDeviceInfo = async () => {
+        alert(JSON.stringify(await getDeviceInfo()))
+    };
+
+    forceSync = async () => {
+        if (this.syncLock === true) {
+            return;
+        }
+        this.syncLock = true;
+        await this.props.forceSync();
+        this.syncLock = false;
+    };
+
+    renderForceSync() {
+        const {isForceSync} = this.props;
+        if (!this.props.agentId) {
+            return null;
+        }
+        if (isForceSync === true) {
+            return (
+                <View>
+                    <TouchableOpacity style={styles.feedbackButton} onPress={this.forceSync}>
+                        <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
+                            <ActivityIndicator size="small" style={styles.activity}/>
+                            <Text style={styles.text}>{I18n.t("user_profile.sync")}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+        return (
+            <View>
+                <TouchableOpacity style={styles.feedbackButton} onPress={this.forceSync}>
+                    <Text style={styles.feedbackText}>{I18n.t("user_profile.sync")}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
     render() {
 
         const {pins, pin} = this.props;
         const name = pins[pin].name;
+
+        if (this.props.agentFetch === true) {
+            const text = (this.props.agentId) ? I18n.t("user_profile.updateAgent") : I18n.t("user_profile.createAgent");
+            return (
+                <View style={styles.containerInfo}>
+                    <ActivityIndicator size="small"/>
+                    <Text style={styles.infoText}>{text}</Text>
+                </View>
+            );
+        }
 
         return (
             <KeyboardAwareScrollView extraScrollHeight={100} style={styles.container} enableOnAndroid={true}>
@@ -118,10 +206,12 @@ class ProfileScene extends Component {
                             marginTop: 16
                         }}>{`${I18n.t('settings.build')} ${DeviceInfo.getBuildNumber()}`}</Text>
                     </TouchableOpacity>
-                    <Text style={{
-                        color: '#b4b4b4',
-                        marginTop: 16
-                    }}>{name}</Text>
+                    <TouchableOpacity onLongPress={this.showDeviceInfo}>
+                        <Text style={{
+                            color: '#b4b4b4',
+                            marginTop: 16
+                        }}>{name}</Text>
+                    </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
         )
@@ -137,7 +227,11 @@ const mapStateToProps = state => ({
     pathNumber: state.profile.pathNumber,
     contactNumber: state.profile.contactNumber,
     hasChanges: state.profile.hasChanges,
-    agentId: state.auth.id
+    agentId: state.auth.id,
+    agentFetch: state.auth.agentFetch,
+    visitSync: state.visits.syncProcess,
+    photoSync: state.photo.syncProcess,
+    isForceSync: state.app.isForceSync
 });
 
 export default connect(mapStateToProps, {
@@ -146,7 +240,8 @@ export default connect(mapStateToProps, {
     setName,
     setSurname,
     setPatronymic,
-    setPathNumber
+    setPathNumber,
+    forceSync
 })(ProfileScene)
 
 

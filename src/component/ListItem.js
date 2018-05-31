@@ -86,7 +86,7 @@ class ListItem extends PureComponent {
             }
         }
 
-        if (moderation !== null) {
+        if (moderation && moderation.status) {
             switch (moderation.status) {
                 case 'NEGATIVE' :
                     moderationView = moderationBlock(badIcon, I18n.t('visits_list.moderation'), styles.red);

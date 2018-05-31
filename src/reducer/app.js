@@ -2,7 +2,7 @@ import {
     DEBUG_CLEAR_OFFLINE_STORE,
     DEBUG_CLEAR_PHOTOS_STORE,
     DEBUG_CLEAR_SYNC_STORE,
-    SET_APP_DATA,
+    SET_APP_DATA, SET_FORCE_SYNC,
     SET_RATIO_EXCEPTIONS,
     SET_SYNC_TIME,
     SHOW_TOAST
@@ -16,11 +16,12 @@ export const genSeed = () => {
 export const init = {
     isConnected: false,
     syncTime: null,
+    isForceSync: false,
     beenSyncVisit: false,
     beenSyncPhoto: false,
     sync: false,
     error: "",
-    ratioExceptions: ['M5s', 'MEIZU_M5', 'SP56', 'WAS-LX1', 'SM-A500F', 'SM-G930F'],
+    ratioExceptions: ["M5s", "MEIZU_M5", "SP56", "WAS-LX1", "SM-A500F", "SM-G930F", "K10a40Lenov", "SM-T311", "ZTE BLADE V7"],
     errorSeed: genSeed()
 };
 
@@ -29,6 +30,8 @@ export default (state = init, action) => {
         case SHOW_TOAST :
             const errorSeed = action.errorSeed || state.errorSeed;
             return {...state, error: action.payload, errorSeed};
+        case SET_FORCE_SYNC:
+            return {...state, isForceSync: action.payload};
         case SET_APP_DATA :
             return {...state, ...action.payload};
         case SET_RATIO_EXCEPTIONS:

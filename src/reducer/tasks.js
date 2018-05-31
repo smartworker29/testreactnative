@@ -13,6 +13,7 @@ export default (state = init, action) => {
         case GET_TASKS_REQUEST_END:
             return {...state, isFetch: false};
         case SET_TASKS:
+            //alert(action.payload);
             return {...state, list: List(action.payload)};
         default:
             return state

@@ -7,6 +7,7 @@ import {unlink} from 'react-native-fs';
 import {allowAction, getPhotoPath, getPhotoPathWithPrefix} from "../utils/util";
 import * as NavigationActions from '../actions/navigation'
 import Swiper from 'react-native-swiper';
+import I18n from 'react-native-i18n'
 
 class PreviewScene extends Component {
     static navigationOptions = ({navigation}) => previewNavigationOptions(navigation);
@@ -77,7 +78,7 @@ class PreviewScene extends Component {
         const indicator = (this.props.deleteFetch) ? <ActivityIndicator size="small"/> : null;
 
         if (this.props.deleteFetch || this.props.deleteError !== null) {
-            const text = (this.props.deleteError) ? this.props.deleteError : "Удаление фото";
+            const text = (this.props.deleteError) ? this.props.deleteError : I18n.t("preview.preview");
             return (
                 <View style={styles.containerInfo}>
                     {indicator}

@@ -2,34 +2,40 @@ import {visitDetailsAndReset} from './navigation'
 import {AsyncStorage} from 'react-native'
 import API from '../api/index'
 import {
-    CREATE_VISIT_ERROR, CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, DELETE_OFFLINE_VISIT,
+    CREATE_VISIT_ERROR,
+    CREATE_VISIT_REQUEST,
+    CREATE_VISIT_RESPONSE,
+    DELETE_OFFLINE_VISIT, FEEDBACK_CLEAR_ERROR,
     REFRESH_VISIT_ERROR,
-    REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE, SEND_FEEDBACK_REQUEST, SET_APP_DATA, SET_LAST_CREATED_ID,
+    REFRESH_VISIT_REQUEST,
+    REFRESH_VISIT_RESPONSE,
+    SEND_FEEDBACK_REQUEST, SEND_FEEDBACK_RESPONSE,
+    SEND_FEEDBACK_TIMEOUT,
+    SET_APP_DATA,
+    SET_LAST_CREATED_ID,
     SET_SYNC_VISIT,
-    SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
+    SET_VISIT_OFFLINE,
+    SYNC_VISIT_END,
+    SYNC_VISIT_REQUEST,
+    SYNC_VISIT_RESPONSE,
+    SYNC_VISIT_START
 } from '../utils/constants'
 import _ from "lodash";
 import {Map} from "immutable";
 import {getDeviceInfo} from "../utils/util";
 
-export const createVisit = (shop, taskId, timeout) => async (dispatch, getState) => {
+export const createVisit = (shop, taskId, timeout, coordinates) => async (dispatch, getState) => {
 
     dispatch({type: CREATE_VISIT_REQUEST});
 
-    let coordinates = {};
+    let _coordinates = {
+        longitude: coordinates.longitude,
+        latitude: coordinates.latitude
+    };
 
-    try {
-        const {longitude, latitude} = await getCoordinates();
-        coordinates.longitude = longitude;
-        coordinates.latitude = latitude;
-    } catch (error) {
-        console.log(error)
-    }
-
-    // const data = {...coordinates, route: "PSHD12", customer_id: 12345};
     const name = `${_.trim(getState().profile.surname)} ${_.trim(getState().profile.name)} ${_.trim(getState().profile.patronymic)}`
     const data = {
-        ...coordinates,
+        ..._coordinates,
         route: getState().profile.pathNumber,
         customer_id: shop,
         task: taskId,
@@ -64,11 +70,10 @@ export const createVisit = (shop, taskId, timeout) => async (dispatch, getState)
         const id = new Date().getTime();
 
         const local_date = new Date().toJSON();
-        const payload = {id, tmp: true, shop, results: null, moderation: null, local_date, data};
+        const payload = {id, tmp: true, task: taskId, shop, results: null, moderation: null, local_date, data};
 
         dispatch({type: CREATE_VISIT_RESPONSE, payload, offline: true});
         await AsyncStorage.setItem(`@${pin}_last_created_id`, JSON.stringify(id));
-
         await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
         dispatch(visitDetailsAndReset(payload.id, true, true))
     }
@@ -80,7 +85,8 @@ const getCoordinates = async () => {
             resolve(data.coords)
         }, error => reject(error), {
             timeout: 1000,
-            maxAge: 0
+            maximumAge: 0,
+            enableHighAccuracy: true
         })
     })
 };
@@ -151,10 +157,12 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
     }
 };
 
-export const syncVisitList = () => async (dispatch, getState) => {
+export const syncVisitList = (force = false) => async (dispatch, getState) => {
 
-    if (getState().visits.syncProcess === true) {
-        return;
+    if (force === false) {
+        if (getState().visits.syncProcess === true) {
+            return;
+        }
     }
 
     dispatch({type: SYNC_VISIT_START});
@@ -181,10 +189,10 @@ export const syncVisitList = () => async (dispatch, getState) => {
 
     dispatch({type: SET_APP_DATA, payload: {beenSyncVisit}});
     dispatch({type: SET_SYNC_VISIT, payload: sync});
-    dispatch({type: SYNC_VISIT_END});
     const pin = getState().auth.pin;
-    AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
-    AsyncStorage.setItem(`@${pin}_visits_sync`, JSON.stringify(sync));
+    await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
+    await AsyncStorage.setItem(`@${pin}_visits_sync`, JSON.stringify(sync));
+    dispatch({type: SYNC_VISIT_END});
 };
 
 export const sendFeedback = (visit, request) => async (dispatch, getState) => {
@@ -193,5 +201,14 @@ export const sendFeedback = (visit, request) => async (dispatch, getState) => {
     const deviceInfo = await getDeviceInfo();
     const data = {visit, device_info: deviceInfo, request};
     const response = await API.sendFeedback(agentId, data);
-    return response !== null;
+    if (response === null) {
+        dispatch({type: SEND_FEEDBACK_TIMEOUT});
+    } else {
+        dispatch({type: SEND_FEEDBACK_RESPONSE});
+    }
+    return response;
+};
+
+export const clearFeedbackError = () => (dispatch, getState) => {
+    dispatch({type: FEEDBACK_CLEAR_ERROR});
 };

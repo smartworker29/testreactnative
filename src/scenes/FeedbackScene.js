@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, TextInput, Keyboard, ScrollView} from "react-native";
+import {View, StyleSheet, TextInput, Keyboard, ScrollView, Text, ActivityIndicator, Alert} from "react-native";
 import {connect} from "react-redux";
 import {feedbackNavigationOptions} from "../navigators/options";
 import I18n from "react-native-i18n";
 import GradientButton from "../component/GradientButton";
-import {sendFeedback} from "../actions/visist";
+import {clearFeedbackError, sendFeedback} from "../actions/visist";
 import {back} from "../actions/navigation"
 
 class FeedbackScene extends Component {
@@ -18,13 +18,20 @@ class FeedbackScene extends Component {
         }
     }
 
-    sendFeedback = () => {
+    sendFeedback = async () => {
         if (this.state.text.length === 0) {
             return;
         }
         const {id} = this.props.navigation.state.params;
-        this.props.sendFeedback(id, this.state.text);
-        this.props.navigation.dispatch(back());
+        const response = await this.props.sendFeedback(id, this.state.text);
+        if (response !== null) {
+            this.hideKeyboard();
+            Alert.alert(I18n.t("error.attention"), I18n.t("feedback.success"));
+            this.props.navigation.dispatch(back());
+        } else {
+            Alert.alert(I18n.t("error.attention"), I18n.t("feedback.error"));
+            this.props.clearFeedbackError();
+        }
     };
 
     componentDidMount() {
@@ -41,7 +48,7 @@ class FeedbackScene extends Component {
     };
 
     onHideKeyboard = (data) => {
-        this.setState({keyboardHeight: data.endCoordinates.height});
+        this.setState({keyboardHeight: 0});
     };
 
     changeText = (text) => {
@@ -50,9 +57,21 @@ class FeedbackScene extends Component {
 
     render() {
         const padding = {bottom: 10 + this.state.keyboardHeight};
+        const indicator = (this.props.isFetch) ? <ActivityIndicator size="small"/> : null;
+
+        if (this.props.isFetch) {
+            const text = (this.props.error) ? this.props.error : I18n.t("feedback.request");
+            return (
+                <View style={styles.containerInfo}>
+                    {indicator}
+                    <Text style={styles.infoText}>{text}</Text>
+                </View>
+            );
+        }
+
         return (
             <View style={styles.container}>
-                <TextInput multiline={true} underlineColorAndroid="transparent" placeholder="Опишите ситуацию"
+                <TextInput multiline={true} underlineColorAndroid="transparent" placeholder={I18n.t("feedback.describe")}
                            onChangeText={this.changeText} value={this.state.text} autoFocus={true}
                            style={styles.textContainer}/>
                 <GradientButton style={[styles.takePhotoBtn, padding]} text={I18n.t('feedback.send')}
@@ -63,12 +82,25 @@ class FeedbackScene extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+        isFetch: state.feedback.isFetch,
+        error: state.feedback.error
+    }
 };
 
-export default connect(mapStateToProps, {sendFeedback})(FeedbackScene);
+export default connect(mapStateToProps, {sendFeedback, clearFeedbackError})(FeedbackScene);
 
 const styles = StyleSheet.create({
+    containerInfo: {
+        flex: 1,
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    infoText: {
+        color: "black",
+        marginTop: 20
+    },
     container: {
         flex: 1,
         backgroundColor: "white"

@@ -17,10 +17,12 @@
     "prop-types": "^15.6.1",
     "react": "16.2.0",
     "react-native": "^0.55.3",
+    "react-native-app-link": "^0.4.1",
     "react-native-camera": "^1.0.2",
     "react-native-device-info": "^0.21.5",
     "react-native-dialogs": "0.0.21",
     "react-native-fs": "^2.9.12",
+    "react-native-geolocation-service": "^1.0.4",
     "react-native-htmlview": "^0.12.1",
     "react-native-i18n": "^2.0.12",
     "react-native-image-pan-zoom": "^2.1.1",
@@ -67,7 +69,8 @@
     "eslint-plugin-react-native": "^3.2.1",
     "eslint-plugin-standard": "^3.0.1",
     "jest": "22.1.4",
-    "react-test-renderer": "16.2.0"
+    "react-test-renderer": "16.2.0",
+    "remote-redux-devtools": "^0.5.12"
   },
   "jest": {
     "preset": "react-native",
