@@ -63,7 +63,7 @@ export default {
     photo: {
         title: 'Photo', // 'Фото',
         reship: 'Remake', // 'Переснять',
-        makePhoto: 'Make Photo', // 'Сделать фото',
+        makePhoto: 'Take Photo', // 'Сделать фото',
         noPhotoTitle: 'No photos yet', // 'Пока нет фотографий',
         expiredVisit: 'Visit completed', // "Отчёт завершен",
         noPhotoDescription: 'Tap a button below to capture your first photo', // 'Чтобы сделать свой первый снимок нажмите кнопку ниже',
@@ -80,7 +80,7 @@ export default {
         emptyName: 'Enter your name', // "Введите имя",
         emptySurname: 'Enter your surname', // "Введите фамилию",
         emptyPathNumber: 'Enter your route ID', // "Введите Номер маршрута",
-        emptyPatronymic: 'Enter your last name', // "Введите отчество",
+        emptyPatronymic: 'Enter your middle name', // "Введите отчество",
         agentCreation: 'Couldn\'t create an agent, try again', // "Неудалось создать агента, попробуйте ещё раз",
         geoDeny: 'Geolocation is disabled in your phone', // "В телефоне отключенна геолокация",
         createAgent: 'Error while creating agent', // "Ошибка создания агента",
