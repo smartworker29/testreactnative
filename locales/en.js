@@ -102,33 +102,33 @@ export default {
         emptyDescription: 'We will notify you upon receiving new tasks', // "Мы уведомим вас при поступлении новых заданий"
     },
     tabBar: {
-        tasks: '', // "Задания",
-        results: '', // "Результат ",
-        reports: '', // "Отчёты",
-        profile: '', // "Профиль"
+        tasks: 'Tasks', // "Задания",
+        results: 'Results', // "Результат ",
+        reports: 'Reports', // "Отчёты",
+        profile: 'Profile', // "Профиль"
     },
     sync: {
-        title: '', // "Состояние"
+        title: 'Sync status', // "Состояние"
     },
     reports: {
-        underNum: '', // "Успешно засчитанных отчетов",
-        unassigned: '', // "Незасчитанных отчетов",
-        moderationPass: '', // "Модерация пройдена",
-        moderationUnPass: '', // "Модерация не пройдена",
-        onModeration: '', // "На модерации"
+        underNum: 'Accepted reports', // "Успешно засчитанных отчетов",
+        unassigned: 'Rejected reports', // "Незасчитанных отчетов",
+        moderationPass: 'Moderation passed', // "Модерация пройдена",
+        moderationUnPass: 'Moderation not passed', // "Модерация не пройдена",
+        onModeration: 'On moderation', // "На модерации"
     },
     preview: {
-        title: '', // "Предпросмотр",
-        remove: '', // "Удаление фото"
+        title: 'Preview', // "Предпросмотр",
+        remove: 'Delete photo', // "Удаление фото"
     },
     feedback: {
-        support: '', // "Служба поддержки",
-        title: '', // "Жалоба",
-        send: '', // "Отправить",
-        answer: '', // "Ответ на жалобу",
-        request: '', // "Отправка жалобы",
-        success: '', // "Жалоба успешно отправлена",
-        error: '', // "Жалоба не отправлена",
-        describe: '', // "Опишите ситуацию"
+        support: 'Support', // "Служба поддержки",
+        title: 'Complaint', // "Жалоба",
+        send: 'Send', // "Отправить",
+        answer: 'Reply', // "Ответ на жалобу",
+        request: 'Send', // "Отправка жалобы",
+        success: 'Complaint sent!', // "Жалоба успешно отправлена",
+        error: 'Complaint not sent', // "Жалоба не отправлена",
+        describe: 'Describe the situation', // "Опишите ситуацию"
     }
 }
