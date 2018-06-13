@@ -1,7 +1,7 @@
 export default {
     login: {
         login_button: 'Войти',
-        signup_button: 'Зарегестрироваться'
+        signup_button: 'Зарегистрироваться'
     },
     user_profile: {
         title: 'Профиль',
@@ -44,7 +44,7 @@ export default {
         title: 'Новый отчёт',
         photo: 'Фотографии',
         createAction: 'Начать',
-        backAction: 'назвд',
+        backAction: 'назад',
         label: 'ID  Торговой точки',
         description: 'Чтобы начать новый отчёт, укажите ниже ID магазина',
         getGeo: "Получение геолокации",
@@ -82,7 +82,7 @@ export default {
         emptyPathNumber: "Введите Номер маршрута",
         emptyPatronymic: "Введите отчество",
         agentCreation: "Неудалось создать агента, попробуйте ещё раз",
-        geoDeny: "В телефоне отключенна геолокация",
+        geoDeny: "В телефоне отключена геолокация",
         createAgent: "Ошибка создания агента",
         updateAgent: "Ошибка обновления агента"
     },
