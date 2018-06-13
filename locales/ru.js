@@ -44,7 +44,7 @@ export default {
         title: 'Новый отчёт',
         photo: 'Фотографии',
         createAction: 'Начать',
-        backAction: 'назвд',
+        backAction: 'назад',
         label: 'ID  Торговой точки',
         description: 'Чтобы начать новый отчёт, укажите ниже ID магазина',
         getGeo: "Получение геолокации",
