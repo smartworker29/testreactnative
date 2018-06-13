@@ -1,7 +1,7 @@
 export default {
     login: {
         login_button: 'Войти',
-        signup_button: 'Зарегестрироваться'
+        signup_button: 'Зарегистрироваться'
     },
     user_profile: {
         title: 'Профиль',
