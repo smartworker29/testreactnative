@@ -90,7 +90,7 @@ export default {
         enter: 'Enter PIN', // "Введите пин-код",
         enterAgain: 'Enter PIN again', // "Укажите пин-код повторно",
         error: 'Incorrect PIN', // "Неверный пин-код",
-        description: 'Having trouble with login?\nCall 8 (800) 550-27-78 (free)', // "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
+        description: 'Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com', // "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
     },
     task: {
         title: 'Tasks', // "Задачи",
