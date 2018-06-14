@@ -1,7 +1,7 @@
 export default {
     login: {
         login_button: 'Войти',
-        signup_button: 'Зарегистрироваться'
+        signup_button: 'Зарегестрироваться'
     },
     user_profile: {
         title: 'Профиль',
@@ -38,16 +38,30 @@ export default {
         moderationComment: 'Комментарий модератора:',
         visitAccept: 'Засчитан',
         visitReject: 'Не засчитан',
-        visitResult: 'Результаты отчёта'
+        visitResult: 'Результаты отчёта',
+        shopId: "ID торговой точки",
+        pathId: "Номер маршрута",
+        feedback: "Пожаловаться"
+    },
+    overScreen: {
+        notInstall: "У вас не установленны",
+        install: "Установите сервисы",
+        needUpdate: "Необходимо обновите сервисы",
+        update: "Обновить сервисы",
+        offService: "У вас отключены сервисы",
+        geoOff: "У вас отключенна геолокация.",
+        startGeoInSettings: "Включите её в настройках.",
+        goToSettings: "Перейти в настройки",
+        onService: "Включите сервисы"
     },
     CreateVisit: {
         title: 'Новый отчёт',
         photo: 'Фотографии',
         createAction: 'Начать',
-        backAction: 'назад',
+        backAction: 'назвд',
         label: 'ID  Торговой точки',
         description: 'Чтобы начать новый отчёт, укажите ниже ID магазина',
-        getGeo: "Получение геолокации",
+        getGeo: "Получение геопозиции",
         okGeo: "Геопозиция полученна",
         createVisit: "Создание отчёта"
     },
@@ -82,20 +96,41 @@ export default {
         emptyPathNumber: "Введите Номер маршрута",
         emptyPatronymic: "Введите отчество",
         agentCreation: "Неудалось создать агента, попробуйте ещё раз",
-        geoDeny: "В телефоне отключена геолокация",
+        geoDeny: "В телефоне отключенна геолокация",
         createAgent: "Ошибка создания агента",
-        updateAgent: "Ошибка обновления агента"
+        updateAgent: "Ошибка обновления агента",
+        geoPlayService: "Установите Google Play сервисы",
+        geoTimeout: "Истекло время получения геопозиции"
+    },
+    shops: {
+        shops: "Магазины",
+        favorite: "Избранные",
+        nearest: "Ближайшие",
+        enterId: "Ввести ID"
+    },
+    alerts: {
+        haveUpdate: "Доступно обновление",
+        updateQuestion: "Обновить до новой версии?",
+        mustUpdate: "Пожалуйста, обновите приложение. Обновления повышают стабильность работы и добавляют новые функции.",
+        yes: "Да",
+        no: "Нет",
+        enterIdShop: "Введите ID магазина",
+        changeRoute: "Изменение маршрута",
+        cancel: "Отмена",
+        change: "Изменить",
+        accept: "Принять"
     },
     pin: {
         enter: "Введите пин-код",
         enterAgain: "Укажите пин-код повторно",
         error: "Неверный пин-код",
+        oldVersion: "Версия программы устарела",
+        firstLoad: "Идет загрузка начальных данных",
         description: "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
     },
     task: {
         title: "Задачи",
-        instruction: "Подробная инструкция",
-
+        instruction: "Подробная инструкция"
     },
     tasks: {
         emptyTitle: "Пока нет заданий",

@@ -61,6 +61,7 @@ export default connect(mapStateToProps)(TasksScene);
 
 const styles = StyleSheet.create({
     item: {
+        fontFamily: "SFUIDisplay-Regular",
         borderRadius: 4,
         backgroundColor: 'white',
         padding: 16,
@@ -75,11 +76,13 @@ const styles = StyleSheet.create({
         elevation: 3
     },
     title: {
+        fontFamily: "SFUIDisplay-Medium",
         fontSize: 17,
         fontWeight: "bold",
         color: "#000000"
     },
     description: {
+        fontFamily: "SFUIDisplay-Regular",
         marginTop: 8,
         fontSize: 15,
         fontWeight: "normal",
@@ -92,6 +95,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     emptyTitle: {
+        fontFamily: "SFUIDisplay-Regular",
         marginTop: 31,
         fontSize: 22,
         fontWeight: "500",
@@ -101,6 +105,7 @@ const styles = StyleSheet.create({
         color: "#000000"
     },
     emptyDetail: {
+        fontFamily: "SFUIDisplay-Regular",
         marginTop: 15,
         width: 260,
         fontSize: 16,
@@ -110,4 +115,4 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#9b9b9b"
     },
-})
+});

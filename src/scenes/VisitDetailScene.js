@@ -322,7 +322,7 @@ export class VisitDetailScene extends Component {
 
         if (Platform.OS === "ios") {
             AlertIOS.prompt(
-                'Изменение маршрута',
+                I18n.t("alerts.changeRoute"),
                 null,
                 text => {
                     const {id} = this.props.navigation.state.params;
@@ -332,7 +332,7 @@ export class VisitDetailScene extends Component {
         } else {
             const dialog = new DialogAndroid();
             dialog.set({
-                title: 'Изменение маршрута',
+                title: I18n.t("alerts.changeRoute"),
                 input: {
                     callback: (routeId) => {
                         const {id} = this.props.navigation.state.params;
@@ -340,8 +340,8 @@ export class VisitDetailScene extends Component {
                     }
                 },
                 allowEmptyInput: false,
-                positiveText: 'Изменить',
-                negativeText: 'Отмена',
+                positiveText: I18n.t("alerts.change"),
+                negativeText: I18n.t("alerts.cancel"),
             });
             dialog.show();
         }
@@ -358,7 +358,7 @@ export class VisitDetailScene extends Component {
     renderFeedbackButton() {
         return (
             <TouchableOpacity style={styles.feedbackButton} onPress={this.goToFeedback}>
-                <Text style={styles.feedbackText}>Пожаловаться</Text>
+                <Text style={styles.feedbackText}>{I18n.t('feedback.support')}</Text>
             </TouchableOpacity>
         )
     }
@@ -420,11 +420,11 @@ export class VisitDetailScene extends Component {
                             <Text style={styles.taskName}>{taskName}</Text>
                             {this.renderShopDetail(visit)}
                             <View style={styles.updateRow}>
-                                <Text style={styles.titleValue}>{`ID торговой точки: `}</Text>
+                                <Text style={styles.titleValue}>{`${I18n.t("visitDetail.shopId")}: `}</Text>
                                 <Text style={styles.value}>{shopId}</Text>
                             </View>
                             <View style={styles.updateRow}>
-                                <Text style={styles.titleValue}>{`Номер маршрута: `}</Text>
+                                <Text style={styles.titleValue}>{`${I18n.t("visitDetail.pathId")}: `}</Text>
                                 <Text style={styles.value}>{route}</Text>
                                 <TouchableOpacity style={styles.updateArea}
                                                   hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}

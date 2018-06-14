@@ -4,8 +4,9 @@ import { Root } from 'native-base'
 import { configureStore } from './configStore'
 import AppWithNavigationState from './navigators/AppNavigator'
 import I18n from 'react-native-i18n'
-import en from '../locales/en'
-import ru from '../locales/ru'
+import en from '../locales/en';
+import ru from '../locales/ru';
+import es from '../locales/es';
 import Orientation from "react-native-orientation";
 
 const currentLocale = I18n.currentLocale();
@@ -35,5 +36,6 @@ I18n.fallbacks = true;
 // Define the supported locales
 I18n.translations = {
     en,
+    es,
     ru
 };

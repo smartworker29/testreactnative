@@ -27,7 +27,8 @@ export const getPins = async () => {
             method: 'get',
             url: `https://app.inspector-cloud.ru/befda61b-95be-4f1e-8297-ae5ed7c8b3ce/instanse.json`,
             headers: {
-                'user-Agent': 'okhttp/3.6.0'
+                'user-Agent': 'okhttp/3.6.0',
+                'Cache-Control': 'no-cache'
             },
             // url: `https://cloud-inspector-dev.firebaseio.com/instance.json`,
             timeout: 5000
@@ -99,7 +100,7 @@ export const getTasksFetch = async (data) => {
             }
         });
     } catch (err) {
-        console.log(error)
+        ErrorLogging.push("getTasksFetch", err);
     }
 };
 
@@ -159,7 +160,6 @@ export const patchAgent = async (id, data) => {
         })
     } catch (error) {
         ErrorLogging.push("patchAgent", error);
-        console.log(error);
         return null
     }
 };
@@ -185,8 +185,6 @@ export const makeVisit = async (id = 1, data, timeout) => {
     try {
         return await axios(options)
     } catch (error) {
-        console.log("makeVisit error");
-        console.log(error);
         ErrorLogging.push("makeVisit", error);
         return null
     }
@@ -206,8 +204,6 @@ export const getVisitDetails = async (id) => {
             },
         })
     } catch (error) {
-        console.log("getVisitDetails error");
-        console.log(error);
         ErrorLogging.push("getVisitDetails", error);
         return null
     }
@@ -226,8 +222,6 @@ export const getAgents = async (id) => {
             },
         })
     } catch (error) {
-        console.log("getAgents error");
-        console.log(error);
         ErrorLogging.push("getAgents", error);
         return null
     }
@@ -247,7 +241,6 @@ export const updateAgent = async (id, name) => {
             data: {name}
         })
     } catch (error) {
-        console.log(error);
         ErrorLogging.push("updateAgent", error);
         return null
     }
@@ -266,8 +259,6 @@ export const getAgentUpdates = async (id = 1) => {
             },
         })
     } catch (error) {
-        console.log("getAgentUpdates error");
-        console.log(error);
         ErrorLogging.push("getAgentUpdates", error);
         return null
     }
@@ -287,7 +278,6 @@ export const getVisitsByAgent = async (id = 1) => {
         })
     }
     catch (error) {
-        console.log("getVisitsByAgent");
         ErrorLogging.push("getVisitsByAgent", error);
         throw error
     }
@@ -305,7 +295,6 @@ export const uploadPhoto = async (id, data) => {
             }, data,
         })
     } catch (error) {
-        console.log("uploadPhoto error");
         ErrorLogging.push("uploadPhoto", error);
         throw error
     }
@@ -324,7 +313,6 @@ export const deleteImage = async (id) => {
             }
         })
     } catch (error) {
-        console.log("deleteImage error");
         ErrorLogging.push("deleteImage", error);
         return null;
     }
@@ -344,7 +332,6 @@ export const sendFeedback = async (id, data) => {
             data
         })
     } catch (error) {
-        console.log("deleteImage error");
         ErrorLogging.push("sendFeedback", error);
         return null;
     }

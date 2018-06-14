@@ -1,44 +1,58 @@
 export default {
     login: {
-        login_button: 'Login', // 'Войти',
-        signup_button: 'Sign up', // 'Зарегестрироваться'
+        login_button: 'Login',
+        signup_button: 'Sign up'
     },
     user_profile: {
-        title: 'Profile', // 'Профиль',
-        instanceName: 'Section', // "Раздел",
-        createAgent: 'Create new agent', // "Создание агента",
-        updateAgent: 'Update agent', // "Обновление агента",
-        sync: 'Sync', // "Синхронизация"
+        title: 'Profile',
+        instanceName: "Section",
+        createAgent: "Create new agent",
+        updateAgent: "Update agent",
+        sync: "Sync"
     },
     visits_list: {
-        title: 'Reports', // 'Отчёты',
-        emptyListMessageTitle: 'No reports yet', // 'Пока нет отчетов',
-        emptyListMessageDetail: 'Open "Tasks" tab to begin', // 'Чтобы добавить свой первый отчет откройте вкладку задания',
-        newVisit: 'New report', // 'Новый отчёт',
-        today: 'Today', // 'Сегодня',
-        before: 'Before', // 'Ранее',
-        lastSync: 'Last sync at', // 'Последняя синхронизация данных',
-        moderation: 'Moderation', // 'Модерация',
-        OnModeration: 'On moderation', // "На модерации",
-        resultBad: 'Rejected', // 'Не засчитан',
-        resultGood: 'OK', // 'Засчитан',
-        route: 'Route', // "маршрут"
+        title: 'Reports',
+        emptyListMessageTitle: 'No reports yet',
+        emptyListMessageDetail: 'Open "Tasks" tab to begin',
+        newVisit: 'New report',
+        today: 'Today',
+        before: 'Before',
+        lastSync: 'Last sync at',
+        moderation: 'Moderation',
+        OnModeration: "On moderation",
+        resultBad: 'Rejected',
+        resultGood: 'OK',
+        route: "Route"
     },
     visitDetail: {
-        title: 'Report', // 'Отчёт',
-        agent: 'Agent', // 'Агент',
-        shop: 'Store', // 'Магазин',
-        photo: 'Photos', // 'Фотографии',
-        started_date: 'Date', // 'Дата отчёта',
-        offline: 'Not synced yet', // 'не синхронизированно',
-        message: 'Report', // 'Отчёт',
-        moderationResult: 'Moderation status', // 'Результат модерации',
-        moderationDone: 'Moderation passed', // 'Модерация пройдена',
-        moderationReject: 'Moderation not passed', // 'Модерация не пройдена',
-        moderationComment: 'Moderator comment', // 'Комментарий модератора:',
-        visitAccept: 'OK', // 'Засчитан',
-        visitReject: 'Rejected', // 'Не засчитан',
-        visitResult: 'Visit results', // 'Результаты отчёта'
+        title: 'Report',
+        agent: 'Agent',
+        shop: 'Store',
+        photo: 'Photos',
+        started_date: 'Date',
+        offline: 'Not synced yet',
+        message: 'Report',
+        moderationResult: 'Moderation status',
+        moderationDone: 'Moderation passed',
+        moderationReject: 'Moderation not passed',
+        moderationComment: 'Moderator comment',
+        visitAccept: 'OK',
+        visitReject: 'Rejected',
+        visitResult: 'Visit results',
+        shopId: "ID торговой точки",
+        pathId: "Номер маршрута",
+        feedback: "Пожаловаться"
+    },
+    overScreen: {
+        notInstall: "У вас не установленны",
+        install: "Установите сервисы",
+        needUpdate: "Необходимо обновите сервисы",
+        update: "Обновить сервисы",
+        offService: "У вас отключены сервисы",
+        geoOff: "У вас отключенна геолокация.",
+        startGeoInSettings: "Включите её в настройках.",
+        goToSettings: "Перейти в настройки",
+        onService: "Включите сервисы"
     },
     CreateVisit: {
         title: 'New report', // 'Новый отчёт',
@@ -85,17 +99,38 @@ export default {
         geoDeny: 'Geolocation is disabled in your phone', // "В телефоне отключенна геолокация",
         createAgent: 'Error while creating agent', // "Ошибка создания агента",
         updateAgent: 'Error while updating agent', // "Ошибка обновления агента"
+        geoPlayService: "Установите Google Play сервисы",
+        geoTimeout: "Истекло время получения геопозиции"
+    },
+    shops: {
+        shops: "Магазины",
+        favorite: "Избранные",
+        nearest: "Ближайшие",
+        enterId: "Ввести ID"
+    },
+    alerts: {
+        haveUpdate: "Доступно обновление",
+        updateQuestion: "Обновить до новой версии?",
+        mustUpdate: "Пожалуйста, обновите приложение. Обновления повышают стабильность работы и добавляют новые функции.",
+        yes: "Да",
+        no: "Нет",
+        enterIdShop: "Введите ID магазина",
+        changeRoute: "Изменение маршрута",
+        cancel: "Отмена",
+        change: "Изменить",
+        accept: "Принять"
     },
     pin: {
-        enter: 'Enter PIN', // "Введите пин-код",
-        enterAgain: 'Enter PIN again', // "Укажите пин-код повторно",
-        error: 'Incorrect PIN', // "Неверный пин-код",
-        description: 'Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com', // "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
+        enter: "Enter PIN",
+        enterAgain: "Enter PIN again",
+        error: "Incorrect PIN",
+        oldVersion: "Версия программы устарела",
+        firstLoad: "Идет загрузка начальных данных",
+        description: "Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com'"
     },
     task: {
         title: 'Tasks', // "Задачи",
         instruction: 'Instruction', // "Подробная инструкция",
-
     },
     tasks: {
         emptyTitle: 'No tasks yet', // "Пока нет заданий",

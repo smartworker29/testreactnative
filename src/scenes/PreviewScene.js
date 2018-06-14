@@ -78,7 +78,7 @@ class PreviewScene extends Component {
         const indicator = (this.props.deleteFetch) ? <ActivityIndicator size="small"/> : null;
 
         if (this.props.deleteFetch || this.props.deleteError !== null) {
-            const text = (this.props.deleteError) ? this.props.deleteError : I18n.t("preview.preview");
+            const text = (this.props.deleteError) ? this.props.deleteError : I18n.t("preview.remove");
             return (
                 <View style={styles.containerInfo}>
                     {indicator}

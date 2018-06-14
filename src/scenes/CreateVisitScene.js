@@ -36,7 +36,7 @@ export class CreateVisitScene extends Component {
                     console.log(error);
                     reject(error)
                 },
-                {enableHighAccuracy: true, timeout: 10000, maximumAge: 0}
+                {enableHighAccuracy: true, timeout: 15000, maximumAge: 0}
             );
         })
     };
@@ -55,21 +55,31 @@ export class CreateVisitScene extends Component {
             clearInterval(this.check);
             this.setState({geoAllow: true, fetchGeo: false, coordinates, geoError: ""});
         } catch (error) {
-            this.setState({geoAllow: false, fetchGeo: false, geoError: I18n.t("error.geoDeny")});
+            let errMsg = "";
+            if (error && error.code) {
+                switch (error.code) {
+                    case 3:
+                        errMsg = I18n.t("error.geoTimeout");
+                        break;
+                    case 4:
+                        errMsg = I18n.t("error.geoPlayService");
+                        break;
+                    default:
+                        errMsg = I18n.t("error.geoDeny");
+                }
+            }
+            this.setState({geoAllow: false, fetchGeo: false, geoError: errMsg});
         }
     };
 
     async componentDidMount() {
+        await Permissions.request('location');
         await this.getGeo();
         this.check = setInterval(async () => {
-            if(this.state.coordinates === null) {
+            if (this.state.coordinates === null) {
                 await this.getGeo();
             }
-        }, 12000);
-
-        if (Platform.OS === 'ios') {
-            await Permissions.request('location');
-        }
+        }, 15000);
 
         if (this.input) {
             this.input.focus();

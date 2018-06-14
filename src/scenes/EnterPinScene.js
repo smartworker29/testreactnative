@@ -43,15 +43,18 @@ class EnterPinScene extends Component {
         if (this.input) {
             this.input.focus();
         }
-    }
+    };
 
     enterPin = (pin) => {
+        if (this.state.syncProcessFirst) {
+            return;
+        }
         this.setState({pin});
         if (pin.length === 4) {
             this.props.checkPin(pin);
         }
 
-    }
+    };
 
     renderCircle(pos) {
         const color = (this.state.pin.length >= pos) ? styles.red : styles.gray
@@ -79,8 +82,15 @@ class EnterPinScene extends Component {
 
         const error = (this.props.wrongPin) ? I18n.t("pin.error") : " ";
         const message = (this.props.wrongPin) ? I18n.t("pin.enterAgain") : I18n.t("pin.enter");
-        const indicator = (!this.props.isFetchPin) ? this.renderCircles() :
+        let indicator = (!this.props.isFetchPin) ? this.renderCircles() :
             <ActivityIndicator style={styles.indicator}/>;
+
+        if (this.props.syncProcessFirst) {
+            indicator = <View style={styles.loadPins}>
+                <ActivityIndicator style={{marginRight: 5}} size="small"/>
+                <Text>{I18n.t("pin.firstLoad")}</Text>
+            </View>;
+        }
 
         return (
             <View style={styles.container}>
@@ -105,9 +115,10 @@ class EnterPinScene extends Component {
 const mapStateTopProps = (state) => {
     return {
         wrongPin: state.auth.wrongPin,
-        isFetchPin: state.auth.isFetchPin
+        isFetchPin: state.auth.isFetchPin,
+        syncProcessFirst: state.auth.syncProcessFirst
     }
-}
+};
 
 export default connect(mapStateTopProps, {checkPin})(EnterPinScene)
 
@@ -123,6 +134,12 @@ const styles = StyleSheet.create({
         marginTop: 42,
         width: 244,
         height: 35
+    },
+    loadPins: {
+        marginTop: 19,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center"
     },
     error: {
         marginTop: 34,

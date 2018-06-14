@@ -1,6 +1,18 @@
 import React, {Component} from 'react';
 import {addNavigationHelpers, StackNavigator, NavigationActions, TabNavigator} from 'react-navigation';
-import {BackHandler, YellowBox} from "react-native";
+import {
+    BackHandler,
+    YellowBox,
+    Linking,
+    AppState,
+    Alert,
+    AlertIOS,
+    Platform,
+    StyleSheet,
+    View,
+    Text,
+    TouchableOpacity
+} from "react-native";
 import {addListener} from '../utils/redux';
 import {clearPhoto, photoInit, syncPhoto} from '../actions/photo'
 import PropTypes from 'prop-types';
@@ -30,6 +42,9 @@ import PreviewScene from "../scenes/PreviewScene";
 import FeedbackScene from "../scenes/FeedbackScene";
 import SyncScene from "../scenes/SyncScene";
 import ErrorLogging from "../utils/Errors";
+import Permissions from 'react-native-permissions';
+import OpenSettings from 'react-native-open-settings';
+import GoogleAPIAvailability from 'react-native-google-api-availability-bridge';
 
 YellowBox.ignoreWarnings([
     'Warning: componentWillMount is deprecated',
@@ -121,6 +136,34 @@ class AppWithNavigationState extends Component {
 
     constructor() {
         super();
+
+        this.state = {
+            geo: null,
+            checkGeo: false,
+            service: null,
+            platform: Platform.OS
+        };
+
+        AppState.addEventListener("change", async event => {
+            if (event === "active") {
+                if (this.state.checkGeo === false) {
+                    await this.checkLocation();
+                }
+            }
+        });
+    }
+
+    async checkLocation() {
+        this.setState({checkGeo: true}, async () => {
+            const status = await Permissions.request('location');
+            console.log("status", status);
+            if (this.state.platform === "android") {
+                GoogleAPIAvailability.checkGooglePlayServices((result) => {
+                    this.setState({service: result});
+                });
+            }
+            this.setState({geo: status, checkGeo: false});
+        });
     }
 
     async init() {
@@ -140,6 +183,7 @@ class AppWithNavigationState extends Component {
     }
 
     async componentDidMount() {
+        await this.checkLocation();
         await this.props.dispatch(initFolders());
         await this.props.dispatch(initPins());
         //await this.props.dispatch(updateRatioExceptions());
@@ -206,6 +250,77 @@ class AppWithNavigationState extends Component {
 
     render() {
         const {dispatch, nav} = this.props;
+
+        console.log(this.state.geo);
+
+        if (this.state.geo === null) {
+            return null;
+        }
+
+        if (this.state.platform === "android" && this.state.service === null) {
+            return null;
+        }
+
+        if (this.state.platform === "android" && (this.state.service === "failure" || this.state.service === "invalid")) {
+            return (
+                <View style={styles.containerInfo}>
+                    <Text style={styles.deleteText}>{"У вас не установленны"}</Text>
+                    <Text style={styles.deleteText}>{"Google Play Services"}</Text>
+                    <TouchableOpacity onPress={() => {
+                        GoogleAPIAvailability.promptGooglePlayUpdate(false);
+                    }}>
+                        <Text style={styles.link}>Установите сервисы</Text>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+
+        if (this.state.platform === "android" && (this.state.service === "update")) {
+            return (
+                <View style={styles.containerInfo}>
+                    <Text style={styles.deleteText}>{"Необходимо обновите сервисы"}</Text>
+                    <Text style={styles.deleteText}>{"Google Play Services"}</Text>
+                    <TouchableOpacity onPress={() => {
+                        GoogleAPIAvailability.promptGooglePlayUpdate(false);
+                    }}>
+                        <Text style={styles.link}>Обновить сервисы</Text>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+
+        if (this.state.platform === "android" && (this.state.service === "disabled")) {
+            return (
+                <View style={styles.containerInfo}>
+                    <Text style={styles.deleteText}>{"У вас отключены сервисы"}</Text>
+                    <Text style={styles.deleteText}>{"Google Play Services"}</Text>
+                    <TouchableOpacity onPress={() => {
+                        GoogleAPIAvailability.promptGooglePlayUpdate(false);
+                    }}>
+                        <Text style={styles.link}>Включите сервисы</Text>
+                    </TouchableOpacity>
+                </View>
+            )
+        }
+
+        if (this.state.geo === "denied" || this.state.geo === "restricted") {
+            return (
+                <View style={styles.containerInfo}>
+                    <Text style={styles.deleteText}>У вас отключенна геолокация.</Text>
+                    <Text style={styles.deleteText}>Включите её в настройках.</Text>
+                    <TouchableOpacity onPress={() => {
+                        if (Platform.OS === "ios") {
+                            Linking.openURL('app-settings:');
+                        } else {
+                            OpenSettings.openSettings();
+                        }
+                    }}>
+                        <Text style={styles.link}>Перейти в настройки</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+
         return (
             <AppNavigator
                 navigation={addNavigationHelpers({
@@ -235,3 +350,29 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(AppWithNavigationState);
+
+const styles = StyleSheet.create({
+    containerPhoto: {
+        flex: 1,
+        backgroundColor: "black"
+    },
+    containerInfo: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    image: {
+        flex: 1
+    },
+    deleteText: {
+        fontSize: 20,
+        color: "black",
+        fontWeight: "bold"
+    },
+    link: {
+        marginTop: 20,
+        fontWeight: "bold",
+        fontSize: 20,
+        color: "blue",
+    }
+});

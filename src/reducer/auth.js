@@ -6,7 +6,7 @@ import {
     SET_AUTH_ID,
     SET_PIN,
     SET_PINS, SYNC_PINS_END, SYNC_PINS_RESPONSE,
-    SYNC_PINS_START
+    SYNC_PINS_START, SYNC_PINS_START_FIRST
 } from '../utils/constants'
 
 const init = {
@@ -18,7 +18,8 @@ const init = {
     agentFetch: false,
     wrongPin: false,
     isFetchPin: false,
-    syncProcess: false
+    syncProcess: false,
+    syncProcessFirst: false
 };
 
 export default (state = init, action) => {
@@ -40,8 +41,10 @@ export default (state = init, action) => {
             return {...state, pin: null, isFetchPin: false, wrongPin: true};
         case SYNC_PINS_START:
             return {...state, syncProcess: true};
+        case SYNC_PINS_START_FIRST:
+            return {...state, syncProcessFirst: true};
         case SYNC_PINS_END:
-            return {...state, syncProcess: false};
+            return {...state, syncProcess: false, syncProcessFirst: false};
         default:
             return state
     }
