@@ -159,6 +159,8 @@ dependencies {
     compile (project(':react-native-camera')) {
         exclude group: "com.android.support", module: 'support-v4'
     }
+    compile project(':react-native-gesture-handler')
+    compile project(':react-native-photo-view')
     compile project(':react-native-google-api-availability-bridge')
     compile project(':react-native-open-settings')
     compile project(':react-native-orientation')

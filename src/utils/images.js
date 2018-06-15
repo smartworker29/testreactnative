@@ -30,3 +30,7 @@ export const reportsActiveIcon = require('../assets/images/icReportsActive.png')
 export const cameraButton = require('../assets/images/camera-button.png');
 export const deleteIcon = require('../assets/images/icDelete.png');
 export const editIcon = require('../assets/images/icEdit.png');
+
+export const flashOn = require('../assets/images/flashOn.png');
+export const flashOff = require('../assets/images/flashOff.png');
+export const flashAuto = require('../assets/images/flashAuto.png');

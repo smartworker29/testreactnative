@@ -8,6 +8,7 @@ import {allowAction, getPhotoPath, getPhotoPathWithPrefix} from "../utils/util";
 import * as NavigationActions from '../actions/navigation'
 import Swiper from 'react-native-swiper';
 import I18n from 'react-native-i18n'
+import PhotoView from 'react-native-photo-view';
 
 class PreviewScene extends Component {
     static navigationOptions = ({navigation}) => previewNavigationOptions(navigation);
@@ -72,7 +73,16 @@ class PreviewScene extends Component {
         let items = [];
         for (const photo of photos) {
             const filPath = getPhotoPathWithPrefix(photo.uri);
-            items.push(<Image source={{uri: filPath}} key={filPath} resizeMode="contain" style={styles.image}/>)
+            items.push(
+                <PhotoView
+                    key={filPath}
+                    source={{uri: filPath}}
+                    minimumZoomScale={1.0}
+                    maximumZoomScale={2.5}
+                    androidScaleType="fitCenter"
+                    onLoad={() => console.log("Image loaded!")}
+                    style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} />
+            )
         }
 
         const indicator = (this.props.deleteFetch) ? <ActivityIndicator size="small"/> : null;

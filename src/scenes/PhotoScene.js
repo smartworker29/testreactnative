@@ -7,7 +7,7 @@ import {
     Modal,
     StyleSheet,
     View,
-    Dimensions, TouchableOpacity, Image, Text, Platform
+    Dimensions, TouchableOpacity, Image, Text, Platform, Animated, Easing
 } from 'react-native'
 import {addPhoto, uploadPhoto, clearPhoto} from '../actions/photo'
 import {getPhotoPath, isIphoneX} from '../utils/util'
@@ -17,16 +17,22 @@ import I18n from 'react-native-i18n'
 import {NavigationActions} from 'react-navigation'
 import _ from 'lodash'
 import {RNCamera} from 'react-native-camera';
-import {backIcon, cameraButton} from "../utils/images";
+import {backIcon, cameraButton, closeIcon, flashAuto, flashOff, flashOn} from "../utils/images";
 import {copyFile, unlink, stat} from 'react-native-fs';
-import DeviceInfo from 'react-native-device-info';
 import {decorator as sensors} from "react-native-sensors";
 import ImageResizer from 'react-native-image-resizer';
 import Orientation from "react-native-orientation";
+import {PinchGestureHandler} from "react-native-gesture-handler"
+
+const ANDROID_INC = 10;
+const ANDROID_DEC = 10;
+const IOS_INC = 0.001;
+const IOS_DEC = 0.001;
 
 class PhotoScene extends Component {
 
     takePictureStatus = false;
+    tmpZoom = 0;
 
     constructor(props) {
         super(props);
@@ -37,8 +43,11 @@ class PhotoScene extends Component {
             isSend: false,
             status: false,
             photoCount: 0,
-            processPhoto: false
-        }
+            processPhoto: false,
+            flashMode: RNCamera.Constants.FlashMode.auto,
+            fadeValue: new Animated.Value(1),
+            zoom: 0
+        };
     }
 
     prepareRatio = async () => {
@@ -49,6 +58,24 @@ class PhotoScene extends Component {
             }
         }
     };
+
+    fadeCamera() {
+        Animated.timing(
+            this.state.fadeValue,
+            {
+                toValue: 0,
+                duration: 300,
+            }
+        ).start(() => {
+            Animated.timing(
+                this.state.fadeValue,
+                {
+                    toValue: 1,
+                    duration: 300,
+                }
+            ).start();
+        });
+    }
 
     onBackPress = () => {
         this.props.navigation.dispatch(NavigationActions.back());
@@ -102,6 +129,18 @@ class PhotoScene extends Component {
         return rotate;
     }
 
+    changeFlashMode = () => {
+        if (this.state.flashMode === RNCamera.Constants.FlashMode.off) {
+            this.setState({flashMode: RNCamera.Constants.FlashMode.auto})
+        }
+        if (this.state.flashMode === RNCamera.Constants.FlashMode.auto) {
+            this.setState({flashMode: RNCamera.Constants.FlashMode.on})
+        }
+        if (this.state.flashMode === RNCamera.Constants.FlashMode.on) {
+            this.setState({flashMode: RNCamera.Constants.FlashMode.off})
+        }
+    };
+
     getOrientation() {
         return new Promise((resolve, reject) => {
             Orientation.getOrientation((err, orientation) => {
@@ -116,6 +155,7 @@ class PhotoScene extends Component {
             return;
         }
 
+        this.fadeCamera();
         this.takePictureStatus = true;
         this.setState({processPhoto: true});
 
@@ -149,31 +189,67 @@ class PhotoScene extends Component {
         });
     };
 
+    changeZoom = _.throttle(() => {
+        console.log("this.tmpZoom", this.tmpZoom);
+        this.setState({zoom: this.tmpZoom})
+    }, 20);
+
+    pinchGesture = (event) => {
+        const INC = (Platform.OS === "android") ? ANDROID_INC : IOS_INC;
+        const DEC = (Platform.OS === "android") ? ANDROID_DEC : IOS_DEC;
+        if (event.nativeEvent.velocity > 0) {
+            this.tmpZoom += (event.nativeEvent.velocity * INC);
+        }
+        if (event.nativeEvent.velocity < 0) {
+            this.tmpZoom += (event.nativeEvent.velocity * DEC);
+        }
+        if (this.tmpZoom > 1) {
+            this.tmpZoom = 1;
+        }
+        if (this.tmpZoom < 0) {
+            this.tmpZoom = 0
+        }
+        this.changeZoom();
+    };
+
     selectCamera() {
         const props = {};
         if (this.state.ratio) {
             props.ratio = this.state.ratio
         }
-        return <RNCamera
-            ref={ref => {
-                this.camera = ref;
-            }}
-
-            zoom={0.0}
-            style={[styles.preview,]}
-            type={RNCamera.Constants.Type.back}
-            flashMode={RNCamera.Constants.FlashMode.off}
-            permissionDialogTitle={'Permission to use camera'}
-            permissionDialogMessage={'We need your permission to use your camera phone'}
-            onCameraReady={this.prepareRatio}
-            {...props}
-        />
+        return <Animated.View style={{flex: 1, opacity: this.state.fadeValue}}>
+            <PinchGestureHandler
+                onGestureEvent={this.pinchGesture}>
+                <RNCamera
+                    ref={ref => {
+                        this.camera = ref;
+                    }}
+                    zoom={this.state.zoom}
+                    style={[styles.preview]}
+                    type={RNCamera.Constants.Type.back}
+                    flashMode={this.state.flashMode}
+                    onCameraReady={this.prepareRatio}
+                    {...props}
+                />
+            </PinchGestureHandler>
+        </Animated.View>
     }
 
     renderCamera() {
         let rowStyle = styles.bottomRow;
         let itemStyle = styles.bottomRowItem;
         const rotate = this.getRotate();
+
+        let flashIcon = flashAuto;
+
+        if (this.state.flashMode === RNCamera.Constants.FlashMode.on) {
+            flashIcon = flashOn;
+        }
+
+        if (this.state.flashMode === RNCamera.Constants.FlashMode.off) {
+            flashIcon = flashOff;
+        }
+
         const buttonTint = (this.state.processPhoto === true) ? {tintColor: "#555"} : {tintColor: "white"};
         const overButton = (this.state.processPhoto === true) ?
             <View style={styles.photoWait}><ActivityIndicator/></View> :
@@ -181,14 +257,21 @@ class PhotoScene extends Component {
         return (
             <View style={{flex: 1}}>
                 {this.selectCamera()}
+                <View style={{position: "absolute"}}>
+                    <TouchableOpacity onPress={this.onBackPress} style={{paddingLeft: 16, paddingTop: 30}}
+                                      hitSlop={{top: 50, left: 50, bottom: 50, right: 50}}>
+                        <Image source={closeIcon}
+                               style={{tintColor: "white", transform: [{rotate: -1 * rotate + 'deg'}]}}/>
+                    </TouchableOpacity>
+                </View>
+                <View style={{position: "absolute", right: 0}}>
+                    <TouchableOpacity onPress={this.changeFlashMode} style={{paddingRight: 16, paddingTop: 30}}
+                                      hitSlop={{top: 50, right: 50, bottom: 50, left: 50}}>
+                        <Image source={flashIcon} style={{tintColor: "white", width: 24, height: 24}}/>
+                    </TouchableOpacity>
+                </View>
                 <View style={rowStyle}>
-                    <View style={itemStyle}>
-                        <TouchableOpacity onPress={this.onBackPress} style={{padding: 30}}
-                                          hitSlop={{top: 200, left: 100, bottom: 200, right: 10}}>
-                            <Image source={backIcon}
-                                   style={{tintColor: "white", transform: [{rotate: -1 * rotate + 'deg'}]}}/>
-                        </TouchableOpacity>
-                    </View>
+                    <View style={itemStyle}/>
                     <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
                         {overButton}
                         <Image style={[styles.cameraImage, buttonTint]} source={cameraButton}/>
@@ -248,7 +331,7 @@ const styles = StyleSheet.create({
     preview: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     leftRow: {
         position: "absolute",
@@ -281,7 +364,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     capture: {
-        padding: 30,
+        padding: 20,
         flexDirection: "row",
         justifyContent: 'center',
         alignItems: "center",
