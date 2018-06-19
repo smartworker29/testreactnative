@@ -39,20 +39,20 @@ export default {
         visitAccept: 'OK', // 'OK', // 'Засчитан',
         visitReject: 'Rejected', // 'Rejected', // 'Не засчитан',
         visitResult: 'Visitar resultados', // 'Visit results', // 'Результаты отчёта'
-        shopId: "ID торговой точки",
-        pathId: "Номер маршрута",
-        feedback: "Пожаловаться"
+        shopId: "ID de tienda", // "ID торговой точки",
+        pathId: "ID de rute", // "Route ID"
+        feedback: "Manutención"
     },
     overScreen: {
-        notInstall: "У вас не установленны",
-        install: "Установите сервисы",
-        needUpdate: "Необходимо обновите сервисы",
-        update: "Обновить сервисы",
-        offService: "У вас отключены сервисы",
-        geoOff: "У вас отключенна геолокация.",
-        startGeoInSettings: "Включите её в настройках.",
-        goToSettings: "Перейти в настройки",
-        onService: "Включите сервисы"
+        notInstall: "No estás instalado", // "У вас не установленны",
+        install: "Instalar servicios", // "Установите сервисы",
+        needUpdate: "Actualiza los servicios", // "Необходимо обновите сервисы",
+        update: "Servicios de actualización", // "Обновить сервисы",
+        offService: "Sus servicios están deshabilitados", // "У вас отключены сервисы",
+        geoOff: "Has inhabilitado la geolocalización", // "У вас отключенна геолокация.",
+        startGeoInSettings: "Actívela en la configuración", // "Включите её в настройках.",
+        goToSettings: "Ir a la configuración", // "Перейти в настройки",
+        onService: "Habilitar servicios", // "Включите сервисы"
     },
     CreateVisit: {
         title: 'Nuevo informe', // 'New report', // 'Новый отчёт',
@@ -99,33 +99,33 @@ export default {
         geoDeny: 'La geolocalización está deshabilitada en su teléfono', // 'Geolocation is disabled in your phone', // "В телефоне отключенна геолокация",
         createAgent: 'Error al crear agente', // 'Error while creating agent', // "Ошибка создания агента",
         updateAgent: 'Error al actualizar el agente', // 'Error while updating agent', // "Ошибка обновления агента"
-        geoPlayService: "Установите Google Play сервисы",
-        geoTimeout: "Истекло время получения геопозиции"
+        geoPlayService: "Instalar servicios de Google Play", // "Установите Google Play сервисы",
+        geoTimeout: "Hora de recibir la posición geográfica", // "Истекло время получения геопозиции"
     },
     shops: {
-        shops: "Магазины",
-        favorite: "Избранные",
-        nearest: "Ближайшие",
-        enterId: "Ввести ID"
+        shops: "Tiendas", // "Магазины",
+        favorite: "Seleccionado", // "Избранные",
+        nearest: "Más cercano", // "Ближайшие",
+        enterId: "Ingresar ID" // "Ввести ID"
     },
     alerts: {
-        haveUpdate: "Доступно обновление",
-        updateQuestion: "Обновить до новой версии?",
-        mustUpdate: "Пожалуйста, обновите приложение. Обновления повышают стабильность работы и добавляют новые функции.",
-        yes: "Да",
-        no: "Нет",
-        enterIdShop: "Введите ID магазина",
-        changeRoute: "Изменение маршрута",
-        cancel: "Отмена",
-        change: "Изменить",
-        accept: "Принять"
+        haveUpdate: "Actualización disponible", // "Доступно обновление",
+        updateQuestion: "¿Actualizar a la nueva versión?", // "Обновить до новой версии?",
+        mustUpdate: "Actualice la aplicación. Las actualizaciones aumentan la estabilidad y agregan nuevas funciones. ", // "Пожалуйста, обновите приложение. Обновления повышают стабильность работы и добавляют новые функции.",
+        yes: "Sí" // "Да",
+        no: "No", // "Нет",
+        enterIdShop: "Ingresar ID de tienda", // "Введите ID магазина",
+        changeRoute: "Cambiar la ruta", // "Изменение маршрута",
+        cancel: "Cancelar", // "Отмена",
+        change: "Editar", // "Изменить",
+        accept: "Aceptar" // "Принять"
     },
     pin: {
         enter: 'Ingresar PIN', // 'Enter PIN', // "Введите пин-код",
         enterAgain: 'Ingresar PIN nuevamente', // 'Enter PIN again', // "Укажите пин-код повторно",
         error: 'PIN incorrecto', // 'Incorrect PIN', // "Неверный пин-код",
-        oldVersion: "Версия программы устарела",
-        firstLoad: "Идет загрузка начальных данных",
+        oldVersion: "La versión del programa está obsoleta", // "Версия программы устарела",
+        firstLoad: "Cargando datos iniciales", // "Идет загрузка начальных данных",
         description: '¿Tiene problemas con el inicio de sesión?\nEnviar correo electrónico a', // 'Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com', // "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
         descriptionAddress: "support@inspectorcloud.freshdesk.com"
     },

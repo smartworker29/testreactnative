@@ -44,13 +44,13 @@ export default {
         feedback: "Пожаловаться"
     },
     overScreen: {
-        notInstall: "У вас не установленны",
+        notInstall: "У вас не установлены",
         install: "Установите сервисы",
-        needUpdate: "Необходимо обновите сервисы",
+        needUpdate: "Необходимо обновить сервисы",
         update: "Обновить сервисы",
         offService: "У вас отключены сервисы",
-        geoOff: "У вас отключенна геолокация.",
-        startGeoInSettings: "Включите её в настройках.",
+        geoOff: "У вас отключена геолокация.",
+        startGeoInSettings: "Включите её в настройках",
         goToSettings: "Перейти в настройки",
         onService: "Включите сервисы"
     },
@@ -58,11 +58,11 @@ export default {
         title: 'Новый отчёт',
         photo: 'Фотографии',
         createAction: 'Начать',
-        backAction: 'назвд',
-        label: 'ID  Торговой точки',
+        backAction: 'Назад',
+        label: 'ID Торговой точки',
         description: 'Чтобы начать новый отчёт, укажите ниже ID магазина',
         getGeo: "Получение геопозиции",
-        okGeo: "Геопозиция полученна",
+        okGeo: "Геопозиция получена",
         createVisit: "Создание отчёта"
     },
     settings: {
@@ -95,8 +95,8 @@ export default {
         emptySurname: "Введите фамилию",
         emptyPathNumber: "Введите Номер маршрута",
         emptyPatronymic: "Введите отчество",
-        agentCreation: "Неудалось создать агента, попробуйте ещё раз",
-        geoDeny: "В телефоне отключенна геолокация",
+        agentCreation: "Не удалось создать агента, попробуйте ещё раз",
+        geoDeny: "В телефоне отключена геолокация",
         createAgent: "Ошибка создания агента",
         updateAgent: "Ошибка обновления агента",
         geoPlayService: "Установите Google Play сервисы",

@@ -41,18 +41,18 @@ export default {
         visitResult: 'Visit results',
         shopId: "Shop ID",
         pathId: "Route ID",
-        feedback: "Пожаловаться"
+        feedback: "Support", // "Пожаловаться"
     },
     overScreen: {
-        notInstall: "У вас не установленны",
-        install: "Установите сервисы",
-        needUpdate: "Необходимо обновите сервисы",
-        update: "Обновить сервисы",
-        offService: "У вас отключены сервисы",
-        geoOff: "У вас отключенна геолокация.",
-        startGeoInSettings: "Включите её в настройках.",
-        goToSettings: "Перейти в настройки",
-        onService: "Включите сервисы"
+        notInstall: "Not installed", // "У вас не установленны",
+        install: "Please, install services", // "Установите сервисы",
+        needUpdate: "Update is required", // "Необходимо обновите сервисы",
+        update: "Update now", // "Обновить сервисы",
+        offService: "You have services disabled", // "У вас отключены сервисы",
+        geoOff: "Your geolocation is offline", // "У вас отключенна геолокация.",
+        startGeoInSettings: "Please, enable geolocation in settings", // "Включите её в настройках.",
+        goToSettings: "Settings", // "Перейти в настройки",
+        onService: "Enable services", // "Включите сервисы"
     },
     CreateVisit: {
         title: 'New report', // 'Новый отчёт',
@@ -99,33 +99,33 @@ export default {
         geoDeny: 'Geolocation is disabled in your phone', // "В телефоне отключенна геолокация",
         createAgent: 'Error while creating agent', // "Ошибка создания агента",
         updateAgent: 'Error while updating agent', // "Ошибка обновления агента"
-        geoPlayService: "Установите Google Play сервисы",
-        geoTimeout: "Истекло время получения геопозиции"
+        geoPlayService: "Please, install Google Play services", // "Установите Google Play сервисы",
+        geoTimeout: "Geolocation timeout", // "Истекло время получения геопозиции"
     },
     shops: {
-        shops: "Магазины",
-        favorite: "Избранные",
-        nearest: "Ближайшие",
-        enterId: "Ввести ID"
+        shops: "Shops", // "Магазины",
+        favorite: "Favorite", // "Избранные",
+        nearest: "Nearest", // "Ближайшие",
+        enterId: "Enter ID", // "Ввести ID"
     },
     alerts: {
-        haveUpdate: "Доступно обновление",
-        updateQuestion: "Обновить до новой версии?",
-        mustUpdate: "Пожалуйста, обновите приложение. Обновления повышают стабильность работы и добавляют новые функции.",
-        yes: "Да",
-        no: "Нет",
-        enterIdShop: "Введите ID магазина",
-        changeRoute: "Изменение маршрута",
-        cancel: "Отмена",
-        change: "Изменить",
-        accept: "Принять"
+        haveUpdate: "Update is available", // "Доступно обновление",
+        updateQuestion: "Update to the latest version", // "Обновить до новой версии?",
+        mustUpdate: "Please update the app. Updates increase stability and introduce new features!", // "Пожалуйста, обновите приложение. Обновления повышают стабильность работы и добавляют новые функции.",
+        yes: "Yes", // "Да",
+        no: "No", // "Нет",
+        enterIdShop: "Enter Shop ID", // "Введите ID магазина",
+        changeRoute: "Change Route", // "Изменение маршрута",
+        cancel: "Cancel", // "Отмена",
+        change: "Change", // "Изменить",
+        accept: "Accept", // "Принять"
     },
     pin: {
         enter: "Enter PIN",
         enterAgain: "Enter PIN again",
         error: "Incorrect PIN",
-        oldVersion: "Версия программы устарела",
-        firstLoad: "Идет загрузка начальных данных",
+        oldVersion: "App is outdated", // "Версия программы устарела",
+        firstLoad: "Preloading", // "Идет загрузка начальных данных",
         description: "Having trouble with login?\nSend email at",
         descriptionAddress: "support@inspectorcloud.freshdesk.com"
     },
