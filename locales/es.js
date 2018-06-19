@@ -20,7 +20,7 @@ export default {
         lastSync: 'Última sincronización en', // 'Last sync at', // 'Последняя синхронизация данных',
         moderation: 'Moderación', // 'Moderation', // 'Модерация',
         OnModeration: 'On moderation', // 'On moderation', // "На модерации",
-        resultBad: 'Rejected', // 'Rejected', // 'Не засчитан',
+        resultBad: 'Rechazado', // 'Rejected', // 'Не засчитан',
         resultGood: 'OK', // 'OK', // 'Засчитан',
         route: 'Ruta', // 'Route', // "маршрут"
     },
@@ -37,7 +37,7 @@ export default {
         moderationReject: 'Moderación no aprobada', // 'Moderation not passed', // 'Модерация не пройдена',
         moderationComment: 'Comentario del moderador', // 'Moderator comment', // 'Комментарий модератора:',
         visitAccept: 'OK', // 'OK', // 'Засчитан',
-        visitReject: 'Rejected', // 'Rejected', // 'Не засчитан',
+        visitReject: 'Rechazado', // 'Rejected', // 'Не засчитан',
         visitResult: 'Visitar resultados', // 'Visit results', // 'Результаты отчёта'
         shopId: "ID de tienda", // "ID торговой точки",
         pathId: "ID de rute", // "Route ID"
