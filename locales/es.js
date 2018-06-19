@@ -126,7 +126,8 @@ export default {
         error: 'PIN incorrecto', // 'Incorrect PIN', // "Неверный пин-код",
         oldVersion: "Версия программы устарела",
         firstLoad: "Идет загрузка начальных данных",
-        description: '¿Tiene problemas con el inicio de sesión?\nEnviar correo electrónico a support@inspectorcloud.freshdesk.com', // 'Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com', // "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
+        description: '¿Tiene problemas con el inicio de sesión?\nEnviar correo electrónico a', // 'Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com', // "Если у вас возникли сложности, то свяжитесь с нами по номеру\n 8 (800) 550-27-78 (звонок беплатный)"
+        descriptionAddress: "support@inspectorcloud.freshdesk.com"
     },
     task: {
         title: 'Tareas', // 'Tasks', // "Задачи",
@@ -155,7 +156,7 @@ export default {
     },
     preview: {
         title: 'Vista previa', // 'Preview', // "Предпросмотр",
-        remove: 'Eliminar foto', // 'Delete photo', // "Удаление фото"
+        remove: '¿Eliminar foto?', // 'Delete photo', // "Удаление фото"
     },
     feedback: {
         support: 'Soporte', // 'Support', // "Служба поддержки",

@@ -39,8 +39,8 @@ export default {
         visitAccept: 'OK',
         visitReject: 'Rejected',
         visitResult: 'Visit results',
-        shopId: "ID торговой точки",
-        pathId: "Номер маршрута",
+        shopId: "Shop ID",
+        pathId: "Route ID",
         feedback: "Пожаловаться"
     },
     overScreen: {
@@ -126,7 +126,8 @@ export default {
         error: "Incorrect PIN",
         oldVersion: "Версия программы устарела",
         firstLoad: "Идет загрузка начальных данных",
-        description: "Having trouble with login?\nSend email at support@inspectorcloud.freshdesk.com'"
+        description: "Having trouble with login?\nSend email at",
+        descriptionAddress: "support@inspectorcloud.freshdesk.com"
     },
     task: {
         title: 'Tasks', // "Задачи",
@@ -154,7 +155,7 @@ export default {
     },
     preview: {
         title: 'Preview', // "Предпросмотр",
-        remove: 'Delete photo', // "Удаление фото"
+        remove: 'Delete photo?', // "Удаление фото"
     },
     feedback: {
         support: 'Support', // "Служба поддержки",

@@ -228,14 +228,6 @@ class AppWithNavigationState extends Component {
                 await this.sync();
             }, 2000);
         }
-
-        if (this.props.error !== props.error || this.props.seed !== props.seed) {
-            Toast.show({
-                text: props.error,
-                position: 'bottom',
-                buttonText: null
-            });
-        }
     }
 
     onBackPress = () => {

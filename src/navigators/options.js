@@ -155,11 +155,11 @@ export const createVisitsNavigationOptions = (navigation) => {
 
 const alertQuestion = (deleteHandler, currentPhotoUri, photoId) => {
     Alert.alert(
-        'Внимание',
-        'Удалить фотографию?',
+        I18n.t("error.attention"),
+        I18n.t("preview.remove"),
         [
             {
-                text: 'Да', onPress: () => {
+                text: I18n.t(""), onPress: () => {
                     deleteHandler(currentPhotoUri, photoId);
                 }
             },

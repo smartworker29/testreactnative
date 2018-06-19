@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {pinNavigationOptions} from "../navigators/options";
-import {Image, View, StyleSheet, Text, TextInput, Keyboard, ActivityIndicator, TouchableOpacity} from 'react-native'
+import {Image, View, StyleSheet, Text, TextInput, Keyboard, ActivityIndicator, TouchableOpacity, Linking} from 'react-native'
 import {logo} from "../utils/images";
 import I18n from "react-native-i18n";
 import {connect} from "react-redux";
@@ -57,7 +57,7 @@ class EnterPinScene extends Component {
     };
 
     renderCircle(pos) {
-        const color = (this.state.pin.length >= pos) ? styles.red : styles.gray
+        const color = (this.state.pin.length >= pos) ? styles.red : styles.gray;
         return <View style={[styles.circle, color]}/>
     }
 
@@ -77,6 +77,17 @@ class EnterPinScene extends Component {
             this.setState({pin: ""});
         }
     }
+
+    openSupport = () => {
+        const locale  = I18n.currentLocale();
+
+        if(locale.includes("ru")) {
+            Linking.openURL(`tel:${I18n.t("pin.descriptionAddress")}`);
+        } else {
+            Linking.openURL(`mailto:${I18n.t("pin.descriptionAddress")}`)
+        }
+
+    };
 
     render() {
 
@@ -99,6 +110,7 @@ class EnterPinScene extends Component {
                 <Text style={styles.enterText}>{message}</Text>
                 {indicator}
                 <Text style={styles.description}>{I18n.t("pin.description")}</Text>
+                <Text style={styles.descriptionAddress} onPress={this.openSupport}>{I18n.t("pin.descriptionAddress")}</Text>
                 <TextInput ref={(ref) => this.input = ref}
                            value={this.state.pin}
                            onChangeText={this.enterPin}
@@ -178,12 +190,17 @@ const styles = StyleSheet.create({
     gray: {
         backgroundColor: "#e5e5e5",
     },
+    descriptionAddress: {
+        color: "blue",
+        textAlign: "center",
+        fontSize: 15,
+    },
     description: {
-        paddingHorizontal: 32,
+        paddingHorizontal: 10,
         marginTop: 32,
         color: "#636363",
         textAlign: "center",
         fontSize: 15,
         lineHeight: 20,
     }
-})
+});
