@@ -80,7 +80,6 @@ class PreviewScene extends Component {
                     minimumZoomScale={1.0}
                     maximumZoomScale={2.5}
                     androidScaleType="fitCenter"
-                    onLoad={() => console.log("Image loaded!")}
                     style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} />
             )
         }

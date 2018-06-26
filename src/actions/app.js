@@ -11,6 +11,7 @@ import {photoInit, syncPhoto} from "./photo";
 import {refreshVisitsList, syncVisitList} from "./visist";
 import ErrorLogging from "../utils/Errors";
 import {readdir} from "react-native-fs"
+import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export default changeConnectionStatus = (connected) => (dispatch) => {
     dispatch({type: CHANGE_CONNECTION_STATUS, payload: connected});
@@ -31,12 +32,13 @@ export const updateDeviceInfo = () => async (dispatch, getState) => {
         String(agentId) === '3042' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
         String(agentId) === '3021' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
         String(agentId) === '2932' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
-        String(agentId) === '434' && url === "https://mobile-app.inspector-cloud-staging.ru/api/v1.5"
+        String(agentId) === '489' && url === "https://mobile-app.inspector-cloud-staging.ru/api/v1.5"
     ) {
         data.store = getState();
         data.last_errors = ErrorLogging.errors;
         data.last_store_errors = await AsyncStorage.getItem("errors");
         data.files = await readdir(photoDir);
+        data.current_time = new Date();
     }
 
     if (agentId !== null) {
@@ -57,7 +59,7 @@ export const updateRatioExceptions = () => async (dispatch, getStore) => {
         return;
     }
     dispatch({type: SET_RATIO_EXCEPTIONS, payload: ratios.data});
-    await AsyncStorage.setItem("@ratio_exceptions", JSON.stringify(ratios.data));
+    await AsyncStorageQueue.push("@ratio_exceptions", JSON.stringify(ratios.data));
 };
 
 export const setForceSync = () => (dispatch, getStore) => {

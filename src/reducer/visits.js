@@ -14,7 +14,7 @@ export const init = {
     isCreateFetch: false,
     isSync: false,
     syncVisitId: null,
-    syncVisitError: "sdfsfsfs",
+    syncVisitError: "",
     refresh: false,
     hasMore: false,
     needSync: false,
@@ -55,11 +55,11 @@ export default (state = init, action) => {
 
         case SET_VISIT_OFFLINE:
             const nState = _.cloneDeep(state);
-            nState.entities.offline = {...action.payload, ...nState.entities.offline}
+            nState.entities.offline = {...action.payload, ...nState.entities.offline};
             return nState;
 
         case SET_LAST_CREATED_ID:
-            return {...state, lastCreatedId: action.payload}
+            return {...state, lastCreatedId: action.payload};
 
         case REFRESH_VISIT_RESPONSE:
             const refreshVisits = Map(action.payload.entities.visit).take(30).toObject();
@@ -113,7 +113,7 @@ export default (state = init, action) => {
 
         case DELETE_OFFLINE_VISIT:
             let newOffline = {...state.entities.offline};
-            delete newOffline[action.payload]
+            delete newOffline[action.payload];
             return {
                 ...state,
                 entities: {visit: {...state.entities.visit}, offline: {...newOffline}}
@@ -126,7 +126,7 @@ export default (state = init, action) => {
 
             const needSync = (Object.keys(state.entities.offline).length > 0);
 
-            const visit = _.cloneDeep(state.entities.visit)
+            const visit = _.cloneDeep(state.entities.visit);
             visit[action.payload.id] = action.payload;
             delete visit[action.syncId];
 

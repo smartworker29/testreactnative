@@ -23,6 +23,7 @@ import {
 import _ from "lodash";
 import {Map} from "immutable";
 import {getDeviceInfo} from "../utils/util";
+import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export const createVisit = (shop, taskId, timeout, coordinates) => async (dispatch, getState) => {
 
@@ -43,40 +44,32 @@ export const createVisit = (shop, taskId, timeout, coordinates) => async (dispat
     };
     const pin = getState().auth.pin;
 
-    try {
+    const response = await API.makeVisit(getState().auth.id, data, timeout);
 
-        const response = await API.makeVisit(getState().auth.id, data, timeout);
-
-        if (response.status !== 200) {
-            return dispatch({type: CREATE_VISIT_ERROR})
-        }
-
-        await AsyncStorage.setItem(`@${pin}_visits`, JSON.stringify({
+    if (response !== null) {
+        await AsyncStorageQueue.push(`@${pin}_visits`, JSON.stringify({
             entities: {visit: {...getState().visits.entities.visit, [response.data.id]: response.data}},
             result: [response.data.id, ...getState().visits.result]
         }));
 
         dispatch({type: CREATE_VISIT_RESPONSE, payload: response.data});
-        await AsyncStorage.setItem(`@${pin}_last_created_id`, JSON.stringify(getState().visits.lastCreatedId));
-        await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
-        dispatch(visitDetailsAndReset(response.data.id, false, true))
-
-    } catch (error) {
-
-        if (error.status !== undefined) {
-            return dispatch({type: CREATE_VISIT_ERROR, payload: error})
-        }
-
-        const id = new Date().getTime();
-
-        const local_date = new Date().toJSON();
-        const payload = {id, tmp: true, task: taskId, shop, results: null, moderation: null, local_date, data};
-
-        dispatch({type: CREATE_VISIT_RESPONSE, payload, offline: true});
-        await AsyncStorage.setItem(`@${pin}_last_created_id`, JSON.stringify(id));
-        await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
-        dispatch(visitDetailsAndReset(payload.id, true, true))
+        await AsyncStorageQueue.push(`@${pin}_last_created_id`, JSON.stringify(getState().visits.lastCreatedId));
+        await AsyncStorageQueue.push(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
+        return dispatch(visitDetailsAndReset(response.data.id, false, true));
     }
+
+    dispatch({type: CREATE_VISIT_ERROR, payload: "Timeout"});
+
+    const id = new Date().getTime();
+
+    const local_date = new Date().toJSON();
+    const payload = {id, tmp: true, task: taskId, shop, results: null, moderation: null, local_date, data};
+
+    dispatch({type: CREATE_VISIT_RESPONSE, payload, offline: true});
+    await AsyncStorageQueue.push(`@${pin}_last_created_id`, JSON.stringify(id));
+    await AsyncStorageQueue.push(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
+
+    return dispatch(visitDetailsAndReset(payload.id, true, true));
 };
 
 const getCoordinates = async () => {
@@ -93,9 +86,9 @@ const getCoordinates = async () => {
 
 export const initVisits = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
-    const cache = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits`)) || {};
+    const cache = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits`)) || null;
 
-    if (!cache) {
+    if (cache) {
         dispatch({type: REFRESH_VISIT_RESPONSE, payload: cache})
     }
 
@@ -135,7 +128,7 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
         payload.count = response.data.length;
         payload.hasMore = false;
 
-        await AsyncStorage.setItem(`@${pin}_visits`, JSON.stringify(payload));
+        await AsyncStorageQueue.push(`@${pin}_visits`, JSON.stringify(payload));
         dispatch({type: REFRESH_VISIT_RESPONSE, payload: payload})
 
     } catch (error) {
@@ -190,8 +183,8 @@ export const syncVisitList = (force = false) => async (dispatch, getState) => {
     dispatch({type: SET_APP_DATA, payload: {beenSyncVisit}});
     dispatch({type: SET_SYNC_VISIT, payload: sync});
     const pin = getState().auth.pin;
-    await AsyncStorage.setItem(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
-    await AsyncStorage.setItem(`@${pin}_visits_sync`, JSON.stringify(sync));
+    await AsyncStorageQueue.push(`@${pin}_visits_offline`, JSON.stringify(getState().visits.entities.offline));
+    await AsyncStorageQueue.push(`@${pin}_visits_sync`, JSON.stringify(sync));
     dispatch({type: SYNC_VISIT_END});
 };
 

@@ -11,6 +11,7 @@ import * as API from "../api";
 import AppLink from "react-native-app-link";
 import DeviceInfo from 'react-native-device-info';
 import I18n from "react-native-i18n";
+import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export const authInit = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
@@ -47,8 +48,8 @@ export const checkPin = (pin) => async (dispatch, getState) => {
                 dispatch({type: FETCH_PIN_ERROR});
                 return dispatch({type: FETCH_PIN, payload: false});
             }
-            await AsyncStorage.setItem("@url", String(instance.url));
-            await AsyncStorage.setItem("@token", String(instance.token));
+            await AsyncStorageQueue.push("@url", String(instance.url));
+            await AsyncStorageQueue.push("@token", String(instance.token));
             dispatch({type: SET_PIN, payload: pinId});
             dispatch({type: FETCH_PIN_RESPONSE, payload: pins})
         } else {
@@ -57,8 +58,8 @@ export const checkPin = (pin) => async (dispatch, getState) => {
         }
     } else {
         if (pins[pin] !== undefined) {
-            await AsyncStorage.setItem("@url", String(pins[pin].url));
-            await AsyncStorage.setItem("@token", String(pins[pin].token));
+            await AsyncStorageQueue.push("@url", String(pins[pin].url));
+            await AsyncStorageQueue.push("@token", String(pins[pin].token));
             dispatch({type: SET_PIN, payload: pin});
             dispatch({type: FETCH_PIN_RESPONSE, payload: pins})
         } else {
@@ -142,7 +143,7 @@ export const syncPins = () => async (dispatch, getState) => {
         return dispatch({type: SYNC_PINS_END});
     } else {
         dispatch({type: SET_PINS, payload: pins.data});
-        await AsyncStorage.setItem("@pins", JSON.stringify(pins.data));
+        await AsyncStorageQueue.push("@pins", JSON.stringify(pins.data));
     }
 
     dispatch({type: SYNC_PINS_END});

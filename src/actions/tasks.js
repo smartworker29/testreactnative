@@ -1,6 +1,7 @@
 import * as API from "../api";
 import {AsyncStorage} from 'react-native'
 import {GET_TASKS_REQUEST_END, GET_TASKS_REQUEST_START, SET_TASKS} from "../utils/constants";
+import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export const initTasks = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
@@ -32,7 +33,7 @@ export const getTasksList = () => async (dispatch, getState) => {
 
     if (data.results) {
         dispatch({type: SET_TASKS, payload: data.results});
-        await AsyncStorage.setItem(`@${pin}_tasks`, JSON.stringify(data.results));
+        await AsyncStorageQueue.push(`@${pin}_tasks`, JSON.stringify(data.results));
     }
     dispatch({type: GET_TASKS_REQUEST_END})
 };

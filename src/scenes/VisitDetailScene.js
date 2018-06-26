@@ -358,7 +358,7 @@ export class VisitDetailScene extends Component {
     renderFeedbackButton() {
         return (
             <TouchableOpacity style={styles.feedbackButton} onPress={this.goToFeedback}>
-                <Text style={styles.feedbackText}>{I18n.t('feedback.support')}</Text>
+                <Text style={styles.feedbackText}>{I18n.t('visitDetail.feedback')}</Text>
             </TouchableOpacity>
         )
     }

@@ -15,6 +15,7 @@ import {genSeed} from "../reducer/app";
 import _ from "lodash";
 import bugsnag from '../bugsnag';
 import DeviceInfo from 'react-native-device-info';
+import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export const saveData = (action) => async (dispatch, getState) => {
 
@@ -41,8 +42,7 @@ export const saveData = (action) => async (dispatch, getState) => {
     data.hasChanges = false;
     dispatch({type: SET_PROFILE_DATA, payload: data});
     const pin = getState().auth.pin;
-    await AsyncStorage.setItem(`@${pin}_profile`, JSON.stringify(data));
-
+    await AsyncStorageQueue.push(`@${pin}_profile`, JSON.stringify(data));
     const device_info = {
         battery_level: String(await DeviceInfo.getBatteryLevel()),
         brand: DeviceInfo.getBrand(),
@@ -69,7 +69,7 @@ export const saveData = (action) => async (dispatch, getState) => {
     if (authId == null) {
         const result = await API.createAgent({name, device_info, route: data.pathNumber});
         if (result !== null) {
-            await AsyncStorage.setItem(`@${pin}_agent`, String(result.data.id));
+            await AsyncStorageQueue.push(`@${pin}_agent`, String(result.data.id));
             dispatch({type: SET_AUTH_ID, payload: String(result.data.id)});
             dispatch({type: AGENT_FETCH, payload: false});
             return dispatch(resetToList());

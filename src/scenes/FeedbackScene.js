@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white"
     },
     textContainer: {
+        height: 150,
         padding: 16,
         marginTop: 16
     },

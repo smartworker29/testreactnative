@@ -14,6 +14,7 @@ export const init = {
     needSync: false,
     deleteFetch: false,
     deleteError: null,
+    lastSyncDate: new Date(),
     photos: Map()
 };
 
@@ -50,6 +51,7 @@ export default (state = init, action) => {
                 ...state,
                 isFetch: false,
                 error: null,
+                lastSyncDate: new Date(),
                 needSync: checkNeedSync(photos),
                 photos
             };

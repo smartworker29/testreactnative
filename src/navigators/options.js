@@ -159,12 +159,12 @@ const alertQuestion = (deleteHandler, currentPhotoUri, photoId) => {
         I18n.t("preview.remove"),
         [
             {
-                text: I18n.t(""), onPress: () => {
+                text: I18n.t("alerts.yes"), onPress: () => {
                     deleteHandler(currentPhotoUri, photoId);
                 }
             },
             {
-                text: 'Нет', onPress: () => {
+                text: I18n.t("alerts.no"), onPress: () => {
                 }
             },
         ],

@@ -1,6 +1,7 @@
 import {AsyncStorage} from 'react-native'
 import API from "../api/"
 import {Map} from "immutable";
+import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export const ADD_PHOTO = 'ADD_PHOTO';
 /**
@@ -11,7 +12,7 @@ export const ADD_PHOTO = 'ADD_PHOTO';
 export const addPhoto = (uri, id) => async (dispatch, getState) => {
     dispatch({type: ADD_PHOTO, payload: {uri, id}});
     const pin = getState().auth.pin;
-    await AsyncStorage.setItem(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
+    await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
 };
 
 export const CLEAR_PHOTO = 'CLEAR_PHOTO';
@@ -51,13 +52,12 @@ export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getStat
         }
 
         dispatch({type: UPLOAD_PHOTO_RESPONSE, payload: {visit: id, uri, tmpId: visitId, photoId: response.data.id}});
-        await AsyncStorage.setItem(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
-
+        await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
     } catch (error) {
         console.log("error", error);
         dispatch({type: "SHOW_TOAST", payload: "Ошибка загрузки фото"});
         dispatch({type: UPLOAD_PHOTO_ERROR, payload: {uri, error}});
-        await AsyncStorage.setItem(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
+        await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
     }
 };
 
@@ -100,8 +100,7 @@ export const syncPhoto = () => async (dispatch, getState) => {
 
     const pin = getState().auth.pin;
     await dispatch(uploadPhoto(photo.uri, id, photo.visit));
-    await AsyncStorage.setItem(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
-
+    await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
     dispatch({type: SYNC_PHOTO_END});
 };
 
@@ -117,7 +116,7 @@ export const deleteImage = (uri, id) => async (dispatch, getState) => {
     }
     dispatch({type: DELETE_IMAGE, payload: uri});
     const pin = getState().auth.pin;
-    await AsyncStorage.setItem(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
+    await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
     return true;
 };
 

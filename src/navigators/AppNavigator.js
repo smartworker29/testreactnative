@@ -42,6 +42,7 @@ import PreviewScene from "../scenes/PreviewScene";
 import FeedbackScene from "../scenes/FeedbackScene";
 import SyncScene from "../scenes/SyncScene";
 import ErrorLogging from "../utils/Errors";
+import I18n from "react-native-i18n";
 import Permissions from 'react-native-permissions';
 import OpenSettings from 'react-native-open-settings';
 import GoogleAPIAvailability from 'react-native-google-api-availability-bridge';
@@ -198,18 +199,6 @@ class AppWithNavigationState extends Component {
         }, 5000);
     }
 
-    async sync() {
-        if (this.props.isForceSync === true) {
-            return;
-        }
-        await this.props.dispatch(syncVisitList());
-        await this.props.dispatch(syncPhoto());
-        await this.props.dispatch(refreshVisitsList(false));
-        await this.props.dispatch(getTasksList());
-        await this.props.dispatch(getStatistics());
-        await this.props.dispatch(syncPins());
-    }
-
     async componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
     }
@@ -224,9 +213,30 @@ class AppWithNavigationState extends Component {
         if (this.props.authId !== props.authId && this.props.dispatch) {
             clearInterval(this.intervalSyncPins);
             await this.props.dispatch(refreshVisitsList(true));
+
             setInterval(async () => {
-                await this.sync();
+                await this.props.dispatch(syncVisitList());
             }, 2000);
+
+            setInterval(async () => {
+                await this.props.dispatch(syncPhoto());
+            }, 2000);
+
+            setInterval(async () => {
+                await this.props.dispatch(refreshVisitsList(false));
+            }, 7000);
+
+            setInterval(async () => {
+                await this.props.dispatch(getTasksList());
+            }, 7000);
+
+            setInterval(async () => {
+                await this.props.dispatch(getStatistics());
+            }, 7000);
+
+            setInterval(async () => {
+                await this.props.dispatch(syncPins());
+            }, 7000);
         }
     }
 
@@ -243,8 +253,6 @@ class AppWithNavigationState extends Component {
     render() {
         const {dispatch, nav} = this.props;
 
-        console.log(this.state.geo);
-
         if (this.state.geo === null) {
             return null;
         }
@@ -256,12 +264,12 @@ class AppWithNavigationState extends Component {
         if (this.state.platform === "android" && (this.state.service === "failure" || this.state.service === "invalid")) {
             return (
                 <View style={styles.containerInfo}>
-                    <Text style={styles.deleteText}>{"У вас не установленны"}</Text>
+                    <Text style={styles.deleteText}>{I18n.t("overScreen.notInstall")}</Text>
                     <Text style={styles.deleteText}>{"Google Play Services"}</Text>
                     <TouchableOpacity onPress={() => {
                         GoogleAPIAvailability.promptGooglePlayUpdate(false);
                     }}>
-                        <Text style={styles.link}>Установите сервисы</Text>
+                        <Text style={styles.link}>{I18n.t("overScreen.install")}</Text>
                     </TouchableOpacity>
                 </View>
             )
@@ -270,12 +278,12 @@ class AppWithNavigationState extends Component {
         if (this.state.platform === "android" && (this.state.service === "update")) {
             return (
                 <View style={styles.containerInfo}>
-                    <Text style={styles.deleteText}>{"Необходимо обновите сервисы"}</Text>
+                    <Text style={styles.deleteText}>{I18n.t("overScreen.needUpdate")}</Text>
                     <Text style={styles.deleteText}>{"Google Play Services"}</Text>
                     <TouchableOpacity onPress={() => {
                         GoogleAPIAvailability.promptGooglePlayUpdate(false);
                     }}>
-                        <Text style={styles.link}>Обновить сервисы</Text>
+                        <Text style={styles.link}>{I18n.t("overScreen.update")}</Text>
                     </TouchableOpacity>
                 </View>
             )
@@ -284,12 +292,12 @@ class AppWithNavigationState extends Component {
         if (this.state.platform === "android" && (this.state.service === "disabled")) {
             return (
                 <View style={styles.containerInfo}>
-                    <Text style={styles.deleteText}>{"У вас отключены сервисы"}</Text>
+                    <Text style={styles.deleteText}>{I18n.t("overScreen.offService")}</Text>
                     <Text style={styles.deleteText}>{"Google Play Services"}</Text>
                     <TouchableOpacity onPress={() => {
                         GoogleAPIAvailability.promptGooglePlayUpdate(false);
                     }}>
-                        <Text style={styles.link}>Включите сервисы</Text>
+                        <Text style={styles.link}>{I18n.t("overScreen.onService")}</Text>
                     </TouchableOpacity>
                 </View>
             )
@@ -298,8 +306,8 @@ class AppWithNavigationState extends Component {
         if (this.state.geo === "denied" || this.state.geo === "restricted") {
             return (
                 <View style={styles.containerInfo}>
-                    <Text style={styles.deleteText}>У вас отключенна геолокация.</Text>
-                    <Text style={styles.deleteText}>Включите её в настройках.</Text>
+                    <Text style={styles.deleteText}>{I18n.t("overScreen.geoOff")}</Text>
+                    <Text style={styles.deleteText}>{I18n.t("overScreen.startGeoInSettings")}</Text>
                     <TouchableOpacity onPress={() => {
                         if (Platform.OS === "ios") {
                             Linking.openURL('app-settings:');
@@ -307,7 +315,7 @@ class AppWithNavigationState extends Component {
                             OpenSettings.openSettings();
                         }
                     }}>
-                        <Text style={styles.link}>Перейти в настройки</Text>
+                        <Text style={styles.link}>{I18n.t("overScreen.goToSettings")}</Text>
                     </TouchableOpacity>
                 </View>
             );

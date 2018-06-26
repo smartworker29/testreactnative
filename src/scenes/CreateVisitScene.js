@@ -135,11 +135,8 @@ export class CreateVisitScene extends Component {
             <View style={styles.container}>
                 <View style={{flex: 1, justifyContent: "flex-start"}}>
                     <Text style={styles.description}>{I18n.t("CreateVisit.description")}</Text>
-                    <View style={styles.geoView}>
-                        {geoText}
-                    </View>
                     <View style={styles.input}>
-                        <Text>{I18n.t('CreateVisit.label')}</Text>
+                        {geoText}
                         <TextInput onChangeText={(text) => this.setState({text: text.replace(/[^0-9]/g, '')})}
                                    ref={(cmp) => this.input = cmp}
                                    maxLength={9}
@@ -147,6 +144,7 @@ export class CreateVisitScene extends Component {
                                    keyboardType="numeric"
                                    style={styles.inputCmp}
                                    underlineColorAndroid="transparent"
+                                   placeholder={I18n.t('CreateVisit.label')}
                                    value={this.state.text}
                         />
                     </View>

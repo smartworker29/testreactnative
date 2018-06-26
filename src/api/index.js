@@ -23,6 +23,10 @@ getAuth = async () => {
 };
 
 export const getPins = async () => {
+    const source = axios.CancelToken.source();
+    setTimeout(() => {
+        source.cancel("getPins Timeout by timer");
+    }, 7000);
     try {
         return await axios({
             method: 'get',
@@ -32,7 +36,7 @@ export const getPins = async () => {
                 'Cache-Control': 'no-cache'
             },
             // url: `https://cloud-inspector-dev.firebaseio.com/instance.json`,
-            timeout: 5000
+            cancelToken: source.token,
         })
     } catch (error) {
         ErrorLogging.push("getPins", error);
@@ -41,11 +45,15 @@ export const getPins = async () => {
 };
 
 export const getRatioExceptions = async () => {
+    const source = axios.CancelToken.source();
+    setTimeout(() => {
+        source.cancel("getRatioExceptions Timeout by timer");
+    }, 2000);
     try {
         return await axios({
             method: 'get',
             url: `https://app.inspector-cloud.ru/befda61b-95be-4f1e-8297-ae5ed7c8b3ce/app_models.json`,
-            timeout: 10000
+            cancelToken: source.token,
         })
     } catch (error) {
         ErrorLogging.push("getRatioExceptions", error);
@@ -54,8 +62,12 @@ export const getRatioExceptions = async () => {
 };
 
 export const getStats = async (id) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("getStats Timeout by timer");
+        }, 7000);
         return await axios({
             method: 'get',
             validateStatus: null,
@@ -64,7 +76,7 @@ export const getStats = async (id) => {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
             },
-            timeout: 10000
+            cancelToken: source.token,
         })
     } catch (error) {
         ErrorLogging.push("getStats", error);
@@ -73,8 +85,12 @@ export const getStats = async (id) => {
 };
 
 export const getTasks = async () => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("getTasks Timeout by timer");
+        }, 7000);
         return await axios({
             method: 'get',
             url: `${url}/visit_task/`,
@@ -82,7 +98,7 @@ export const getTasks = async () => {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
             },
-            timeout: 10000
+            cancelToken: source.token,
         })
     } catch (error) {
         ErrorLogging.push("getTasks", error);
@@ -91,8 +107,8 @@ export const getTasks = async () => {
 };
 
 export const getTasksFetch = async (data) => {
-    const {url, token} = await getAuth();
     try {
+        const {url, token} = await getAuth();
         return await fetch(`${url}/visit_task/`, {
             method: 'GET',
             headers: {
@@ -106,12 +122,16 @@ export const getTasksFetch = async (data) => {
 };
 
 export const createAgent = async (data) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("createAgent Timeout by timer");
+        }, 10000);
         return await axios({
             method: 'post',
             url: `${url}/agents/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -125,12 +145,16 @@ export const createAgent = async (data) => {
 };
 
 export const updateVisit = async (id, data) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("updateVisit Timeout by timer");
+        }, 7000);
         return await axios({
             method: 'patch',
             url: `${url}/visits/${id}/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -144,15 +168,16 @@ export const updateVisit = async (id, data) => {
 };
 
 export const patchAgent = async (id, data) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
-        console.log(url, token);
-        console.log(data);
-        console.log("url", `${url}/agents/${id}/`);
+        setTimeout(() => {
+            source.cancel("patchAgent Timeout by timer");
+        }, 5000);
         return await axios({
             method: 'patch',
             url: `${url}/agents/${id}/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -166,25 +191,22 @@ export const patchAgent = async (id, data) => {
 };
 
 export const makeVisit = async (id = 1, data, timeout) => {
-
+    const source = axios.CancelToken.source();
     const {url, token} = await getAuth();
-    const options = {
-        method: 'post',
-        url: `${url}/agents/${id}/visits/`,
-        timeout: 10000,
-        headers: {
-            'Authorization': `Token ${token}`,
-            'Content-Type': 'application/json'
-        },
-        data
-    };
-
-    if (timeout) {
-        options.timeout = timeout;
-    }
-
+    setTimeout(() => {
+        source.cancel("makeVisit Timeout by timer");
+    }, 5000);
     try {
-        return await axios(options)
+        return await axios({
+            method: 'post',
+            url: `${url}/agents/${id}/visits/`,
+            cancelToken: source.token,
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data
+        })
     } catch (error) {
         ErrorLogging.push("makeVisit", error);
         return null
@@ -192,13 +214,17 @@ export const makeVisit = async (id = 1, data, timeout) => {
 };
 
 export const getVisitDetails = async (id) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("getVisitDetails Timeout by timer");
+        }, 5000);
         return await axios({
             method: 'get',
             url: `${url}/visits/${id}/`,
             validateStatus: null,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -211,12 +237,16 @@ export const getVisitDetails = async (id) => {
 };
 
 export const getAgents = async (id) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("getAgents Timeout by timer");
+        }, 5000);
         return await axios({
             method: 'get',
             url: `${url}/agents`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -229,12 +259,16 @@ export const getAgents = async (id) => {
 };
 
 export const updateAgent = async (id, name) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("updateAgent Timeout by timer");
+        }, 5000);
         return await axios({
             method: 'put',
             url: `${url}/agents/${id}/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -248,12 +282,16 @@ export const updateAgent = async (id, name) => {
 };
 
 export const getAgentUpdates = async (id = 1) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("getAgentUpdates Timeout by timer");
+        }, 5000);
         return await axios({
             method: 'get',
             url: `${url}/agents/${id}/updates/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -266,12 +304,16 @@ export const getAgentUpdates = async (id = 1) => {
 };
 
 export const getVisitsByAgent = async (id = 1) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("getVisitsByAgent Timeout by timer");
+        }, 5000);
         return await axios({
             method: 'get',
             url: `${url}/agents/${id}/visits/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
@@ -285,12 +327,16 @@ export const getVisitsByAgent = async (id = 1) => {
 };
 
 export const uploadPhoto = async (id, data) => {
+    const source = axios.CancelToken.source();
     try {
         const {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("uploadPhoto Timeout by timer");
+        }, 10000);
         return await axios({
             method: 'post',
             url: `${url}/visits/${id}/scene/0/upload/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`
             }, data,
@@ -302,12 +348,16 @@ export const uploadPhoto = async (id, data) => {
 };
 
 export const deleteImage = async (id) => {
+    const source = axios.CancelToken.source();
     try {
         let {url, token} = await getAuth();
         url = url.substr(0, url.length - 5);
+        setTimeout(() => {
+            source.cancel("deleteImage Timeout by timer");
+        }, 10000);
         return await axios({
             method: 'delete',
-            timeout: 10000,
+            cancelToken: source.token,
             url: `${url}/internal/images/${id}/`,
             headers: {
                 'Authorization': `Token ${token}`
@@ -320,12 +370,16 @@ export const deleteImage = async (id) => {
 };
 
 export const sendFeedback = async (id, data) => {
+    const source = axios.CancelToken.source();
     try {
         let {url, token} = await getAuth();
+        setTimeout(() => {
+            source.cancel("sendFeedback Timeout by timer");
+        }, 10000);
         return await axios({
             method: 'post',
             url: `${url}/agents/${id}/helpdesk/`,
-            timeout: 10000,
+            cancelToken: source.token,
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
