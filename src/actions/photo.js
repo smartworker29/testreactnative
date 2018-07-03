@@ -2,6 +2,8 @@ import {AsyncStorage} from 'react-native'
 import API from "../api/"
 import {Map} from "immutable";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
+import {exists} from "react-native-fs"
+import uuidv4 from 'uuid/v4';
 
 export const ADD_PHOTO = 'ADD_PHOTO';
 /**
@@ -10,7 +12,9 @@ export const ADD_PHOTO = 'ADD_PHOTO';
  * @param id visit's id
  */
 export const addPhoto = (uri, id) => async (dispatch, getState) => {
-    dispatch({type: ADD_PHOTO, payload: {uri, id}});
+    const offline = getState().visits.entities.offline;
+    const tmpId = (offline[id]) ? id : null;
+    dispatch({type: ADD_PHOTO, payload: {uri, id, tmpId}});
     const pin = getState().auth.pin;
     await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
 };
@@ -41,11 +45,18 @@ export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getStat
     dispatch({type: UPLOAD_PHOTO_REQUEST, payload: {uri, id}});
 
     const data = new FormData();
-    data.append('datafile', {uri: uri, type: 'image/jpg', name: uri.replace(/^.*[\\\/]/, '')});
+    data.append('datafile', {
+        uri: uri,
+        type: 'image/jpg',
+        name: uri.replace(/^.*[\\\/]/, ''),
+        uuid: uuidv4()
+    });
     const pin = getState().auth.pin;
 
     try {
-        const response = await API.uploadPhoto(id, data);
+        dispatch({type: UPLOAD_PROGRESS_START, payload: uri});
+        const response = await API.uploadPhoto(id, data, dispatch, uri);
+        dispatch({type: UPLOAD_PROGRESS_END, payload: uri});
 
         if (response.status !== 201) {
             return dispatch({type: UPLOAD_PHOTO_ERROR, payload: {uri, error: response.data}});
@@ -55,6 +66,7 @@ export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getStat
         await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
     } catch (error) {
         console.log("error", error);
+        dispatch({type: UPLOAD_PROGRESS_END, payload: uri});
         dispatch({type: "SHOW_TOAST", payload: "Ошибка загрузки фото"});
         dispatch({type: UPLOAD_PHOTO_ERROR, payload: {uri, error}});
         await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
@@ -63,6 +75,7 @@ export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getStat
 
 export const SYNC_PHOTO_START = 'SYNC_PHOTO_START';
 export const SYNC_PHOTO_END = 'SYNC_PHOTO_END';
+export const NOT_FIND_PHOTO = "NOT_FIND_PHOTO";
 
 export const syncPhoto = () => async (dispatch, getState) => {
 
@@ -85,10 +98,18 @@ export const syncPhoto = () => async (dispatch, getState) => {
             return 0;
         }
     }).find(photo => photo.isUploaded === false);
-    const sync = getState().visits.sync;
 
     if (!photo) {
         return;
+    }
+
+    if (await exists(photo.uri) === false) {
+        return dispatch({type: DELETE_IMAGE, payload: photo.uri});
+    }
+
+    const sync = getState().visits.sync;
+    if (getState().visits.entities.visit[photo.visit] === undefined && sync[photo.visit] === undefined) {
+        return dispatch({type: DELETE_IMAGE, payload: photo.uri});
     }
 
     dispatch({type: SYNC_PHOTO_START});
@@ -124,6 +145,10 @@ export const clearDeleteError = () => (dispatch) => {
     dispatch({type: DELETE_IMAGE_ERROR, payload: null});
 };
 
+export const UPLOAD_PROGRESS = 'UPLOAD_PROGRESS';
+export const UPLOAD_PROGRESS_START = 'UPLOAD_PROGRESS_START';
+export const UPLOAD_PROGRESS_END = 'UPLOAD_PROGRESS_END';
+
 export const deleteImageHandler = () => {
 
-}
+};

@@ -157,7 +157,6 @@ class AppWithNavigationState extends Component {
     async checkLocation() {
         this.setState({checkGeo: true}, async () => {
             const status = await Permissions.request('location');
-            console.log("status", status);
             if (this.state.platform === "android") {
                 GoogleAPIAvailability.checkGooglePlayServices((result) => {
                     this.setState({service: result});
@@ -175,6 +174,10 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(photoInit());
         await this.props.dispatch(loadData());
         await this.props.dispatch(updateDeviceInfo());
+
+        setInterval(async () => {
+            await this.props.dispatch(updateDeviceInfo());
+        }, 300000);
 
         if (this.props.authId === null || this.props.pathNumber.length === 0) {
             this.props.dispatch(resetToProfile());
@@ -349,7 +352,7 @@ const mapStateToProps = state => ({
     isForceSync: state.app.isForceSync
 });
 
-export default connect(mapStateToProps)(AppWithNavigationState);
+export default  connect(mapStateToProps)(AppWithNavigationState);
 
 const styles = StyleSheet.create({
     containerPhoto: {

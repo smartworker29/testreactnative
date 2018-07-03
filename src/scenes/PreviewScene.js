@@ -3,7 +3,7 @@ import {View, StyleSheet, Image, Dimensions, StatusBar, Platform, ActivityIndica
 import {connect} from "react-redux";
 import {previewNavigationOptions} from "../navigators/options";
 import {clearDeleteError, deleteImage} from "../actions/photo";
-import {unlink} from 'react-native-fs';
+import {unlink, exists} from 'react-native-fs';
 import {allowAction, getPhotoPath, getPhotoPathWithPrefix} from "../utils/util";
 import * as NavigationActions from '../actions/navigation'
 import Swiper from 'react-native-swiper';
@@ -20,9 +20,9 @@ class PreviewScene extends Component {
     deleteImage = async (uri, id) => {
         if (allowAction("deletePhoto")) {
             try {
-                await unlink(getPhotoPath(uri));
                 const result = await this.props.deleteImage(uri, id);
                 if (result === true) {
+                    await unlink(getPhotoPath(uri));
                     this.props.navigation.dispatch(NavigationActions.back())
                 }
             } catch (error) {

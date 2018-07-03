@@ -2,7 +2,8 @@
 import axios from 'axios'
 import {AsyncStorage} from "react-native";
 import ErrorLogging from "../utils/Errors";
-
+import {UPLOAD_PROGRESS, UPLOAD_PROGRESS_END} from "../actions/photo";
+import * as URI from "uri-js";
 
 // DEVELOP
 //export const base_url = 'https://mobile-app.inspector-cloud-staging.ru/api/v1.5'
@@ -17,8 +18,8 @@ import ErrorLogging from "../utils/Errors";
 // const token = 'f18ca23121bbc0cbfee0da81c4b4bec36e61a546'
 
 getAuth = async () => {
-    const url = await AsyncStorage.getItem("@url");
-    const token = await AsyncStorage.getItem("@token");
+    let url = await AsyncStorage.getItem("@url");
+    let token = await AsyncStorage.getItem("@token");
     return {url, token}
 };
 
@@ -173,7 +174,7 @@ export const patchAgent = async (id, data) => {
         const {url, token} = await getAuth();
         setTimeout(() => {
             source.cancel("patchAgent Timeout by timer");
-        }, 5000);
+        }, 15000);
         return await axios({
             method: 'patch',
             url: `${url}/agents/${id}/`,
@@ -193,9 +194,11 @@ export const patchAgent = async (id, data) => {
 export const makeVisit = async (id = 1, data, timeout) => {
     const source = axios.CancelToken.source();
     const {url, token} = await getAuth();
-    setTimeout(() => {
-        source.cancel("makeVisit Timeout by timer");
-    }, 5000);
+    if (timeout) {
+        setTimeout(() => {
+            source.cancel("makeVisit Timeout by timer");
+        }, 5000);
+    }
     try {
         return await axios({
             method: 'post',
@@ -309,7 +312,7 @@ export const getVisitsByAgent = async (id = 1) => {
         const {url, token} = await getAuth();
         setTimeout(() => {
             source.cancel("getVisitsByAgent Timeout by timer");
-        }, 5000);
+        }, 7000);
         return await axios({
             method: 'get',
             url: `${url}/agents/${id}/visits/`,
@@ -326,23 +329,28 @@ export const getVisitsByAgent = async (id = 1) => {
     }
 };
 
-export const uploadPhoto = async (id, data) => {
-    const source = axios.CancelToken.source();
+export const uploadPhoto = async (id, data, dispatch, uri) => {
+    const payload = {uri};
     try {
         const {url, token} = await getAuth();
-        setTimeout(() => {
-            source.cancel("uploadPhoto Timeout by timer");
-        }, 10000);
         return await axios({
             method: 'post',
             url: `${url}/visits/${id}/scene/0/upload/`,
-            cancelToken: source.token,
+            onUploadProgress: function (progressEvent) {
+                payload.data = {
+                    loaded: progressEvent.loaded,
+                    total: progressEvent.total
+                };
+                dispatch({type: UPLOAD_PROGRESS, payload})
+            },
             headers: {
                 'Authorization': `Token ${token}`
             }, data,
         })
     } catch (error) {
         ErrorLogging.push("uploadPhoto", error);
+        payload.error = error;
+        dispatch({type: UPLOAD_PROGRESS_END, payload});
         throw error
     }
 };
@@ -351,19 +359,21 @@ export const deleteImage = async (id) => {
     const source = axios.CancelToken.source();
     try {
         let {url, token} = await getAuth();
-        url = url.substr(0, url.length - 5);
+        const parsed = URI.parse(url);
+        url = parsed.scheme + ":\\\\" + parsed.host;
         setTimeout(() => {
             source.cancel("deleteImage Timeout by timer");
         }, 10000);
         return await axios({
             method: 'delete',
             cancelToken: source.token,
-            url: `${url}/internal/images/${id}/`,
+            url: `${url}/api/internal/images/${id}/`,
             headers: {
                 'Authorization': `Token ${token}`
             }
         })
     } catch (error) {
+        console.log(error);
         ErrorLogging.push("deleteImage", error);
         return null;
     }

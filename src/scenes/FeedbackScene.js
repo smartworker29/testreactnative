@@ -6,6 +6,7 @@ import I18n from "react-native-i18n";
 import GradientButton from "../component/GradientButton";
 import {clearFeedbackError, sendFeedback} from "../actions/visist";
 import {back} from "../actions/navigation"
+import {updateDeviceInfo} from "../actions/app";
 
 class FeedbackScene extends Component {
     static navigationOptions = ({navigation}) => feedbackNavigationOptions(navigation);
@@ -24,6 +25,7 @@ class FeedbackScene extends Component {
         }
         const {id} = this.props.navigation.state.params;
         const response = await this.props.sendFeedback(id, this.state.text);
+        await this.props.updateDeviceInfo(true);
         if (response !== null) {
             this.hideKeyboard();
             Alert.alert(I18n.t("error.attention"), I18n.t("feedback.success"));
@@ -88,7 +90,7 @@ const mapStateToProps = (state) => {
     }
 };
 
-export default connect(mapStateToProps, {sendFeedback, clearFeedbackError})(FeedbackScene);
+export default connect(mapStateToProps, {sendFeedback, clearFeedbackError, updateDeviceInfo})(FeedbackScene);
 
 const styles = StyleSheet.create({
     containerInfo: {

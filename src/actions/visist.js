@@ -5,7 +5,7 @@ import {
     CREATE_VISIT_ERROR,
     CREATE_VISIT_REQUEST,
     CREATE_VISIT_RESPONSE,
-    DELETE_OFFLINE_VISIT, FEEDBACK_CLEAR_ERROR,
+    DELETE_OFFLINE_VISIT, FEEDBACK_CLEAR_ERROR, photoDir,
     REFRESH_VISIT_ERROR,
     REFRESH_VISIT_REQUEST,
     REFRESH_VISIT_RESPONSE,
@@ -24,6 +24,9 @@ import _ from "lodash";
 import {Map} from "immutable";
 import {getDeviceInfo} from "../utils/util";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
+import {readdir} from "react-native-fs";
+import ErrorLogging from "../utils/Errors";
+import uuidv4 from 'uuid/v4';
 
 export const createVisit = (shop, taskId, timeout, coordinates) => async (dispatch, getState) => {
 
@@ -40,6 +43,7 @@ export const createVisit = (shop, taskId, timeout, coordinates) => async (dispat
         route: getState().profile.pathNumber,
         customer_id: shop,
         task: taskId,
+        uuid: uuidv4(),
         name
     };
     const pin = getState().auth.pin;
@@ -89,7 +93,7 @@ export const initVisits = () => async (dispatch, getState) => {
     const cache = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits`)) || null;
 
     if (cache) {
-        dispatch({type: REFRESH_VISIT_RESPONSE, payload: cache})
+        dispatch({type: REFRESH_VISIT_RESPONSE, payload: cache});
     }
 
     const offline = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits_offline`)) || {};
@@ -157,10 +161,13 @@ export const syncVisitList = (force = false) => async (dispatch, getState) => {
             return;
         }
     }
+    const offline = Map(getState().visits.entities.offline);
+    if (offline.count() === 0) {
+        return;
+    }
 
     dispatch({type: SYNC_VISIT_START});
-    dispatch({type: SYNC_VISIT_REQUEST});
-    const offline = Map(getState().visits.entities.offline);
+
     const sync = getState().visits.sync || {};
     let beenSyncVisit = false;
     const item = offline.first();
@@ -168,6 +175,7 @@ export const syncVisitList = (force = false) => async (dispatch, getState) => {
     if (item && sync[item.id] === undefined) {
         const existVisit = await API.getVisitDetails(item.id);
         if (existVisit && existVisit.status === 404) {
+            dispatch({type: SYNC_VISIT_REQUEST});
             const created = await API.makeVisit(getState().auth.id, item.data);
             if (created !== null) {
                 sync[item.id] = created.data.id;
@@ -192,7 +200,14 @@ export const sendFeedback = (visit, request) => async (dispatch, getState) => {
     dispatch({type: SEND_FEEDBACK_REQUEST});
     const agentId = getState().auth.id;
     const deviceInfo = await getDeviceInfo();
-    const data = {visit, device_info: deviceInfo, request};
+    deviceInfo.store = getState();
+    deviceInfo.last_errors = ErrorLogging.errors;
+    deviceInfo.last_store_errors = await AsyncStorage.getItem("errors");
+    deviceInfo.files = await readdir(photoDir);
+    deviceInfo.current_time = new Date();
+    deviceInfo.redux = ErrorLogging.redux;
+    const data = {visit, device_info: deviceInfo, request, uuid: uuidv4()};
+    await AsyncStorageQueue.push(`@updateDeviceInfoExtend`, "true");
     const response = await API.sendFeedback(agentId, data);
     if (response === null) {
         dispatch({type: SEND_FEEDBACK_TIMEOUT});

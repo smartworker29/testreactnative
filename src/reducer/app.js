@@ -8,6 +8,7 @@ import {
     SHOW_TOAST
 } from "../utils/constants";
 import {AsyncStorage} from "react-native";
+import ErrorLogging from "../utils/Errors";
 
 export const genSeed = () => {
     return Math.random().toString(32).substr(2);
@@ -25,7 +26,31 @@ export const init = {
     errorSeed: genSeed()
 };
 
+const excludeActions = [
+    "SET_TASKS",
+    "SET_PINS",
+    "REFRESH_VISIT_REQUEST",
+    "REFRESH_VISIT_RESPONSE",
+    "FETCH_PIN",
+    "FETCH_PIN_RESPONSE",
+    "SET_STATISTICS",
+    "SYNC_PINS_START",
+    "SYNC_PINS_END",
+    "GET_TASKS_REQUEST_START",
+    "GET_TASKS_REQUEST_END",
+    "Navigation/RESET",
+    "Navigation/NAVIGATE",
+    "Navigation/BACK",
+    "Navigation/SET_PARAMS",
+    "Navigation/COMPLETE_TRANSITION"
+];
+
 export default (state = init, action) => {
+
+    if (!excludeActions.includes(action.type)) {
+        ErrorLogging.storeReduxAction(action);
+    }
+
     switch (action.type) {
         case SHOW_TOAST :
             const errorSeed = action.errorSeed || state.errorSeed;

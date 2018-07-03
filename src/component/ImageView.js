@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, ImageBackground, TouchableOpacity, View, Image,} from 'react-native';
+import {StyleSheet, ImageBackground, TouchableOpacity, View, Image, Text, ActivityIndicator} from 'react-native';
 import PropTypes from 'prop-types';
 import {photoUnsyncIcon} from "../utils/images";
 import {getPhotoPathWithPrefix} from "../utils/util";
@@ -7,12 +7,17 @@ import {getPhotoPathWithPrefix} from "../utils/util";
 export default class ImageView extends Component {
 
     render() {
-        const {photo} = this.props;
+        const {photo, loaded, total} = this.props;
+        const percent = (loaded && total) ? loaded * 100 / total : null;
+        const loader = (total) ?
+            <ActivityIndicator sixe="small" color="white" style={styles.indicator}/> : (photo.isUploaded) ? null :
+                <Image source={photoUnsyncIcon} style={styles.indicator}/>;
         const filPath = getPhotoPathWithPrefix(photo.uri);
         return (
             <TouchableOpacity {...this.props} onPress={this.props.onPress}>
                 <View style={styles.item}>
-                    {photo.isUploaded ? null : <Image source={photoUnsyncIcon} style={styles.indicator}/>}
+                    {loader}
+                    {percent ? <Text style={styles.loadedText}>{`${Math.round(percent)}%`}</Text> : null}
                     <ImageBackground style={styles.image} source={{uri: filPath}}/>
                 </View>
             </TouchableOpacity>
@@ -41,11 +46,20 @@ const styles = StyleSheet.create({
         top: 0, zIndex: 1,
         margin: 8
     },
+    loadedText: {
+        zIndex: 1,
+        color: "white",
+        position: 'absolute',
+        right: 25,
+        top: 8,
+    },
     indicator: {
         zIndex: 1,
         position: 'absolute',
         right: 5,
         top: 10,
+        width: 18,
+        height: 18
     },
     image: {
         zIndex: 0,

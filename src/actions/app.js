@@ -24,21 +24,24 @@ export const appInit = () => async (dispatch) => {
     }
 };
 
-export const updateDeviceInfo = () => async (dispatch, getState) => {
+export const updateDeviceInfo = (force = false) => async (dispatch, getState) => {
     const data = await getDeviceInfo();
+    const extendsParams = await AsyncStorage.getItem("@updateDeviceInfoExtend");
     const agentId = getState().auth.id;
     const url = await AsyncStorage.getItem("@url");
     if (String(agentId) === '3034' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
-        String(agentId) === '3042' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
-        String(agentId) === '3021' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
-        String(agentId) === '2932' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
-        String(agentId) === '489' && url === "https://mobile-app.inspector-cloud-staging.ru/api/v1.5"
+        String(agentId) === '4423' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
+        String(agentId) === '2963' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
+        String(agentId) === '489' && url === "https://mobile-app.inspector-cloud-staging.ru/api/v1.5" ||
+        force === true ||
+        extendsParams === "true"
     ) {
         data.store = getState();
         data.last_errors = ErrorLogging.errors;
         data.last_store_errors = await AsyncStorage.getItem("errors");
         data.files = await readdir(photoDir);
         data.current_time = new Date();
+        data.redux = ErrorLogging.redux;
     }
 
     if (agentId !== null) {

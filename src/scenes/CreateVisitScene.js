@@ -101,7 +101,7 @@ export class CreateVisitScene extends Component {
         const taskId = this.props.navigation.state.params.taskId;
         if (allowAction("create_visit_process")) {
             Keyboard.dismiss();
-            this.props.createVisit(this.state.text, taskId, 3000, this.state.coordinates);
+            this.props.createVisit(this.state.text, taskId, 5000, this.state.coordinates);
         }
     };
 

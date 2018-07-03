@@ -16,6 +16,7 @@ import _ from "lodash";
 import bugsnag from '../bugsnag';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
+import uuidv4 from 'uuid/v4';
 
 export const saveData = (action) => async (dispatch, getState) => {
 
@@ -67,7 +68,12 @@ export const saveData = (action) => async (dispatch, getState) => {
     dispatch({type: AGENT_FETCH, payload: true});
 
     if (authId == null) {
-        const result = await API.createAgent({name, device_info, route: data.pathNumber});
+        const result = await API.createAgent({
+            name,
+            device_info,
+            route: data.pathNumber,
+            uuid: uuidv4()
+        });
         if (result !== null) {
             await AsyncStorageQueue.push(`@${pin}_agent`, String(result.data.id));
             dispatch({type: SET_AUTH_ID, payload: String(result.data.id)});

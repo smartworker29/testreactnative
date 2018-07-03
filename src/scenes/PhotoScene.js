@@ -23,6 +23,7 @@ import {decorator as sensors} from "react-native-sensors";
 import ImageResizer from 'react-native-image-resizer';
 import Orientation from "react-native-orientation";
 import {PinchGestureHandler} from "react-native-gesture-handler"
+import {Map} from "immutable";
 
 const ANDROID_INC = 10;
 const ANDROID_DEC = 10;
@@ -151,7 +152,7 @@ class PhotoScene extends Component {
 
     takePicture = async () => {
 
-        if (this.takePictureStatus === true) {
+        if (this.takePictureStatus === true || !this.camera) {
             return;
         }
 
@@ -181,7 +182,9 @@ class PhotoScene extends Component {
         const finalUri = "file://" + path;
         const {id} = this.props.navigation.state.params;
         await this.props.addPhoto(finalUri, id);
-        this.props.uploadPhoto(finalUri, id);
+        if (Map(this.props.visits.entities.offline).count() === 0) {
+            this.props.uploadPhoto(finalUri, id);
+        }
         this.setState(state => (
             {photoCount: state.photoCount + 1, processPhoto: false}
         ), () => {
@@ -303,12 +306,13 @@ PhotoScene.propTypes = {
     error: PropTypes.object
 };
 export default connect((state) => {
-        const {photo, app} = state;
+        const {photo, app, visits} = state;
         return {
             uri: photo.uri,
             isFetch: photo.isFetch,
             error: photo.error,
-            ratios: app.ratioExceptions
+            ratios: app.ratioExceptions,
+            visits: visits
         }
     },
     {uploadPhoto, addPhoto, back, clearPhoto}
@@ -396,4 +400,72 @@ const styles = StyleSheet.create({
     },
     text: {color: 'white'}
 });
+
+let a = [
+    1526892855704,
+    1525694210294,
+    1526376030942,
+    1526892732439,
+    1525694196604,
+    1528111008736,
+    1527847036361,
+    1529663202866,
+    1525694202564,
+    1530178723377,
+    1530169196238,
+    1530178728216,
+    1526376039863,
+    1526376052396,
+    1529652373433,
+    1529663288947,
+    1526892845065,
+    1526892814148,
+    1529663183150,
+    1529663474636,
+    1526892797368,
+    1529663468154,
+    1526892791284,
+    1528110996753,
+    1530016068906,
+    1529920475279,
+    1529663343507,
+    1525694191898,
+    1528101926627,
+    1529652646882,
+    1529663375711,
+    1529663472228,
+    1526892775468,
+    1526892831350,
+    1529652640370,
+    1526892833457,
+    1528101910341,
+    1526376056036,
+    1530169182116,
+    1529663648230,
+    1526376070631,
+    1527837725639,
+    1529663458493,
+    1529652479211,
+    1526892756325,
+    1526376059819,
+    1529652461072,
+    1526892862463,
+    1530178739353,
+    1526892822349,
+    1528109620634,
+    1529652625824,
+    1525692963699,
+    1528887327635,
+    1529652526003,
+    1526892750058,
+    1526376036206,
+    1530169190590,
+    1525694229478,
+    1529652472277,
+    1526892848835,
+    1526376023251,
+    1526892785494,
+    1525694217245,
+    1530016079046,
+];
 

@@ -5,6 +5,9 @@ import {SET_PHOTO} from "../actions/photo";
 import {DELETE_IMAGE} from "../actions/photo";
 import {DELETE_IMAGE_REQUEST} from "../actions/photo";
 import {DELETE_IMAGE_ERROR} from "../actions/photo";
+import {UPLOAD_PROGRESS} from "../actions/photo";
+import {UPLOAD_PROGRESS_END} from "../actions/photo";
+import {UPLOAD_PROGRESS_START} from "../actions/photo";
 
 export const init = {
     isFetch: false,
@@ -14,6 +17,7 @@ export const init = {
     needSync: false,
     deleteFetch: false,
     deleteError: null,
+    loadedProgress: new Map(),
     lastSyncDate: new Date(),
     photos: Map()
 };
@@ -83,7 +87,7 @@ export default (state = init, action) => {
                 uri: action.payload.uri,
                 timestamp: Date.now(),
                 visit: action.payload.id,
-                tmpId: null,
+                tmpId: action.payload.tmpId,
                 error: null
             });
             return {
@@ -98,6 +102,13 @@ export default (state = init, action) => {
         case DELETE_IMAGE:
             photos = photos.delete(action.payload);
             return {...state, photos, deleteFetch: false};
+        case UPLOAD_PROGRESS_START:
+            const data = {loaded: 0, total: 100};
+            return {...state, loadedProgress: state.loadedProgress.set(action.payload.uri, data)};
+        case UPLOAD_PROGRESS:
+            return {...state, loadedProgress: state.loadedProgress.set(action.payload.uri, action.payload.data)};
+        case UPLOAD_PROGRESS_END:
+            return {...state, loadedProgress: state.loadedProgress.delete(action.payload)};
         default:
             return state
     }

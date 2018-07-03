@@ -210,9 +210,21 @@ export class VisitDetailScene extends Component {
 
     componentWillReceiveProps(props) {
         const {sync} = this.props;
+        const {id} = this.props.navigation.state.params;
 
         if (this.props.sync !== props.sync) {
-            this.props.navigation.setParams({sync});
+            if (props.sync[id]) {
+                this.props.navigation.setParams({
+                    sync,
+                    id: props.sync[id],
+                    tmp: false
+                });
+            } else {
+                this.props.navigation.setParams({
+                    sync
+                });
+            }
+
         }
     }
 
@@ -246,7 +258,6 @@ export class VisitDetailScene extends Component {
             }
         }).toList();
         const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'));
-
         let photosCount = photos.count();
 
         if (isLast !== true && photosCount === 0) {
@@ -277,11 +288,16 @@ export class VisitDetailScene extends Component {
 
         const imageBlocks = [];
 
+
         for (const image of photos) {
             const index = photos.findIndex(photo => photo.uri === image.uri);
+            const progressData = this.props.loadedProgress.get(image.uri);
+            const loaded = (progressData) ? progressData.loaded : null;
+            const total = (progressData) ? progressData.total : null;
             const count = photos.count();
             imageBlocks.push(
                 <ImageView style={styles.imageView} key={image.uri} photo={image}
+                           loaded={loaded} total={total}
                            onPress={() => this.goToPreview(image.uri, photos, index, count, image.id)}/>
             )
         }
@@ -347,6 +363,35 @@ export class VisitDetailScene extends Component {
         }
 
     };
+
+    renderPhotoInfo() {
+        const {sync, offline} = this.props;
+        const {id} = this.props.navigation.state.params;
+        const photos = this.props.photos.filter(photo => {
+            return photo.visit === id || photo.tmpId === id || sync[photo.visit] === id;
+        }).sort((a, b) => {
+            if (a.timestamp < b.timestamp) {
+                return -1;
+            }
+            if (a.timestamp > b.timestamp) {
+                return 1;
+            }
+            if (a.timestamp === b.timestamp) {
+                return 0;
+            }
+        }).toList();
+
+        return (
+            <View>
+                <Text>{`id = ${id}`}</Text>
+                <Text>{`offline = ${JSON.stringify(offline)}`}</Text>
+                <Text>{`sync = ${JSON.stringify(sync)}`}</Text>
+                <Text>{`sync id = ${sync[id]}`}</Text>
+                <Text>{`photos count = ${photos.count()}`}</Text>
+                <Text>{`photos array = ${JSON.stringify(photos.toArray())}`}</Text>
+            </View>
+        )
+    }
 
     goToFeedback = () => {
         if (allowAction("goToFeedback")) {
@@ -435,6 +480,7 @@ export class VisitDetailScene extends Component {
                             {(photosCount > 0 && !visit.tmp) && this.renderResultsBlock(visit.results, visit.id)}
                             {(photosCount > 0 && !visit.tmp) && this.renderModerationBlock(visit.moderation)}
                         </View>
+                        {/*this.renderPhotoInfo()*/}
                         {this.renderPhotoArea(visit, isLast)}
                         {this.renderFeedbackAnswer(visit.helpdesk)}
                         {this.renderFeedbackButton()}
@@ -462,6 +508,7 @@ const mapStateToProps = (state) => {
         detail: visitDetails.visit,
         tasks: tasks.list,
         needSync: photo.needSync || visits.needSync,
+        loadedProgress: photo.loadedProgress
     }
 };
 
