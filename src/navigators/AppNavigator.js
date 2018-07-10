@@ -40,7 +40,6 @@ import TaskScene from "../scenes/TaskScene";
 import {getStatistics} from "../actions/stats";
 import PreviewScene from "../scenes/PreviewScene";
 import FeedbackScene from "../scenes/FeedbackScene";
-import SyncScene from "../scenes/SyncScene";
 import ErrorLogging from "../utils/Errors";
 import I18n from "react-native-i18n";
 import Permissions from 'react-native-permissions';
@@ -124,9 +123,6 @@ export const AppNavigator = StackNavigator({
     },
     Feedback: {
         screen: FeedbackScene
-    },
-    Sync: {
-        screen: SyncScene
     }
 }, {
     // mode: 'modal',
@@ -252,7 +248,6 @@ class AppWithNavigationState extends Component {
         return true;
     };
 
-
     render() {
         const {dispatch, nav} = this.props;
 
@@ -352,7 +347,7 @@ const mapStateToProps = state => ({
     isForceSync: state.app.isForceSync
 });
 
-export default  connect(mapStateToProps)(AppWithNavigationState);
+export default connect(mapStateToProps)(AppWithNavigationState);
 
 const styles = StyleSheet.create({
     containerPhoto: {

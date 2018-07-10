@@ -34,3 +34,6 @@ export const editIcon = require('../assets/images/icEdit.png');
 export const flashOn = require('../assets/images/flashOn.png');
 export const flashOff = require('../assets/images/flashOff.png');
 export const flashAuto = require('../assets/images/flashAuto.png');
+
+export const triangleUp = require('../assets/images/small-triangle-up.png');
+export const triangleDown = require('../assets/images/small-triangle-down.png');

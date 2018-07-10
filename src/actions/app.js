@@ -12,6 +12,8 @@ import {refreshVisitsList, syncVisitList} from "./visist";
 import ErrorLogging from "../utils/Errors";
 import {readdir} from "react-native-fs"
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
+import moment from 'moment';
+import {Map} from "immutable";
 
 export default changeConnectionStatus = (connected) => (dispatch) => {
     dispatch({type: CHANGE_CONNECTION_STATUS, payload: connected});
@@ -36,12 +38,18 @@ export const updateDeviceInfo = (force = false) => async (dispatch, getState) =>
         force === true ||
         extendsParams === "true"
     ) {
+        const keys = await AsyncStorage.getAllKeys();
+        const storage = {};
+        for (const key of keys) {
+            storage[key] = await AsyncStorage.getItem(key);
+        }
         data.store = getState();
         data.last_errors = ErrorLogging.errors;
         data.last_store_errors = await AsyncStorage.getItem("errors");
         data.files = await readdir(photoDir);
         data.current_time = new Date();
         data.redux = ErrorLogging.redux;
+        data.async_storege = storage;
     }
 
     if (agentId !== null) {
@@ -78,7 +86,7 @@ export const forceSync = () => async (dispatch, getStore) => {
     dispatch({type: SET_FORCE_SYNC, payload: false});
 };
 
-export const initFolders = () => async (dispatch, getStore) => {
+export const initFolders = () => async (dispatch, getState) => {
     await mkdir(photoDir);
-    const files = await readDir(photoDir);
+
 };

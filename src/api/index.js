@@ -4,6 +4,7 @@ import {AsyncStorage} from "react-native";
 import ErrorLogging from "../utils/Errors";
 import {UPLOAD_PROGRESS, UPLOAD_PROGRESS_END} from "../actions/photo";
 import * as URI from "uri-js";
+import 'abortcontroller-polyfill/dist/polyfill-patch-fetch'
 
 // DEVELOP
 //export const base_url = 'https://mobile-app.inspector-cloud-staging.ru/api/v1.5'
@@ -307,21 +308,21 @@ export const getAgentUpdates = async (id = 1) => {
 };
 
 export const getVisitsByAgent = async (id = 1) => {
-    const source = axios.CancelToken.source();
+    const controller = new AbortController();
+    const signal = controller.signal;
     try {
         const {url, token} = await getAuth();
         setTimeout(() => {
-            source.cancel("getVisitsByAgent Timeout by timer");
+            controller.abort();
         }, 7000);
-        return await axios({
-            method: 'get',
-            url: `${url}/agents/${id}/visits/`,
-            cancelToken: source.token,
+        return await fetch(`${url}/agents/${id}/visits/`, {
+            method: 'GET',
             headers: {
                 'Authorization': `Token ${token}`,
                 'Content-Type': 'application/json'
             },
-        })
+            signal
+        });
     }
     catch (error) {
         ErrorLogging.push("getVisitsByAgent", error);

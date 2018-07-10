@@ -9,10 +9,27 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import DeviceInfo from 'react-native-device-info';
 import {allowAction, getDeviceInfo} from "../utils/util";
 import {forceSync, setForceSync} from "../actions/app";
+import {CachedImage} from "react-native-img-cache";
 
 const styles = StyleSheet.create({
     item: {
         marginTop: 15,
+    },
+    logoContainer: {
+        alignItems: "center"
+    },
+    logo: {
+        width: 100,
+        height: 100
+    },
+    logoTitle: {
+        marginTop: 10,
+        fontSize: 24,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        textAlign: "center",
+        color: "#000000"
     },
     containerInfo: {
         flex: 1,
@@ -165,6 +182,7 @@ class ProfileScene extends Component {
 
         const {pins, pin} = this.props;
         const name = pins[pin].name;
+        const logo = pins[pin].logo;
 
         if (this.props.agentFetch === true) {
             const text = (this.props.agentId) ? I18n.t("user_profile.updateAgent") : I18n.t("user_profile.createAgent");
@@ -179,6 +197,10 @@ class ProfileScene extends Component {
         return (
             <KeyboardAwareScrollView extraScrollHeight={100} style={styles.container} enableOnAndroid={true}>
                 <View style={{flex: 1, padding: 16}}>
+                    <View style={styles.logoContainer}>
+                        {(logo) ? <CachedImage style={styles.logo} source={{uri: logo}}/> : null}
+                        <Text style={styles.logoTitle}>{name}</Text>
+                    </View>
                     <Item floatingLabel style={styles.item}>
                         <Label style={{color: '#b4b4b4'}}>{I18n.t('settings.surname')}</Label>
                         <Input style={styles.input} onChangeText={this.onChangeSurname} value={this.props.surname}/>

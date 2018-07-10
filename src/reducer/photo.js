@@ -36,20 +36,24 @@ export default (state = init, action) => {
     switch (action.type) {
         case types.UPLOAD_PHOTO_REQUEST:
             photos = photos.updateIn([action.payload.uri], photo => {
-                photo.isUploading = true;
-                photo.visit = action.payload.id;
-                return photo;
+                if (photo !== undefined) {
+                    photo.isUploading = true;
+                    photo.visit = action.payload.id;
+                    return photo;
+                }
             });
             return {...state, isFetch: true, error: null, photos};
 
         case types.UPLOAD_PHOTO_RESPONSE:
             photos = photos.updateIn([action.payload.uri], photo => {
-                photo.visit = action.payload.visit;
-                photo.tmpId = action.payload.tmpId;
-                photo.id = action.payload.photoId;
-                photo.isUploading = false;
-                photo.isUploaded = true;
-                return photo;
+                if (photo !== undefined) {
+                    photo.visit = action.payload.visit;
+                    photo.tmpId = action.payload.tmpId;
+                    photo.id = action.payload.photoId;
+                    photo.isUploading = false;
+                    photo.isUploaded = true;
+                    return photo;
+                }
             });
             return {
                 ...state,
@@ -68,9 +72,11 @@ export default (state = init, action) => {
 
         case types.UPLOAD_PHOTO_ERROR:
             photos = photos.updateIn([action.payload.uri], photo => {
-                photo.isUploading = false;
-                photo.isUploaded = false;
-                return photo;
+                if (photo !== undefined) {
+                    photo.isUploading = false;
+                    photo.isUploaded = false;
+                    return photo;
+                }
             });
             return {...state, photos, isFetch: false, error: action.payload.error};
 

@@ -12,6 +12,7 @@ import AppLink from "react-native-app-link";
 import DeviceInfo from 'react-native-device-info';
 import I18n from "react-native-i18n";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
+import _ from "lodash";
 
 export const authInit = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
@@ -131,7 +132,7 @@ export const syncPins = () => async (dispatch, getState) => {
         return;
     }
 
-    if (Object.keys(getState().auth.pins).length === 0) {
+    if (_.keys(getState().auth.pins).length === 0) {
         dispatch({type: SYNC_PINS_START_FIRST});
     } else {
         dispatch({type: SYNC_PINS_START});

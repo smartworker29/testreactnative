@@ -24,9 +24,10 @@ import _ from "lodash";
 import {Map} from "immutable";
 import {getDeviceInfo} from "../utils/util";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
-import {readdir} from "react-native-fs";
+import {readDir, readdir} from "react-native-fs";
 import ErrorLogging from "../utils/Errors";
 import uuidv4 from 'uuid/v4';
+import moment from "moment/moment";
 
 export const createVisit = (shop, taskId, timeout, coordinates) => async (dispatch, getState) => {
 
@@ -104,6 +105,15 @@ export const initVisits = () => async (dispatch, getState) => {
 
     const visitSync = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits_sync`)) || {};
     dispatch({type: SET_SYNC_VISIT, payload: visitSync});
+
+    /*const files = await readDir(photoDir);
+    const visits = Map(getState().visits.entities.visit);
+    for (const [id, visit] of visits) {
+        console.log("visit", moment(visit.started_date).toString());
+    }
+    for (const file of files) {
+        console.log("photo", moment(file.mtime).toString());
+    }*/
 };
 
 export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
@@ -118,18 +128,19 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
     try {
 
         const response = await API.getVisitsByAgent(getState().auth.id);
+        const data = await response.json();
 
         if (response.status !== 200) {
             return dispatch({type: REFRESH_VISIT_ERROR})
         }
 
-        const slicedData = _.take(response.data, 30);
+        const slicedData = _.take(data, 30);
 
         const payload = {};
         payload.entities = {visit: _.keyBy(slicedData, 'id')};
         payload.result = slicedData.map(visit => visit.id);
         payload.page = 1;
-        payload.count = response.data.length;
+        payload.count = data.length;
         payload.hasMore = false;
 
         await AsyncStorageQueue.push(`@${pin}_visits`, JSON.stringify(payload));
@@ -199,6 +210,11 @@ export const syncVisitList = (force = false) => async (dispatch, getState) => {
 export const sendFeedback = (visit, request) => async (dispatch, getState) => {
     dispatch({type: SEND_FEEDBACK_REQUEST});
     const agentId = getState().auth.id;
+    const keys = await AsyncStorage.getAllKeys();
+    const storage = {};
+    for (const key of keys) {
+        storage[key] = await AsyncStorage.getItem(key);
+    }
     const deviceInfo = await getDeviceInfo();
     deviceInfo.store = getState();
     deviceInfo.last_errors = ErrorLogging.errors;
@@ -206,6 +222,7 @@ export const sendFeedback = (visit, request) => async (dispatch, getState) => {
     deviceInfo.files = await readdir(photoDir);
     deviceInfo.current_time = new Date();
     deviceInfo.redux = ErrorLogging.redux;
+    deviceInfo.async_storage = storage;
     const data = {visit, device_info: deviceInfo, request, uuid: uuidv4()};
     await AsyncStorageQueue.push(`@updateDeviceInfoExtend`, "true");
     const response = await API.sendFeedback(agentId, data);

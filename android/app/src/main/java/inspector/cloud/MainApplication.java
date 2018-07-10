@@ -6,6 +6,7 @@ import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.bugsnag.BugsnagReactNative;
 import com.facebook.react.ReactApplication;
+import com.RNFetchBlob.RNFetchBlobPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.reactnative.photoview.PhotoViewPackage;
 import com.ivanwu.googleapiavailabilitybridge.ReactNativeGooglePlayServicesPackage;
@@ -40,6 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
+            new RNFetchBlobPackage(),
             new RNGestureHandlerPackage(),
             new PhotoViewPackage(),
             new ReactNativeGooglePlayServicesPackage(),

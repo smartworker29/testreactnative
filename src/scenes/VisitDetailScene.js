@@ -19,6 +19,8 @@ import {allowAction} from "../utils/util";
 import Permissions from 'react-native-permissions';
 import DialogAndroid from 'react-native-dialogs';
 import HTMLView from 'react-native-htmlview';
+import {CachedImage} from "react-native-img-cache";
+import ComponentParser from "../utils/ComponentParser";
 
 export class VisitDetailScene extends Component {
 
@@ -51,7 +53,7 @@ export class VisitDetailScene extends Component {
     componentDidMount() {
         const {openCamera, id} = this.props.navigation.state.params;
         if (openCamera === true) {
-            this.goToPhoto(id);
+            this.goToPhoto(id).then().catch(console.log);
         }
     }
 
@@ -59,12 +61,20 @@ export class VisitDetailScene extends Component {
         if (!visit.shop_name || !visit.shop_area) {
             return null
         }
+
+        const logo = (visit.gps_shop) ? visit.gps_shop.logo : null;
+
         return (
-            <View style={styles.shop}>
-                <Text style={styles.shopName}>{visit.shop_name}</Text>
-                <View style={styles.shopPositionRow}>
-                    <Image source={pinIcon}/>
-                    <Text style={styles.addressText}>{visit.shop_area}</Text>
+            <View style={styles.topRow}>
+                {(logo) ? <CachedImage style={styles.icon} source={{uri: logo}} resizeMode="contain"/> : null}
+                <View style={{flex: 1, justifyContent: "center"}}>
+                    <View>
+                        <Text style={styles.title}>{visit.shop_name}</Text>
+                    </View>
+                    <View style={styles.location}>
+                        <Image source={pinIcon} style={styles.pinIcon}/>
+                        <Text style={styles.description}>{visit.shop_area}</Text>
+                    </View>
                 </View>
             </View>
         )
@@ -111,10 +121,13 @@ export class VisitDetailScene extends Component {
 
         const date = this.moment(results.created_date).format('D MMMM, HH:mm');
 
+        const message = (results.message_type === "MULTIMEDIA") ? ComponentParser.parse(results.message) :
+            <HTMLView value={results.message}/>;
+
         const lastMessage = (
             <View style={styles.statusBlock}>
                 <Text style={styles.statusBlockDate}>{date}</Text>
-                <HTMLView value={results.message}/>
+                {message}
             </View>
         );
 
@@ -171,6 +184,8 @@ export class VisitDetailScene extends Component {
         }
 
         const date = this.moment(moderation.created_date).format('D MMMM, HH:mm');
+        const message = (moderation.message_type === "MULTIMEDIA") ? ComponentParser.parse(moderation.message) :
+            <HTMLView value={moderation.message}/>
 
         return (
             <View style={styles.result}>
@@ -178,9 +193,11 @@ export class VisitDetailScene extends Component {
                 <Text style={styles.infoTitle}>{I18n.t('visitDetail.moderationResult')}</Text>
                 {moderationRow}
                 <View style={styles.statusBlock}>
-                    <Text style={styles.statusBlockComment}>{I18n.t('visitDetail.moderationComment')}</Text>
-                    <Text style={styles.statusBlockDate}>{date}</Text>
-                    <HTMLView value={moderation.message}/>
+                    <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={styles.statusBlockComment}>{I18n.t('visitDetail.moderationComment')}</Text>
+                        <Text style={styles.statusBlockDate}>{date}</Text>
+                    </View>
+                    {message}
                 </View>
             </View>
         )
@@ -552,7 +569,40 @@ const styles = StyleSheet.create({
         fontStyle: 'normal',
         color: '#000000'
     },
-
+    topRow: {
+        marginTop: 20,
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    icon: {
+        width: 40,
+        height: 40,
+        marginRight: 10,
+    },
+    location: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "flex-start"
+    },
+    pinIcon: {
+        width: 14,
+        height: 16,
+        marginTop: 3,
+        marginRight: 5
+    },
+    description: {
+        paddingRight: 16,
+        fontSize: 15,
+        fontWeight: "normal",
+        color: "#808080"
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: "500",
+        fontStyle: "normal",
+        color: "#000000"
+    },
     shopPositionRow: {
         marginTop: 8,
         flexDirection: 'row',
@@ -619,11 +669,10 @@ const styles = StyleSheet.create({
         fontStyle: 'normal'
     },
     statusBlock: {
-        padding: 15,
         flex: 1,
         marginTop: 19,
         borderRadius: 4,
-        backgroundColor: '#f5f5f7',
+        //backgroundColor: '#f5f5f7',
     },
     statusBlockComment: {
         opacity: 0.6,

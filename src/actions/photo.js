@@ -4,6 +4,7 @@ import {Map} from "immutable";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import {exists} from "react-native-fs"
 import uuidv4 from 'uuid/v4';
+import {getPhotoPath} from "../utils/util";
 
 export const ADD_PHOTO = 'ADD_PHOTO';
 /**
@@ -103,7 +104,7 @@ export const syncPhoto = () => async (dispatch, getState) => {
         return;
     }
 
-    if (await exists(photo.uri) === false) {
+    if (await exists(getPhotoPath(photo.uri)) === false) {
         return dispatch({type: DELETE_IMAGE, payload: photo.uri});
     }
 

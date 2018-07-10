@@ -10,10 +10,11 @@ import moment from 'moment'
 import {connect} from 'react-redux';
 import ru from 'moment/locale/ru';
 import _ from "lodash";
+import {CachedImage} from "react-native-img-cache";
 
 class ListItem extends PureComponent {
     constructor() {
-        super()
+        super();
         this.moment = moment;
         this.moment.updateLocale("ru", ru);
 
@@ -24,26 +25,6 @@ class ListItem extends PureComponent {
         }
     }
 
-    /**
-     * Shop detail
-     * @param visit
-     * @returns {*}
-     */
-    renderShopDetail(visit) {
-        const {shop_name, shop_area} = visit
-        if (!shop_name || !shop_area) {
-            return null
-        }
-        return (
-            <View style={styles.shopDetails}>
-                <Text style={styles.shopName}>{shop_name}</Text>
-                <View style={styles.shopPositionRow}>
-                    <Image source={pinIcon}/>
-                    <Text style={styles.addressText}>{shop_area}</Text>
-                </View>
-            </View>
-        )
-    }
 
     /**
      * Status moderation
@@ -107,6 +88,32 @@ class ListItem extends PureComponent {
         )
     }
 
+    renderShopInfo(visit) {
+        if (!visit) {
+            return null;
+        }
+        const {shop_name, shop_area} = visit;
+        if (!shop_name || !shop_area) {
+            return null
+        }
+        const shop = visit.gps_shop;
+        const logo = shop.logo;
+        return (
+            <View style={styles.topRow}>
+                {(logo) ? <CachedImage style={styles.icon} source={{uri: logo}} resizeMode="contain"/> : null}
+                <View style={{flex: 1, justifyContent: "center"}}>
+                    <View>
+                        <Text style={styles.title}>{shop_name}</Text>
+                    </View>
+                    <View style={styles.location}>
+                        <Image source={pinIcon} style={styles.pinIcon}/>
+                        <Text style={styles.description}>{shop_area}</Text>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
     render() {
         const {visit, photos, pathNumber, sync} = this.props;
         const route = (visit.current_agent_route !== undefined) ? visit.current_agent_route : pathNumber;
@@ -121,7 +128,9 @@ class ListItem extends PureComponent {
         const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon;
         const shopId = (visit.shop !== null) ? visit.shop : '- - -';
         const id = (!visit.id || visit.tmp === true) ? '- - -' : visit.id;
-
+        //const shop = (visit.gps_shop) ? this.props.shops.find(shop => shop.id === visit.gps_shop.id) : null;
+        //const task = (shop) ? _.find(shop.tasks, task => task.id === visit.task) : null;
+        //const taskName = (task) ? task.name : "";
         const time = (visit.started_date) ? visit.started_date : visit.local_date;
 
         return (
@@ -131,7 +140,7 @@ class ListItem extends PureComponent {
                         <Text style={styles.dateColor}>{this.moment(time).format('D MMMM, HH:mm')}</Text>
                         <Image source={sync_icon}/>
                     </View>
-                    {this.renderShopDetail(visit)}
+                    {this.renderShopInfo(visit)}
                     <View style={styles.delimiter}/>
                     {this.renderResultBlock(visit)}
                     <View style={styles.numberRow}>
@@ -167,6 +176,48 @@ const styles = StyleSheet.create({
         shadowRadius: 2.5,
         shadowOpacity: 0.15,
         elevation: 3
+    },
+    topRow: {
+        marginTop: 10,
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    icon: {
+        width: 40,
+        height: 40,
+        marginRight: 10,
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: "500",
+        fontStyle: "normal",
+        color: "#000000"
+    },
+    location: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "flex-start"
+    },
+    pinIcon: {
+        width: 14,
+        height: 16,
+        marginTop: 3,
+        marginRight: 5
+    },
+    description: {
+        fontSize: 15,
+        paddingRight: 10,
+        fontWeight: "normal",
+        color: "#b4b4b4"
+    },
+    taskName: {
+        marginTop: 16,
+        fontSize: 17,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        color: "#000000"
     },
     dateColor: {
         color: '#808080',
@@ -259,13 +310,14 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     addressText: {
-        marginLeft: 5,
+        marginHorizontal: 5,
         fontSize: 15,
+        width: 100,
         fontWeight: 'normal',
         fontStyle: 'normal',
         color: '#b4b4b4'
     }
-})
+});
 
 export default connect(state => {
     return {

@@ -68,12 +68,13 @@ import com.android.build.OutputFile
  *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
- *   extraPackagerArgs: []
+ *   extraPackagerArgs: ["--sourcemap-output", "$buildDir/intermediates/assets/release/index.android.bundle.map"]
  * ]
  */
 
 project.ext.react = [
-    entryFile: "index.js"
+    entryFile: "index.js",
+    extraPackagerArgs: ["--sourcemap-output", "$buildDir/intermediates/assets/release/index.android.bundle.map"]
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -103,8 +104,8 @@ android {
     defaultConfig {
         applicationId "inspector.cloud"
         minSdkVersion 16
-        targetSdkVersion 23
-        versionCode 58
+        targetSdkVersion 26
+        versionCode 91
         versionName "1.0"
 
         ndk {
@@ -156,6 +157,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-fetch-blob')
     compile (project(':react-native-camera')) {
         exclude group: "com.android.support", module: 'support-v4'
     }
