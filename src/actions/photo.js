@@ -2,9 +2,10 @@ import {AsyncStorage} from 'react-native'
 import API from "../api/"
 import {Map} from "immutable";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
-import {exists} from "react-native-fs"
+import {exists, unlink} from "react-native-fs"
 import uuidv4 from 'uuid/v4';
-import {getPhotoPath} from "../utils/util";
+import {getFileSize, getPhotoPath} from "../utils/util";
+import ErrorLogging from "../utils/Errors";
 
 export const ADD_PHOTO = 'ADD_PHOTO';
 /**
@@ -106,6 +107,15 @@ export const syncPhoto = () => async (dispatch, getState) => {
 
     if (await exists(getPhotoPath(photo.uri)) === false) {
         return dispatch({type: DELETE_IMAGE, payload: photo.uri});
+    }
+
+    if (await getFileSize(photo.uri) === 0) {
+        try {
+            await unlink(getPhotoPath(photo.uri));
+            return dispatch({type: DELETE_IMAGE, payload: photo.uri});
+        } catch (err) {
+            ErrorLogging.push("delete empty file error", err);
+        }
     }
 
     const sync = getState().visits.sync;

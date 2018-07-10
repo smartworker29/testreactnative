@@ -2,6 +2,7 @@ import {Dimensions, Platform} from 'react-native';
 import {photoDir} from "./constants";
 import {basename} from 'react-native-path';
 import DeviceInfo from 'react-native-device-info';
+import {readDir} from "react-native-fs";
 
 const dimen = Dimensions.get('window');
 
@@ -23,6 +24,15 @@ export const allowAction = (action, ms) => {
     lockMap.set(action, timer);
 
     return true;
+};
+
+export const getFileSize = async (uri) => {
+    const files = await readDir(photoDir);
+    for (const file of files) {
+        if (file.path === getPhotoPath(uri)) {
+            return file.size;
+        }
+    }
 };
 
 export const getPhotoPathWithPrefix = (path) => {

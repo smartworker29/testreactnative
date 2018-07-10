@@ -3,14 +3,14 @@ import {
     SET_RATIO_EXCEPTIONS, UPDATE_RATIO_EXCEPTIONS_REQUEST,
 } from "../utils/constants";
 import {AsyncStorage} from "react-native";
-import {readDir, mkdir} from 'react-native-fs';
+import {readDir, mkdir, exists} from 'react-native-fs';
 import {getRatioExceptions} from "../api";
 import * as API from "../api";
-import {getDeviceInfo} from "../utils/util";
+import {getDeviceInfo, getPhotoPath} from "../utils/util";
 import {photoInit, syncPhoto} from "./photo";
 import {refreshVisitsList, syncVisitList} from "./visist";
 import ErrorLogging from "../utils/Errors";
-import {readdir} from "react-native-fs"
+import {readdir, stat} from "react-native-fs"
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import moment from 'moment';
 import {Map} from "immutable";
@@ -46,7 +46,7 @@ export const updateDeviceInfo = (force = false) => async (dispatch, getState) =>
         data.store = getState();
         data.last_errors = ErrorLogging.errors;
         data.last_store_errors = await AsyncStorage.getItem("errors");
-        data.files = await readdir(photoDir);
+        data.files = await readDir(photoDir);
         data.current_time = new Date();
         data.redux = ErrorLogging.redux;
         data.async_storege = storage;
@@ -88,5 +88,4 @@ export const forceSync = () => async (dispatch, getStore) => {
 
 export const initFolders = () => async (dispatch, getState) => {
     await mkdir(photoDir);
-
 };

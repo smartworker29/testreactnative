@@ -219,7 +219,7 @@ export const sendFeedback = (visit, request) => async (dispatch, getState) => {
     deviceInfo.store = getState();
     deviceInfo.last_errors = ErrorLogging.errors;
     deviceInfo.last_store_errors = await AsyncStorage.getItem("errors");
-    deviceInfo.files = await readdir(photoDir);
+    deviceInfo.files = await readDir(photoDir);
     deviceInfo.current_time = new Date();
     deviceInfo.redux = ErrorLogging.redux;
     deviceInfo.async_storage = storage;
