@@ -105,7 +105,7 @@ android {
         applicationId "inspector.cloud"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 92
+        versionCode 93
         versionName "1.0"
 
         ndk {

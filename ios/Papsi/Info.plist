@@ -19,11 +19,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.4</string>
+	<string>2.9</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>67</string>
+	<string>92</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationCategoryType</key>
@@ -48,7 +48,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>camera</string>
 	<key>NSCameraUsageDescription</key>
-	<string>camera</string>
+	<string>Camera is needed to create photos for reports</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Приложение Inspector Cloud запрашивает доступ к Вашему местоположению, когда экран включен. Данные о Вашем местоположении будут включены в отчет о визите.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

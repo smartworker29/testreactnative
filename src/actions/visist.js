@@ -148,12 +148,6 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
 
     } catch (error) {
 
-        console.log(error);
-
-        if (error.message.indexOf('403') !== -1) {
-            return dispatch({type: 'SHOW_TOAST', payload: 'Ошибка авторизации'})
-        }
-
         if (isInit === true) {
             const cash = JSON.parse(await AsyncStorage.getItem(`@${pin}_visits`)) || {};
             dispatch({type: REFRESH_VISIT_RESPONSE, payload: cash})

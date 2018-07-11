@@ -314,7 +314,7 @@ export const getVisitsByAgent = async (id = 1) => {
         const {url, token} = await getAuth();
         setTimeout(() => {
             controller.abort();
-        }, 7000);
+        }, 60000);
         return await fetch(`${url}/agents/${id}/visits/`, {
             method: 'GET',
             headers: {
@@ -361,7 +361,7 @@ export const deleteImage = async (id) => {
     try {
         let {url, token} = await getAuth();
         const parsed = URI.parse(url);
-        url = parsed.scheme + ":\\\\" + parsed.host;
+        url = parsed.scheme + "://" + parsed.host;
         setTimeout(() => {
             source.cancel("deleteImage Timeout by timer");
         }, 10000);
