@@ -31,7 +31,7 @@ import ResultsScene from "../scenes/ResultsScene";
 
 import {Toast} from "native-base";
 import {initVisits, refreshVisitsList, syncVisitList} from "../actions/visist";
-import {appInit, initFolders, updateDeviceInfo, updateRatioExceptions} from "../actions/app";
+import {appInit, deleteOldPhoto, initFolders, updateDeviceInfo, updateRatioExceptions} from "../actions/app";
 import {resetToList, resetToProfile} from "../actions/navigation";
 import {authInit, initPins, setFetchPin, syncPins} from "../actions/auth";
 import {loadData} from "../actions/profile";
@@ -167,6 +167,7 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(authInit());
         await this.props.dispatch(initTasks());
         await this.props.dispatch(initVisits());
+        await this.props.dispatch(deleteOldPhoto());
         await this.props.dispatch(photoInit());
         await this.props.dispatch(loadData());
         await this.props.dispatch(updateDeviceInfo());
@@ -211,6 +212,7 @@ class AppWithNavigationState extends Component {
 
         if (this.props.authId !== props.authId && this.props.dispatch) {
             clearInterval(this.intervalSyncPins);
+
             await this.props.dispatch(refreshVisitsList(true));
 
             setInterval(async () => {

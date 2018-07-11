@@ -122,6 +122,7 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
         return
     }
 
+
     dispatch({type: REFRESH_VISIT_REQUEST, payload: {isInit: isInit === undefined ? false : isInit}});
     const pin = getState().auth.pin;
 

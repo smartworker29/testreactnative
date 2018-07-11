@@ -3,7 +3,7 @@ import {
     SET_RATIO_EXCEPTIONS, UPDATE_RATIO_EXCEPTIONS_REQUEST,
 } from "../utils/constants";
 import {AsyncStorage} from "react-native";
-import {readDir, mkdir, exists} from 'react-native-fs';
+import {readDir, mkdir, exists, unlink} from 'react-native-fs';
 import {getRatioExceptions} from "../api";
 import * as API from "../api";
 import {getDeviceInfo, getPhotoPath} from "../utils/util";
@@ -14,6 +14,7 @@ import {readdir, stat} from "react-native-fs"
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import moment from 'moment';
 import {Map} from "immutable";
+import {basename} from "react-native-path";
 
 export default changeConnectionStatus = (connected) => (dispatch) => {
     dispatch({type: CHANGE_CONNECTION_STATUS, payload: connected});
@@ -88,4 +89,78 @@ export const forceSync = () => async (dispatch, getStore) => {
 
 export const initFolders = () => async (dispatch, getState) => {
     await mkdir(photoDir);
+};
+
+export const deleteOldPhoto = () => async (dispatch, getState) => {
+
+    const visits = Map(getState().visits.entities.visit);
+    const photos = getState().photo.photos;
+
+    console.log(visits.count());
+
+    if (visits.count() < 30) {
+        return;
+    }
+
+    if (visits.every(visit => _.isNumber(visit.id)) !== true) {
+        return;
+    }
+    if (visits.every(visit => _.isString(visit.started_date)) !== true) {
+        return;
+    }
+
+    let oldDate = moment();
+    visits.forEach(visit => {
+        if (oldDate > moment(visit.started_date)) {
+            oldDate = moment(visit.started_date);
+        }
+    });
+
+    photos.find(photo1 => {
+        console.log(photo1);
+    });
+
+    const files = await readDir(photoDir);
+    for (const file of files) {
+
+        if (moment(file.mtime) > oldDate) {
+            continue;
+        }
+        console.log("file", file.name);
+
+
+        //console.log("photo", photo);
+
+        /*if (photo === undefined) {
+            try {
+                unlink(getPhotoPath(photo.uri));
+            } catch (error) {
+                return ErrorLogging.push("deleteOldPhoto", error);
+            }
+        }
+
+        if (photo.isUploaded === false) {
+            continue;
+        }*/
+
+
+
+        /*try {
+            unlink(getPhotoPath(photo.uri));
+        } catch (error) {
+            return ErrorLogging.push("deleteOldPhoto", error);
+        }*/
+    }
+
+    /*const files = await readDir(photoDir);
+    for (const file of files) {
+        console.log(file);
+        for (const visit of visits.values()) {
+            console.log(visit);
+            console.log("visit.started_date", moment(visit.started_date).toString());
+            console.log("file.mtime", moment(file.mtime).toString());
+            console.log(moment(visit.started_date) < moment(file.mtime));
+        }
+    }*/
+    //console.log(visits.count());
 };
