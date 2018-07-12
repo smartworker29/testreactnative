@@ -28,6 +28,7 @@ import {readDir, readdir} from "react-native-fs";
 import ErrorLogging from "../utils/Errors";
 import uuidv4 from 'uuid/v4';
 import moment from "moment/moment";
+import {deleteOldPhoto} from "./app";
 
 export const createVisit = (shop, taskId, timeout, coordinates) => async (dispatch, getState) => {
 
@@ -145,7 +146,7 @@ export const refreshVisitsList = (isInit) => async (dispatch, getState) => {
         payload.hasMore = false;
 
         await AsyncStorageQueue.push(`@${pin}_visits`, JSON.stringify(payload));
-        dispatch({type: REFRESH_VISIT_RESPONSE, payload: payload})
+        dispatch({type: REFRESH_VISIT_RESPONSE, payload: payload});
 
     } catch (error) {
 

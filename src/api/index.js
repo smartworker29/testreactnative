@@ -92,7 +92,7 @@ export const getTasks = async () => {
         const {url, token} = await getAuth();
         setTimeout(() => {
             source.cancel("getTasks Timeout by timer");
-        }, 7000);
+        }, 10000);
         return await axios({
             method: 'get',
             url: `${url}/visit_task/`,

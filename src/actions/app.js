@@ -7,7 +7,7 @@ import {readDir, mkdir, exists, unlink} from 'react-native-fs';
 import {getRatioExceptions} from "../api";
 import * as API from "../api";
 import {getDeviceInfo, getPhotoPath} from "../utils/util";
-import {photoInit, syncPhoto} from "./photo";
+import {DELETE_IMAGE, photoInit, syncPhoto} from "./photo";
 import {refreshVisitsList, syncVisitList} from "./visist";
 import ErrorLogging from "../utils/Errors";
 import {readdir, stat} from "react-native-fs"
@@ -96,7 +96,9 @@ export const deleteOldPhoto = () => async (dispatch, getState) => {
     const visits = Map(getState().visits.entities.visit);
     const photos = getState().photo.photos;
 
-    console.log(visits.count());
+    if (getState().photo.syncProcess === true || getState().visits.syncProcess === true) {
+        return;
+    }
 
     if (visits.count() < 30) {
         return;
@@ -116,24 +118,21 @@ export const deleteOldPhoto = () => async (dispatch, getState) => {
         }
     });
 
-    photos.find(photo1 => {
-        console.log(photo1);
-    });
-
     const files = await readDir(photoDir);
     for (const file of files) {
 
         if (moment(file.mtime) > oldDate) {
             continue;
         }
-        console.log("file", file.name);
+
+        const photo = photos.find(photo => {
+            return basename(photo.uri) === file.name
+        });
 
 
-        //console.log("photo", photo);
-
-        /*if (photo === undefined) {
+        if (photo === undefined) {
             try {
-                unlink(getPhotoPath(photo.uri));
+                return unlink(getPhotoPath(photo.uri));
             } catch (error) {
                 return ErrorLogging.push("deleteOldPhoto", error);
             }
@@ -141,26 +140,15 @@ export const deleteOldPhoto = () => async (dispatch, getState) => {
 
         if (photo.isUploaded === false) {
             continue;
-        }*/
+        }
 
-
-
-        /*try {
+        try {
             unlink(getPhotoPath(photo.uri));
+            dispatch({type: DELETE_IMAGE, payload: photo.uri});
+            const pin = getState().auth.pin;
+            await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
         } catch (error) {
             return ErrorLogging.push("deleteOldPhoto", error);
-        }*/
-    }
-
-    /*const files = await readDir(photoDir);
-    for (const file of files) {
-        console.log(file);
-        for (const visit of visits.values()) {
-            console.log(visit);
-            console.log("visit.started_date", moment(visit.started_date).toString());
-            console.log("file.mtime", moment(file.mtime).toString());
-            console.log(moment(visit.started_date) < moment(file.mtime));
         }
-    }*/
-    //console.log(visits.count());
+    }
 };

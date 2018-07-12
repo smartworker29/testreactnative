@@ -167,8 +167,8 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(authInit());
         await this.props.dispatch(initTasks());
         await this.props.dispatch(initVisits());
-        await this.props.dispatch(deleteOldPhoto());
         await this.props.dispatch(photoInit());
+        await this.props.dispatch(deleteOldPhoto());
         await this.props.dispatch(loadData());
         await this.props.dispatch(updateDeviceInfo());
 
@@ -210,7 +210,7 @@ class AppWithNavigationState extends Component {
             this.props.dispatch(setFetchPin(false));
         }
 
-        if (this.props.authId !== props.authId && this.props.dispatch) {
+        if (this.props.authId !== props.authId && props.authId !== null && this.props.dispatch) {
             clearInterval(this.intervalSyncPins);
 
             await this.props.dispatch(refreshVisitsList(true));
@@ -229,7 +229,7 @@ class AppWithNavigationState extends Component {
 
             setInterval(async () => {
                 await this.props.dispatch(getTasksList());
-            }, 7000);
+            }, 10000);
 
             setInterval(async () => {
                 await this.props.dispatch(getStatistics());
@@ -238,6 +238,10 @@ class AppWithNavigationState extends Component {
             setInterval(async () => {
                 await this.props.dispatch(syncPins());
             }, 7000);
+
+            setInterval(async () => {
+                await this.props.dispatch(deleteOldPhoto());
+            }, 15000);
         }
     }
 

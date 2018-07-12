@@ -4,7 +4,7 @@ import {Map} from "immutable";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import {exists, unlink} from "react-native-fs"
 import uuidv4 from 'uuid/v4';
-import {getFileSize, getPhotoPath} from "../utils/util";
+import {getFileSize, getPhotoPath, getPhotoPathWithPrefix} from "../utils/util";
 import ErrorLogging from "../utils/Errors";
 
 export const ADD_PHOTO = 'ADD_PHOTO';
@@ -32,10 +32,13 @@ export const SET_PHOTO = 'SET_PHOTO';
 export const photoInit = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
     const photos = JSON.parse(await AsyncStorage.getItem(`@${pin}_photo`)) || {};
+    let newPhoto = Map();
     for (const photo of Object.values(photos)) {
+        photo.uri = getPhotoPathWithPrefix(photo.uri);
         photo.isUploading = false;
+        newPhoto = newPhoto.set(photo.uri, photo);
     }
-    dispatch({type: SET_PHOTO, payload: photos});
+    dispatch({type: SET_PHOTO, payload: newPhoto});
 };
 
 export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getState) => {
