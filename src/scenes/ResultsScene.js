@@ -59,10 +59,8 @@ class ResultsScene extends Component {
                     <Text style={styles.number}>{this.props.successVisits}</Text>
                     <Text style={styles.textUnderNum}>{I18n.t("reports.underNum")}</Text>
                 </View>
+                {this.renderItem(I18n.t("reports.underNum"), this.props.successVisits)}
                 {this.renderItem(I18n.t("reports.unassigned"), this.props.failedVisits)}
-                {this.renderItem(I18n.t("reports.moderationPass"), this.props.moderationSuccess)}
-                {this.renderItem(I18n.t("reports.moderationUnPass"), this.props.moderationFailed)}
-                {this.renderItem(I18n.t("reports.onModeration"), this.props.moderationNew)}
             </ScrollView>
 
 

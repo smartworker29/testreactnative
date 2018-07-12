@@ -60,7 +60,8 @@ export class CreateVisitScene extends Component {
                 switch (error.code) {
                     case 3:
                         errMsg = I18n.t("error.geoTimeout");
-                        break;
+                        clearInterval(this.check);
+                        return this.setState({geoAllow: true, fetchGeo: false, geoError: ""});
                     case 4:
                         errMsg = I18n.t("error.geoPlayService");
                         break;
@@ -95,7 +96,7 @@ export class CreateVisitScene extends Component {
             return;
         }
 
-        if (!this.state.geoAllow || this.state.coordinates === null) {
+        if (!this.state.geoAllow) {
             return
         }
         const taskId = this.props.navigation.state.params.taskId;
@@ -150,7 +151,7 @@ export class CreateVisitScene extends Component {
                     </View>
                     <View style={{marginTop: 15}}>
                         <GradientButton
-                            disable={this.state.text.length === 0 || this.props.isFetch === true || !this.state.geoAllow || !this.state.coordinates}
+                            disable={this.state.text.length === 0 || this.props.isFetch === true || !this.state.geoAllow}
                             text={I18n.t('CreateVisit.createAction')}
                             onPress={this.createVisit}/>
                     </View>

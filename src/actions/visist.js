@@ -34,10 +34,14 @@ export const createVisit = (shop, taskId, timeout, coordinates) => async (dispat
 
     dispatch({type: CREATE_VISIT_REQUEST});
 
-    let _coordinates = {
-        longitude: coordinates.longitude,
-        latitude: coordinates.latitude
-    };
+    let _coordinates = {};
+
+    if (coordinates) {
+        _coordinates = {
+            longitude: coordinates.longitude,
+            latitude: coordinates.latitude
+        };
+    }
 
     const name = `${_.trim(getState().profile.surname)} ${_.trim(getState().profile.name)} ${_.trim(getState().profile.patronymic)}`
     const data = {
