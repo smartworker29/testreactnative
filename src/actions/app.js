@@ -89,7 +89,7 @@ export const forceSync = () => async (dispatch, getStore) => {
 
 export const initFolders = () => async (dispatch, getState) => {
     await mkdir(photoDir);
-    console.log(await readDir(photoDir));
+    //console.log(await readDir(photoDir));
 };
 
 export const deleteOldPhoto = () => async (dispatch, getState) => {

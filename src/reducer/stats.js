@@ -7,7 +7,7 @@ export const init = {
     moderationNew: 0,
     successVisits: 0,
     moderationFailed: 0
-}
+};
 
 export default (state = init, action) => {
     switch (action.type) {

@@ -28,7 +28,7 @@ export const getPins = async () => {
     const source = axios.CancelToken.source();
     setTimeout(() => {
         source.cancel("getPins Timeout by timer");
-    }, 7000);
+    }, 20000);
     try {
         return await axios({
             method: 'get',
@@ -69,7 +69,7 @@ export const getStats = async (id) => {
         const {url, token} = await getAuth();
         setTimeout(() => {
             source.cancel("getStats Timeout by timer");
-        }, 7000);
+        }, 20000);
         return await axios({
             method: 'get',
             validateStatus: null,
@@ -92,7 +92,7 @@ export const getTasks = async () => {
         const {url, token} = await getAuth();
         setTimeout(() => {
             source.cancel("getTasks Timeout by timer");
-        }, 10000);
+        }, 20000);
         return await axios({
             method: 'get',
             url: `${url}/visit_task/`,

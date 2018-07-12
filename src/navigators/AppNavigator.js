@@ -45,6 +45,7 @@ import I18n from "react-native-i18n";
 import Permissions from 'react-native-permissions';
 import OpenSettings from 'react-native-open-settings';
 import GoogleAPIAvailability from 'react-native-google-api-availability-bridge';
+import {Map} from "immutable";
 
 YellowBox.ignoreWarnings([
     'Warning: componentWillMount is deprecated',
@@ -203,6 +204,14 @@ class AppWithNavigationState extends Component {
         BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
     }
 
+    async updateVisit() {
+        this.props.dispatch(refreshVisitsList(false));
+    }
+
+    async updateTask() {
+        await this.props.dispatch(getTasksList());
+    }
+
     async componentWillReceiveProps(props) {
 
         if (props.pin !== null && this.props.pin !== props.pin) {
@@ -223,21 +232,35 @@ class AppWithNavigationState extends Component {
                 await this.props.dispatch(syncPhoto());
             }, 2000);
 
-            setInterval(async () => {
-                await this.props.dispatch(refreshVisitsList(false));
+            this.visitInt = setInterval(async () => {
+                await this.updateVisit();
+                const visits = Map(this.props.visits);
+                if (visits.count() > 0) {
+                    clearTimeout(this.visitInt);
+                    setInterval(async () => {
+                        await this.updateVisit();
+                    }, 300000)
+                }
             }, 7000);
 
-            setInterval(async () => {
-                await this.props.dispatch(getTasksList());
-            }, 10000);
+            this.tasksInt = setInterval(async () => {
+                await this.updateTask();
+                const tasks = Map(this.props.tasks);
+                if (tasks.count() > 0) {
+                    clearTimeout(this.tasksInt);
+                    setInterval(async () => {
+                        await this.updateTask();
+                    }, 300000)
+                }
+            }, 7000);
 
             setInterval(async () => {
                 await this.props.dispatch(getStatistics());
-            }, 7000);
+            }, 300000);
 
             setInterval(async () => {
                 await this.props.dispatch(syncPins());
-            }, 7000);
+            }, 300000);
 
             setInterval(async () => {
                 await this.props.dispatch(deleteOldPhoto());
@@ -348,6 +371,8 @@ const mapStateToProps = state => ({
     nav: state.nav,
     error: state.app.error,
     seed: state.app.errorSeed,
+    tasks: state.tasks.list,
+    visits: state.visits.entities.visit,
     authId: state.auth.id,
     pathNumber: state.profile.pathNumber,
     isForceSync: state.app.isForceSync
