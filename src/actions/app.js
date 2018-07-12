@@ -89,6 +89,7 @@ export const forceSync = () => async (dispatch, getStore) => {
 
 export const initFolders = () => async (dispatch, getState) => {
     await mkdir(photoDir);
+    console.log(await readDir(photoDir));
 };
 
 export const deleteOldPhoto = () => async (dispatch, getState) => {
@@ -131,11 +132,7 @@ export const deleteOldPhoto = () => async (dispatch, getState) => {
 
 
         if (photo === undefined) {
-            try {
-                return unlink(getPhotoPath(photo.uri));
-            } catch (error) {
-                return ErrorLogging.push("deleteOldPhoto", error);
-            }
+            return;
         }
 
         if (photo.isUploaded === false) {
