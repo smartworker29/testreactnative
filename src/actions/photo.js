@@ -39,6 +39,7 @@ export const photoInit = () => async (dispatch, getState) => {
         newPhoto = newPhoto.set(photo.uri, photo);
     }
     dispatch({type: SET_PHOTO, payload: newPhoto});
+    await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
 };
 
 export const uploadPhoto = (uri, id, visitId = null) => async (dispatch, getState) => {

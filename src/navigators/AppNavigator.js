@@ -223,6 +223,7 @@ class AppWithNavigationState extends Component {
             clearInterval(this.intervalSyncPins);
 
             await this.props.dispatch(refreshVisitsList(true));
+            await this.props.dispatch(getTasksList());
 
             setInterval(async () => {
                 await this.props.dispatch(syncVisitList());
@@ -232,35 +233,21 @@ class AppWithNavigationState extends Component {
                 await this.props.dispatch(syncPhoto());
             }, 2000);
 
-            this.visitInt = setInterval(async () => {
-                await this.updateVisit();
-                const visits = Map(this.props.visits);
-                if (visits.count() > 0) {
-                    clearTimeout(this.visitInt);
-                    setInterval(async () => {
-                        await this.updateVisit();
-                    }, 300000)
-                }
-            }, 7000);
+            setInterval(async () => {
+                await this.props.dispatch(refreshVisitsList(false));
+            }, 10000);
 
-            this.tasksInt = setInterval(async () => {
-                await this.updateTask();
-                const tasks = Map(this.props.tasks);
-                if (tasks.count() > 0) {
-                    clearTimeout(this.tasksInt);
-                    setInterval(async () => {
-                        await this.updateTask();
-                    }, 300000)
-                }
-            }, 7000);
+            setInterval(async () => {
+                await this.props.dispatch(getTasksList());
+            }, 10000);
 
             setInterval(async () => {
                 await this.props.dispatch(getStatistics());
-            }, 300000);
+            }, 10000);
 
             setInterval(async () => {
                 await this.props.dispatch(syncPins());
-            }, 300000);
+            }, 10000);
 
             setInterval(async () => {
                 await this.props.dispatch(deleteOldPhoto());
