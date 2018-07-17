@@ -25,6 +25,11 @@ export const checkPin = (pin) => async (dispatch, getState) => {
     let pins = getState().auth.pins;
     let havePinKey = false;
 
+    if (_.isString(pins)) {
+        dispatch({type: FETCH_PIN_ERROR});
+        return dispatch({type: FETCH_PIN, payload: false});
+    }
+
     _.forEach(pins, (inst, key) => {
         if (inst.pin !== undefined) {
             havePinKey = true
