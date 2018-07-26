@@ -6,7 +6,9 @@ export const init = {
     moderationSuccess: 0,
     moderationNew: 0,
     successVisits: 0,
-    moderationFailed: 0
+    moderationFailed: 0,
+    main: {},
+    details: []
 };
 
 export default (state = init, action) => {
@@ -20,6 +22,8 @@ export default (state = init, action) => {
                 moderationNew: action.payload.moderation_new,
                 successVisits: action.payload.success_visits,
                 moderationFailed: action.payload.moderation_failed,
+                //main: action.payload.main,
+                //details: action.payload.details
             }
         }
         default:

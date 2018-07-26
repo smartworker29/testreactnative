@@ -82,41 +82,13 @@ export class VisitDetailScene extends Component {
 
     renderResultsBlock(results, id) {
 
-        let resultRow = (
-            <View style={styles.infoStatusRow}>
-                <Image style={styles.statusIcon} source={unknownIcon}/>
-                <Text style={styles.statusText}>- - -</Text>
-            </View>
-        );
-
         if (!results) {
             return (
                 <View style={styles.result}>
                     <View style={styles.delimiter}/>
                     <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
-                    {resultRow}
                 </View>
             )
-        }
-
-        switch (results.status) {
-            case 'NEGATIVE' :
-                resultRow = (
-                    <View style={styles.infoStatusRow}>
-                        <Image style={styles.statusIcon} source={dislikeIcon}/>
-                        <Text style={[styles.statusText, styles.red]}>{I18n.t('visitDetail.visitReject')}</Text>
-                    </View>
-                );
-                break;
-            case 'NEUTRAL':
-            case 'POSITIVE' :
-                resultRow = (
-                    <View style={styles.infoStatusRow}>
-                        <Image style={styles.statusIcon} source={likeIcon}/>
-                        <Text style={[styles.statusText, styles.green]}>{I18n.t('visitDetail.visitAccept')}</Text>
-                    </View>
-                );
-                break
         }
 
         const date = this.moment(results.created_date).format('D MMMM, HH:mm');
@@ -135,7 +107,6 @@ export class VisitDetailScene extends Component {
             <View style={styles.result}>
                 <View style={styles.delimiter}/>
                 <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
-                {resultRow}
                 {lastMessage}
             </View>
         )

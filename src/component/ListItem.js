@@ -81,7 +81,6 @@ class ListItem extends PureComponent {
         return (
             <View style={[styles.row, styles.mgt15]}>
                 <View style={styles.statusRow}>
-                    {resultView}
                     {moderationView}
                 </View>
             </View>
@@ -115,7 +114,7 @@ class ListItem extends PureComponent {
     }
 
     render() {
-        const {visit, photos, pathNumber, sync} = this.props;
+        const {visit, photos, pathNumber, sync, tasks} = this.props;
         const route = (visit.current_agent_route !== undefined) ? visit.current_agent_route : pathNumber;
         const needPhotoSync = photos.find(photo => {
             return (
@@ -130,7 +129,8 @@ class ListItem extends PureComponent {
         const id = (!visit.id || visit.tmp === true) ? '- - -' : visit.id;
         //const shop = (visit.gps_shop) ? this.props.shops.find(shop => shop.id === visit.gps_shop.id) : null;
         //const task = (shop) ? _.find(shop.tasks, task => task.id === visit.task) : null;
-        //const taskName = (task) ? task.name : "";
+        const task = tasks.find(task => task.id === visit.task);
+        const taskTitle = task ? task.name : null;
         const time = (visit.started_date) ? visit.started_date : visit.local_date;
 
         return (
@@ -140,6 +140,7 @@ class ListItem extends PureComponent {
                         <Text style={styles.dateColor}>{this.moment(time).format('D MMMM, HH:mm')}</Text>
                         <Image source={sync_icon}/>
                     </View>
+                    <Text style={styles.taskName}>{taskTitle}</Text>
                     {this.renderShopInfo(visit)}
                     <View style={styles.delimiter}/>
                     {this.renderResultBlock(visit)}
@@ -156,11 +157,11 @@ class ListItem extends PureComponent {
 ListItem.propTypes = {
     visit: PropTypes.object,
     onPress: PropTypes.func,
-}
+};
 
 ListItem.defaultProps = {
     visit: {}
-}
+};
 
 const styles = StyleSheet.create({
     item: {
@@ -324,5 +325,6 @@ export default connect(state => {
         photos: state.photo.photos,
         pathNumber: state.profile.pathNumber,
         sync: state.visits.sync,
+        tasks: state.tasks.list
     }
 })(ListItem)

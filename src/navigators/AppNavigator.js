@@ -208,10 +208,6 @@ class AppWithNavigationState extends Component {
         this.props.dispatch(refreshVisitsList(false));
     }
 
-    async updateTask() {
-        await this.props.dispatch(getTasksList());
-    }
-
     async componentWillReceiveProps(props) {
 
         if (props.pin !== null && this.props.pin !== props.pin) {
@@ -224,6 +220,7 @@ class AppWithNavigationState extends Component {
 
             await this.props.dispatch(refreshVisitsList(true));
             await this.props.dispatch(getTasksList());
+            await this.props.dispatch(getStatistics());
 
             setInterval(async () => {
                 await this.props.dispatch(syncVisitList());

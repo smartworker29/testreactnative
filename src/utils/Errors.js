@@ -13,6 +13,7 @@ class ErrorLogging {
     }
 
     static storeReduxAction(action) {
+        action._time = moment().format('D.MM.YYYY, H:mm:ss');
         ErrorLogging.redux.push(action);
         if (ErrorLogging.redux.length > 200) {
             ErrorLogging.redux.shift();

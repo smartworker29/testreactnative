@@ -1,12 +1,23 @@
 import React, {Component} from 'react';
 import {resultsNavigationOptions} from "../navigators/options";
-import {View, StyleSheet, Text, Image, ScrollView, Platform, TouchableWithoutFeedback, Button} from "react-native";
+import {
+    View,
+    StyleSheet,
+    Text,
+    Image,
+    ScrollView,
+    Platform,
+    TouchableWithoutFeedback,
+    Button,
+    ActivityIndicator
+} from "react-native";
 import I18n from 'react-native-i18n'
 import {likeBigIcon, likeIcon} from "../utils/images";
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {connect} from "react-redux";
 import ErrorLogging from "../utils/Errors";
 import * as API from "../api";
+import _ from "lodash";
 
 class ResultsScene extends Component {
     static navigationOptions = ({navigation}) => resultsNavigationOptions(navigation);
@@ -24,7 +35,7 @@ class ResultsScene extends Component {
     renderItem(text, val) {
         const textStyle = (val > 0) ? styles.blackText : styles.grayText;
         return (
-            <View style={styles.item}>
+            <View style={styles.item} key={text}>
                 <Text style={styles.itemTitle}>{text}</Text>
                 <Text style={[styles.itemValue, textStyle]}>{val}</Text>
             </View>
@@ -48,6 +59,32 @@ class ResultsScene extends Component {
                 </ScrollView>
             )
         }
+
+
+        const mainVal = this.props.main.value || this.props.successVisits;
+        const mainText = this.props.main.label || I18n.t("reports.underNum");
+
+        let items = [
+            this.renderItem(I18n.t("reports.underNum"), this.props.successVisits),
+            this.renderItem(I18n.t("reports.unassigned"), this.props.failedVisits)
+        ];
+
+        if (_.isArray(this.props.details) && this.props.details.length > 0) {
+            items = [];
+            _.forEach(this.props.details, item => {
+                items.push(this.renderItem(item.label, item.value))
+            })
+        }
+
+        let resultBlock;
+        if (this.props.date.length === 0) {
+            resultBlock = <View style={{marginTop: 25}}>
+                <ActivityIndicator/>
+            </View>
+        } else {
+            resultBlock = items;
+        }
+
         return (
             <ScrollView>
                 <View style={styles.greenContainer}>
@@ -56,20 +93,19 @@ class ResultsScene extends Component {
                     <TouchableWithoutFeedback onLongPress={this.onDebug}>
                         <Image style={styles.like} source={likeBigIcon}/>
                     </TouchableWithoutFeedback>
-                    <Text style={styles.number}>{this.props.successVisits}</Text>
-                    <Text style={styles.textUnderNum}>{I18n.t("reports.underNum")}</Text>
+                    <Text style={styles.number}>{mainVal}</Text>
+                    <Text style={styles.textUnderNum}>{mainText}</Text>
                 </View>
-                {this.renderItem(I18n.t("reports.underNum"), this.props.successVisits)}
-                {this.renderItem(I18n.t("reports.unassigned"), this.props.failedVisits)}
+                {resultBlock}
             </ScrollView>
-
-
         )
     }
 }
 
 const mapStateToProps = state => ({
     date: state.stats.date,
+    main: state.stats.main,
+    details: state.stats.details,
     failedVisits: state.stats.failedVisits,
     moderationSuccess: state.stats.moderationSuccess,
     moderationNew: state.stats.moderationNew,
