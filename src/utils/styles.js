@@ -36,6 +36,11 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: "row",
         justifyContent: "space-between",
+    },
+    idText: {
+        color: "#c40010",
+        fontWeight: "bold",
+        fontSize: 16
     }
 });
 

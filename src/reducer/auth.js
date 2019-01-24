@@ -3,7 +3,7 @@ import {
     FETCH_PIN,
     FETCH_PIN_ERROR,
     FETCH_PIN_RESPONSE,
-    SET_AUTH_ID,
+    SET_AUTH_ID, SET_INSTANCE,
     SET_PIN,
     SET_PINS, SYNC_PINS_END, SYNC_PINS_RESPONSE,
     SYNC_PINS_START, SYNC_PINS_START_FIRST
@@ -19,7 +19,8 @@ const init = {
     wrongPin: false,
     isFetchPin: false,
     syncProcess: false,
-    syncProcessFirst: false
+    syncProcessFirst: false,
+    instance: null
 };
 
 export default (state = init, action) => {
@@ -32,6 +33,8 @@ export default (state = init, action) => {
             return {...state, agentFetch: action.payload};
         case SET_PINS:
             return {...state, pins: action.payload};
+        case SET_INSTANCE:
+            return {...state, instance: action.payload};
         case FETCH_PIN:
             return {...state, isFetchPin: action.payload};
         case FETCH_PIN_RESPONSE:

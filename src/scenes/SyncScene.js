@@ -29,6 +29,7 @@ class SyncScene extends Component {
     };
 
     photoTask = (image) => {
+        const title = (image.isUploading === true) ? "Синхронизация фото" : "Фото в очереди";
         return (
             <View style={styles.taskView} key={image.timestamp}>
                 <Text style={styles.infoText}>{"Фото"}</Text>

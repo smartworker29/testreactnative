@@ -3,7 +3,7 @@ import {
     FETCH_PIN,
     FETCH_PIN_ERROR,
     FETCH_PIN_RESPONSE,
-    SET_AUTH_ID,
+    SET_AUTH_ID, SET_INSTANCE,
     SET_PIN,
     SET_PINS, SYNC_PINS_END, SYNC_PINS_START, SYNC_PINS_START_FIRST
 } from "../utils/constants";
@@ -21,57 +21,58 @@ export const authInit = () => async (dispatch, getState) => {
 };
 
 export const checkPin = (pin) => async (dispatch, getState) => {
-    dispatch({type: FETCH_PIN, payload: true});
-    let pins = getState().auth.pins;
-    let havePinKey = false;
-
-    if (_.isString(pins)) {
-        dispatch({type: FETCH_PIN_ERROR});
-        return dispatch({type: FETCH_PIN, payload: false});
-    }
-
-    _.forEach(pins, (inst, key) => {
-        if (inst.pin !== undefined) {
-            havePinKey = true
-        }
-    });
-
-    if (havePinKey) {
-
-        let instance;
-        let pinId;
+    try {
+        dispatch({type: FETCH_PIN, payload: true});
+        let pins = getState().auth.pins;
+        let havePinKey = false;
 
         _.forEach(pins, (inst, key) => {
-            if (inst.pin === pin) {
-                instance = inst;
-                pinId = key;
+            if (inst.pin !== undefined) {
+                havePinKey = true
             }
         });
 
-        if (instance) {
-            const allow = checkVersion(instance);
-            if (allow !== true) {
+        if (havePinKey) {
+
+            let instance;
+            let pinId;
+
+            _.forEach(pins, (inst, key) => {
+                if (inst.pin === pin) {
+                    instance = inst;
+                    pinId = key;
+                }
+            });
+
+            if (instance) {
+                const allow = checkVersion(instance);
+                if (allow !== true) {
+                    dispatch({type: FETCH_PIN_ERROR});
+                    return dispatch({type: FETCH_PIN, payload: false});
+                }
+                await AsyncStorageQueue.push("@url", String(instance.url));
+                await AsyncStorageQueue.push("@token", String(instance.token));
+                dispatch({type: SET_PIN, payload: pinId});
+                dispatch({type: FETCH_PIN_RESPONSE, payload: pins});
+                dispatch({type: SET_INSTANCE, payload: instance});
+            } else {
                 dispatch({type: FETCH_PIN_ERROR});
-                return dispatch({type: FETCH_PIN, payload: false});
+                dispatch({type: FETCH_PIN, payload: false});
             }
-            await AsyncStorageQueue.push("@url", String(instance.url));
-            await AsyncStorageQueue.push("@token", String(instance.token));
-            dispatch({type: SET_PIN, payload: pinId});
-            dispatch({type: FETCH_PIN_RESPONSE, payload: pins})
         } else {
-            dispatch({type: FETCH_PIN_ERROR});
-            dispatch({type: FETCH_PIN, payload: false});
+            if (pins[pin] !== undefined) {
+                await AsyncStorageQueue.push("@url", String(pins[pin].url));
+                await AsyncStorageQueue.push("@token", String(pins[pin].token));
+                dispatch({type: SET_PIN, payload: pin});
+                dispatch({type: FETCH_PIN_RESPONSE, payload: pins});
+                dispatch({type: SET_INSTANCE, payload: pins[pin]});
+            } else {
+                dispatch({type: FETCH_PIN_ERROR});
+                dispatch({type: FETCH_PIN, payload: false});
+            }
         }
-    } else {
-        if (pins[pin] !== undefined) {
-            await AsyncStorageQueue.push("@url", String(pins[pin].url));
-            await AsyncStorageQueue.push("@token", String(pins[pin].token));
-            dispatch({type: SET_PIN, payload: pin});
-            dispatch({type: FETCH_PIN_RESPONSE, payload: pins})
-        } else {
-            dispatch({type: FETCH_PIN_ERROR});
-            dispatch({type: FETCH_PIN, payload: false});
-        }
+    } catch (error) {
+        Alert.alert("checkPin", error.message);
     }
 };
 
@@ -144,11 +145,38 @@ export const syncPins = () => async (dispatch, getState) => {
     }
 
     const pins = await API.getPins();
-
     if (pins === null) {
         return dispatch({type: SYNC_PINS_END});
     } else {
         dispatch({type: SET_PINS, payload: pins.data});
+        await AsyncStorageQueue.push("@pins", JSON.stringify(pins.data));
+    }
+
+    dispatch({type: SYNC_PINS_END});
+};
+
+export const updateInstance = () => async (dispatch, getState) => {
+
+    const pins = await API.getPins();
+    if (pins === null) {
+        return dispatch({type: SYNC_PINS_END});
+    } else {
+        let instance;
+        const pin = getState().auth.pin;
+        _.forEach(pins.data, pinObject => {
+            if (instance !== undefined) {
+                return;
+            }
+            if (pinObject.pin === pin) {
+                instance = pinObject;
+            }
+        });
+        if (pins.data) {
+            dispatch({type: SET_PINS, payload: pins.data});
+        }
+        if (instance) {
+            dispatch({type: SET_INSTANCE, payload: instance});
+        }
         await AsyncStorageQueue.push("@pins", JSON.stringify(pins.data));
     }
 

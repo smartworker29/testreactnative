@@ -22,8 +22,8 @@ export default (state = init, action) => {
                 moderationNew: action.payload.moderation_new,
                 successVisits: action.payload.success_visits,
                 moderationFailed: action.payload.moderation_failed,
-                //main: action.payload.main,
-                //details: action.payload.details
+                main: action.payload.main || {},
+                details: action.payload.deatils || action.payload.details || []
             }
         }
         default:

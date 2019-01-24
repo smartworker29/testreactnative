@@ -14,4 +14,8 @@ target 'Papsi' do
 
   pod 'react-native-fetch-blob', :path => '../node_modules/react-native-fetch-blob'
 
+  pod 'RNSnackbar', :path => '../node_modules/react-native-snackbar'
+
+  pod 'SentryReactNative', :path => '../node_modules/react-native-sentry'
+
 end

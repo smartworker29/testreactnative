@@ -3,7 +3,7 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import I18n from 'react-native-i18n'
 import PropTypes from 'prop-types'
 import {
-    badIcon, dislikeIcon, goodIcon, likeIcon, pinIcon, syncIcon, timeIcon, unknownIcon,
+    badIcon, dislikeIcon, fiveImage, goodIcon, likeIcon, magnitLogo, pinIcon, syncIcon, timeIcon, unknownIcon,
     unsyncIcon
 } from '../utils/images'
 import moment from 'moment'
@@ -11,6 +11,7 @@ import {connect} from 'react-redux';
 import ru from 'moment/locale/ru';
 import _ from "lodash";
 import {CachedImage} from "react-native-img-cache";
+import DeviceInfo from "react-native-device-info";
 
 class ListItem extends PureComponent {
     constructor() {
@@ -33,14 +34,9 @@ class ListItem extends PureComponent {
     renderResultBlock(visit) {
         const {moderation, results} = visit;
 
-        const resultBlock = (icon, text, color) => {
-            return (
-                <View style={styles.statusResult}>
-                    <Image style={styles.statusIcon} source={icon}/>
-                    <Text style={[styles.statusText, color]}>{text}</Text>
-                </View>
-            )
-        };
+        if (moderation === null) {
+            return null;
+        }
 
         const moderationBlock = (icon, text, color) => {
             return (
@@ -51,21 +47,7 @@ class ListItem extends PureComponent {
             )
         };
 
-        let resultView = resultBlock(unknownIcon, '- - -');
         let moderationView = (!visit.tmp && moderation !== null) ? moderationBlock(timeIcon, I18n.t('visits_list.OnModeration')) : null;
-        //moderationView = (!moderation === null) ? moderation : null;
-
-        if (results && results.status) {
-            switch (results.status) {
-                case 'NEGATIVE' :
-                    resultView = resultBlock(dislikeIcon, I18n.t('visits_list.resultBad'), styles.red);
-                    break;
-                case 'NEUTRAL':
-                case 'POSITIVE' :
-                    resultView = resultBlock(likeIcon, I18n.t('visits_list.resultGood'), styles.green);
-                    break
-            }
-        }
 
         if (moderation && moderation.status) {
             switch (moderation.status) {
@@ -101,12 +83,8 @@ class ListItem extends PureComponent {
             <View style={styles.topRow}>
                 {(logo) ? <CachedImage style={styles.icon} source={{uri: logo}} resizeMode="contain"/> : null}
                 <View style={{flex: 1, justifyContent: "center"}}>
-                    <View>
+                    <View style={styles.rowTitleFavorite}>
                         <Text style={styles.title}>{shop_name}</Text>
-                    </View>
-                    <View style={styles.location}>
-                        <Image source={pinIcon} style={styles.pinIcon}/>
-                        <Text style={styles.description}>{shop_area}</Text>
                     </View>
                 </View>
             </View>
@@ -114,24 +92,36 @@ class ListItem extends PureComponent {
     }
 
     render() {
-        const {visit, photos, pathNumber, sync, tasks} = this.props;
+        const {visit, photos, pathNumber, sync, instance} = this.props;
         const route = (visit.current_agent_route !== undefined) ? visit.current_agent_route : pathNumber;
         const needPhotoSync = photos.find(photo => {
             return (
                 (photo.visit === visit.id || photo.tmpId === visit.id || sync[photo.visit] === visit.id) &&
-                (photo.isUploaded === false || photo.isUploading === true))
+                (photo.isUploaded === false || photo.isUploading === true)) &&
+                photo.isProblem !== true
         });
+
+        let hasRoute = null;
+        if (instance.agent_fields) {
+            hasRoute = _.find(instance.agent_fields, {name: "route"});
+        }
+
+        let [lang] = DeviceInfo.getDeviceLocale().split("-");
+        let routeName = I18n.t("visitDetail.pathId");
+
+        if (lang && hasRoute && hasRoute[`label_${lang}`]) {
+            routeName = hasRoute[`label_${lang}`]
+        }
 
         //Reactotron.log(`visit ${visit.id} needPhotoSync=${needPhotoSync}`);
 
         const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon;
-        const shopId = (visit.shop !== null) ? visit.shop : '- - -';
+        const shopId = (visit.shop && visit.tmp !== true) ? visit.shop : visit.customer_id;
         const id = (!visit.id || visit.tmp === true) ? '- - -' : visit.id;
-        //const shop = (visit.gps_shop) ? this.props.shops.find(shop => shop.id === visit.gps_shop.id) : null;
-        //const task = (shop) ? _.find(shop.tasks, task => task.id === visit.task) : null;
-        const task = tasks.find(task => task.id === visit.task);
-        const taskTitle = task ? task.name : null;
+        const taskName = this.props.taskNames.get(`${visit.shop}_${visit.task}`);
         const time = (visit.started_date) ? visit.started_date : visit.local_date;
+
+        const infoRow = hasRoute ? `ID ${shopId} ${routeName} ${route}` : `ID ${shopId}`;
 
         return (
             <TouchableOpacity {...this.props} onPress={this.props.onPress} style={{padding: 5}}>
@@ -140,12 +130,12 @@ class ListItem extends PureComponent {
                         <Text style={styles.dateColor}>{this.moment(time).format('D MMMM, HH:mm')}</Text>
                         <Image source={sync_icon}/>
                     </View>
-                    <Text style={styles.taskName}>{taskTitle}</Text>
+                    <Text style={styles.taskName}>{taskName}</Text>
                     {this.renderShopInfo(visit)}
                     <View style={styles.delimiter}/>
                     {this.renderResultBlock(visit)}
                     <View style={styles.numberRow}>
-                        <Text style={styles.shopNumber}>{`ID ${shopId} ${I18n.t("visits_list.route")} ${route}`}</Text>
+                        <Text style={styles.shopNumber}>{infoRow}</Text>
                         <Text style={styles.number}>{`№ ${id}`}</Text>
                     </View>
                 </View>
@@ -325,6 +315,7 @@ export default connect(state => {
         photos: state.photo.photos,
         pathNumber: state.profile.pathNumber,
         sync: state.visits.sync,
-        tasks: state.tasks.list
+        taskNames: state.tasks.taskNames,
+        instance: state.auth.instance
     }
 })(ListItem)

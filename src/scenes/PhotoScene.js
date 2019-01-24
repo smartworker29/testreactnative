@@ -7,10 +7,21 @@ import {
     Modal,
     StyleSheet,
     View,
-    Dimensions, TouchableOpacity, Image, Text, Platform, Animated, Easing
+    Dimensions,
+    TouchableOpacity,
+    Image,
+    Text,
+    Platform,
+    Animated,
+    Easing,
+    TouchableWithoutFeedback,
+    Vibration,
+    SafeAreaView,
+    Alert,
+    StatusBar
 } from 'react-native'
-import {addPhoto, uploadPhoto, clearPhoto} from '../actions/photo'
-import {getPhotoPath, isIphoneX} from '../utils/util'
+import {addPhoto, uploadPhoto, clearPhoto, setCameraType, deleteImage} from '../actions/photo'
+import {getFileSize, getPhotoPath, isIphoneX} from '../utils/util'
 import {goToSettings, back} from '../actions/navigation'
 import {Container, Header, Left, Right, Icon, Title, ListItem, Button, Footer} from 'native-base'
 import I18n from 'react-native-i18n'
@@ -24,16 +35,24 @@ import ImageResizer from 'react-native-image-resizer';
 import Orientation from "react-native-orientation";
 import {PinchGestureHandler} from "react-native-gesture-handler"
 import {Map} from "immutable";
+import {basename} from "react-native-path";
+//import ARCamera from "ar-shelf-camera"
 
+let {height, width} = Dimensions.get('window');
+const heightCamera = width / 3 * 4;
+const DURATION = 1000;
 const ANDROID_INC = 10;
 const ANDROID_DEC = 10;
 const IOS_INC = 0.001;
 const IOS_DEC = 0.001;
+const AR_CAMERA = 'AR_CAMERA';
+const STANDARD_CAMERA = "STANDARD_CAMERA";
 
 class PhotoScene extends Component {
 
     takePictureStatus = false;
     tmpZoom = 0;
+    startedSession = false;
 
     constructor(props) {
         super(props);
@@ -45,18 +64,22 @@ class PhotoScene extends Component {
             status: false,
             photoCount: 0,
             processPhoto: false,
-            flashMode: RNCamera.Constants.FlashMode.auto,
+            flashMode: RNCamera.Constants.FlashMode.off,
             fadeValue: new Animated.Value(1),
-            zoom: 0
+            zoom: 0,
+            showButton: false,
+            planeCaptured: false,
+            arReady: false,
+            cameraTypeIos: Platform.OS === "ios" && Platform.Version >= "11.3" ? "AR_CAMERA" : "STANDARD_CAMERA",
+            files: [],
+            photoIndex: null,
+            finalUri: null,
         };
     }
 
     prepareRatio = async () => {
         if (Platform.OS === 'android' && this.camera) {
             const ratios = await this.camera.getSupportedRatiosAsync();
-            if (ratios.includes("16:9") && _.last(ratios) !== "16:9") {
-                this.setState({ratio: "16:9"});
-            }
         }
     };
 
@@ -78,13 +101,25 @@ class PhotoScene extends Component {
         });
     }
 
+    componentDidMount() {
+        StatusBar.setHidden(true);
+        const photoIndex = this.props.navigation.getParam("photoIndex", null);
+        this.setState({photoIndex})
+
+    }
+
+
     onBackPress = () => {
         this.props.navigation.dispatch(NavigationActions.back());
     };
 
     componentWillUnmount() {
+        StatusBar.setHidden(false);
         const {backHandler} = this.props.navigation.state.params;
-        backHandler();
+        if (this.ifAR() && this.camera !== null) {
+            this.camera.stopSession();
+        }
+        backHandler && backHandler(this.state.finalUri);
     }
 
     uploadPhoto = () => {
@@ -132,13 +167,13 @@ class PhotoScene extends Component {
 
     changeFlashMode = () => {
         if (this.state.flashMode === RNCamera.Constants.FlashMode.off) {
-            this.setState({flashMode: RNCamera.Constants.FlashMode.auto})
-        }
-        if (this.state.flashMode === RNCamera.Constants.FlashMode.auto) {
             this.setState({flashMode: RNCamera.Constants.FlashMode.on})
         }
         if (this.state.flashMode === RNCamera.Constants.FlashMode.on) {
             this.setState({flashMode: RNCamera.Constants.FlashMode.off})
+        }
+        if (this.ifAR()) {
+            this.camera.toggleFlash();
         }
     };
 
@@ -150,50 +185,192 @@ class PhotoScene extends Component {
         })
     }
 
+    confirmPlane() {
+        if (this.camera && this.state.planeCaptured === true) {
+            this.camera.confirmPlane();
+        }
+    };
+
+    renderAr = () => {
+        return <TouchableOpacity onPress={() => this.confirmPlane()}><ARCamera
+            ref={ref => {
+                if (this.startedSession === false && ref !== null) {
+                    ref.startSession();
+                    this.startedSession = true;
+                }
+                this.camera = ref;
+            }}
+            flashMode={this.state.flashMode}
+            width={1500}
+            quality={0.9}
+            onCameraReady={() => {
+                this.setState({arReady: true});
+            }}
+            onPlaneCaptureStarted={() => {
+                console.log("onPlaneCaptureStarted")
+            }}
+            onPlaneCaptureSuccess={() => {
+                this.setState({planeCaptured: true});
+                Vibration.vibrate(DURATION)
+            }}
+            onPlaneCaptureLost={() => {
+                this.setState({planeCaptured: false});
+            }}
+        /></TouchableOpacity>
+    };
+
+    renderCameraElement = () => {
+        const props = {};
+        if (this.state.ratio) {
+            props.ratio = "4:3"
+        }
+        return <RNCamera
+            ref={ref => {
+                this.camera = ref;
+            }}
+            zoom={this.state.zoom}
+            style={[styles.preview]}
+            type={RNCamera.Constants.Type.back}
+            flashMode={this.state.flashMode}
+            onCameraReady={this.prepareRatio}
+            ratio="4:3"
+        />
+    };
+
+    getPhotosIndex() {
+        const {id} = this.props.navigation.state.params;
+        const {sync} = this.props;
+        const index = this.props.photos.filter(photo => {
+            return photo.visit === id || photo.tmpId === id || sync[photo.visit] === id;
+        }).count();
+        return index + 1;
+    }
+
+    ifAR = () => {
+        //Disable AR
+        return false;
+        const {pins, pin} = this.props;
+        const enable_ar_camera = pins[pin].enable_ar_camera;
+        return Platform.OS === 'ios' && Platform.Version >= "11.3" && this.state.cameraTypeIos === AR_CAMERA && enable_ar_camera === true
+    };
+
+    ifIosStandard = () => {
+        return true;
+        const {pins, pin} = this.props;
+        const enable_ar_camera = pins[pin].enable_ar_camera;
+        return Platform.OS === 'ios' && (this.state.cameraTypeIos === STANDARD_CAMERA || enable_ar_camera !== true)
+    };
+
     takePicture = async () => {
 
         if (this.takePictureStatus === true || !this.camera) {
             return;
         }
 
+        const photoUUID = this.props.navigation.getParam("photoUUID", null);
+        const photoIndex = this.props.navigation.getParam("photoIndex", null);
+
+        console.log("photoUUID", photoUUID);
+        console.log("photoIndex", photoIndex);
+
         this.fadeCamera();
         this.takePictureStatus = true;
         this.setState({processPhoto: true});
 
         const options = {quality: 0.9, exif: true, width: 1500, skipProcessing: true};
-        let rotate = this.getRotate();
+        let rotate = 0;
 
-        const initial = await this.getOrientation();
-        if (Platform.OS === 'ios' && initial !== 'PORTRAIT') {
-            rotate = 0
+        if (Platform.OS === "android") {
+            rotate = this.getRotate();
         }
 
-        const data = await this.camera.takePictureAsync(options);
+        const initial = await this.getOrientation();
+
+        let data;
+        if (this.ifAR()) {
+            try {
+                data = await this.camera.takePicture(1500, 0.9);
+            } catch (error) {
+                data = null;
+            }
+        } else {
+            data = await this.camera.takePictureAsync(options);
+        }
+
+        if (data === null) {
+            this.takePictureStatus = false;
+            this.setState({processPhoto: false});
+            return alert("Фото не сделано");
+        }
+
+        if (this.ifIosStandard() && initial !== 'PORTRAIT') {
+            rotate = 0
+        }
 
         if (Platform.OS !== 'ios' && data.width > data.height) {
             rotate = rotate + 90;
         }
 
-        const result = await ImageResizer.createResizedImage(data.uri, 1500, 1500, 'JPEG', 90, rotate);
+        if (Platform.OS === 'ios' && initial === 'PORTRAIT' && rotate !== 0) {
+            rotate = 0
+        }
+
+        const width = (Platform.OS === 'ios') ? data.width : 1500;
+        const height = (Platform.OS === 'ios') ? data.height : 1500;
+
+        const result = await ImageResizer.createResizedImage(data.uri, width, height, 'JPEG', 90);
+        if (result.size === 0) {
+            this.takePictureStatus = false;
+            this.setState({processPhoto: false});
+            await unlink(data.uri);
+            await unlink(result.uri);
+            return alert("Размер фото 0 байт, фото будет удаленно");
+        }
+
+        this.setState(state => {
+            const files = [...state.files];
+            files.push({uri: basename(result.uri), size: result.size});
+            return {files}
+        });
+
+        const index = photoIndex ? photoIndex : this.getPhotosIndex();
         await unlink(data.uri);
         const path = getPhotoPath(result.path);
         await copyFile(result.uri, path);
         await unlink(result.uri);
         const finalUri = "file://" + path;
         const {id} = this.props.navigation.state.params;
-        await this.props.addPhoto(finalUri, id);
+        await this.props.addPhoto(finalUri, id, index);
         if (Map(this.props.visits.entities.offline).count() === 0) {
-            this.props.uploadPhoto(finalUri, id);
+            //this.props.uploadPhoto(finalUri, id, null, undefined, index);
         }
+
+        if (photoUUID) {
+            try {
+                const oldPhoto = this.props.photos.find(photo => photo.uuid === photoUUID);
+                const result = await this.props.deleteImage(oldPhoto.uri, oldPhoto.id, true);
+                if (result) {
+                    await unlink(getPhotoPath(oldPhoto.uri));
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         this.setState(state => (
-            {photoCount: state.photoCount + 1, processPhoto: false}
-        ), () => {
-            this.takePictureStatus = false;
+            {photoCount: state.photoCount + 1, processPhoto: false, finalUri}
+        ), async () => {
+            if (photoUUID === null) {
+                this.takePictureStatus = false;
+            } else if (photoUUID && this.state.photoCount < 1) {
+                this.takePictureStatus = false;
+            } else if (photoUUID && this.state.photoCount === 1) {
+                this.onBackPress();
+            }
         });
     };
 
     changeZoom = _.throttle(() => {
-        console.log("this.tmpZoom", this.tmpZoom);
         this.setState({zoom: this.tmpZoom})
     }, 20);
 
@@ -216,31 +393,67 @@ class PhotoScene extends Component {
     };
 
     selectCamera() {
-        const props = {};
-        if (this.state.ratio) {
-            props.ratio = this.state.ratio
+        let camera = null;
+        if (Platform.OS === 'ios') {
+            camera = (this.ifAR())
+                ? this.renderAr()
+                : this.renderCameraElement();
+        } else {
+            camera = this.renderCameraElement();
         }
-        return <Animated.View style={{flex: 1, opacity: this.state.fadeValue}}>
-            <PinchGestureHandler
-                onGestureEvent={this.pinchGesture}>
-                <RNCamera
-                    ref={ref => {
-                        this.camera = ref;
-                    }}
-                    zoom={this.state.zoom}
-                    style={[styles.preview]}
-                    type={RNCamera.Constants.Type.back}
-                    flashMode={this.state.flashMode}
-                    onCameraReady={this.prepareRatio}
-                    {...props}
-                />
-            </PinchGestureHandler>
-        </Animated.View>
+
+        return camera
     }
 
+    closeArCamera = () => {
+        this.setState({cameraTypeIos: STANDARD_CAMERA});
+        if (this.camera) {
+            this.camera.stopSession();
+        }
+    };
+
+    renderBottomControl = () => {
+        const overButton = (this.state.processPhoto === true) ?
+            <View style={{position: "absolute", zIndex: 9}}><ActivityIndicator/></View> :
+            (this.state.photoCount > 0) ? <Text style={styles.photoCount}>{this.state.photoCount}</Text> : null;
+        const buttonTint = (this.state.processPhoto === true) ? {tintColor: "#555"} : {tintColor: "white"};
+
+        const text = !this.state.planeCaptured ? I18n.t("arCamera.captureStarted")
+            : I18n.t("arCamera.captureSuccess");
+
+        if (this.ifAR()) {
+            if (this.state.arReady) {
+                return (
+                    <TouchableOpacity onPress={this.takePicture}>
+                        {overButton}
+                        <Image style={[styles.cameraImage, buttonTint]} source={cameraButton}/>
+                    </TouchableOpacity>
+                )
+            } else {
+                return (
+                    <View style={{alignItems: "center"}}>
+                        <Text style={styles.arText}>{text}</Text>;
+                        <TouchableOpacity
+                            onPress={this.closeArCamera}
+                            style={styles.cancelButton}>
+                            <Text style={styles.cancelAr}>Отмена</Text>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+
+        } else {
+            return (
+                <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
+                    {overButton}
+                    <Image style={[styles.cameraImage, buttonTint]} source={cameraButton}/>
+                </TouchableOpacity>
+            )
+        }
+    };
+
     renderCamera() {
-        let rowStyle = styles.bottomRow;
-        let itemStyle = styles.bottomRowItem;
+        const topPadding = (Platform.OS === "ios") ? 0 : 15;
         const rotate = this.getRotate();
 
         let flashIcon = flashAuto;
@@ -252,41 +465,35 @@ class PhotoScene extends Component {
         if (this.state.flashMode === RNCamera.Constants.FlashMode.off) {
             flashIcon = flashOff;
         }
-
-        const buttonTint = (this.state.processPhoto === true) ? {tintColor: "#555"} : {tintColor: "white"};
-        const overButton = (this.state.processPhoto === true) ?
-            <View style={styles.photoWait}><ActivityIndicator/></View> :
-            (this.state.photoCount > 0) ? <Text style={styles.photoCount}>{this.state.photoCount}</Text> : null;
+        const {id} = this.props.navigation.state.params;
+        const style = (!this.ifAR()) ? {flex: 1} : {};
+        const diff = height - heightCamera;
         return (
-            <View style={{flex: 1}}>
+            <View style={style}>
+                <View style={{height: 55}}/>
                 {this.selectCamera()}
-                <View style={{position: "absolute"}}>
-                    <TouchableOpacity onPress={this.onBackPress} style={{paddingLeft: 16, paddingTop: 30}}
+                <SafeAreaView style={{position: "absolute", top: 22}}>
+                    <TouchableOpacity onPress={this.onBackPress} style={{paddingLeft: 16}}
                                       hitSlop={{top: 50, left: 50, bottom: 50, right: 50}}>
                         <Image source={closeIcon}
                                style={{tintColor: "white", transform: [{rotate: -1 * rotate + 'deg'}]}}/>
                     </TouchableOpacity>
-                </View>
-                <View style={{position: "absolute", right: 0}}>
-                    <TouchableOpacity onPress={this.changeFlashMode} style={{paddingRight: 16, paddingTop: 30}}
+                </SafeAreaView>
+                <SafeAreaView style={{position: "absolute", right: 0, top: 22}}>
+                    <TouchableOpacity onPress={this.changeFlashMode} style={{paddingRight: 16}}
                                       hitSlop={{top: 50, right: 50, bottom: 50, left: 50}}>
                         <Image source={flashIcon} style={{tintColor: "white", width: 24, height: 24}}/>
                     </TouchableOpacity>
-                </View>
-                <View style={rowStyle}>
-                    <View style={itemStyle}/>
-                    <TouchableOpacity onPress={this.takePicture} style={styles.capture}>
-                        {overButton}
-                        <Image style={[styles.cameraImage, buttonTint]} source={cameraButton}/>
-                    </TouchableOpacity>
-                    <View style={itemStyle}/>
+                </SafeAreaView>
+
+                <View style={diff - 55 > 65 ? styles.bottomRowFlex : styles.bottomRowAbs}>
+                    {this.renderBottomControl()}
                 </View>
             </View>
         )
     }
 
     render() {
-
         if (this.state.modalVisible === false && !this.state.uri) {
             return null
         }
@@ -305,6 +512,7 @@ PhotoScene.propTypes = {
     isFetch: PropTypes.bool,
     error: PropTypes.object
 };
+
 export default connect((state) => {
         const {photo, app, visits} = state;
         return {
@@ -312,11 +520,15 @@ export default connect((state) => {
             isFetch: photo.isFetch,
             error: photo.error,
             ratios: app.ratioExceptions,
-            visits: visits
+            visits: visits,
+            pins: state.auth.pins,
+            pin: state.auth.pin,
+            sync: visits.sync,
+            photos: photo.photos
         }
     },
-    {uploadPhoto, addPhoto, back, clearPhoto}
-)(sensors({Accelerometer: {updateInterval: 300}})(PhotoScene))
+    {uploadPhoto, addPhoto, back, clearPhoto, setCameraType, deleteImage}
+)((Platform.OS === "android") ? sensors({Accelerometer: {updateInterval: 300}})(PhotoScene) : PhotoScene)
 
 
 const styles = StyleSheet.create({
@@ -333,9 +545,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
     },
     preview: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        width,
+        height: width / 3 * 4
+        //justifyContent: 'flex-end',
+        //alignItems: 'center',
     },
     leftRow: {
         position: "absolute",
@@ -345,11 +558,19 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: 'space-between'
     },
-    bottomRow: {
+    bottomRowAbs: {
+        width: "100%",
         position: "absolute",
-        bottom: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'center',
+        zIndex: 9,
+        bottom: 10
+    },
+    bottomRowFlex: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        zIndex: 9,
     },
     leftRowItem: {
         flex: 1,
@@ -368,7 +589,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     capture: {
-        padding: 20,
         flexDirection: "row",
         justifyContent: 'center',
         alignItems: "center",
@@ -382,10 +602,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'black'
     },
-    photoWait: {
-        position: "absolute",
-        zIndex: 9
-    },
     photoCount: {
         position: "absolute",
         color: "black",
@@ -398,74 +614,25 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         width: "100%"
     },
+    arText: {
+        width: 300,
+        color: "white",
+        textAlign: "center"
+    },
+    cancelButton: {
+        margin: 10,
+        marginTop: 20,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: "white",
+        borderRadius: 4,
+        width: 100,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    cancelAr: {
+        color: "white"
+    },
     text: {color: 'white'}
 });
-
-let a = [
-    1526892855704,
-    1525694210294,
-    1526376030942,
-    1526892732439,
-    1525694196604,
-    1528111008736,
-    1527847036361,
-    1529663202866,
-    1525694202564,
-    1530178723377,
-    1530169196238,
-    1530178728216,
-    1526376039863,
-    1526376052396,
-    1529652373433,
-    1529663288947,
-    1526892845065,
-    1526892814148,
-    1529663183150,
-    1529663474636,
-    1526892797368,
-    1529663468154,
-    1526892791284,
-    1528110996753,
-    1530016068906,
-    1529920475279,
-    1529663343507,
-    1525694191898,
-    1528101926627,
-    1529652646882,
-    1529663375711,
-    1529663472228,
-    1526892775468,
-    1526892831350,
-    1529652640370,
-    1526892833457,
-    1528101910341,
-    1526376056036,
-    1530169182116,
-    1529663648230,
-    1526376070631,
-    1527837725639,
-    1529663458493,
-    1529652479211,
-    1526892756325,
-    1526376059819,
-    1529652461072,
-    1526892862463,
-    1530178739353,
-    1526892822349,
-    1528109620634,
-    1529652625824,
-    1525692963699,
-    1528887327635,
-    1529652526003,
-    1526892750058,
-    1526376036206,
-    1530169190590,
-    1525694229478,
-    1529652472277,
-    1526892848835,
-    1526376023251,
-    1526892785494,
-    1525694217245,
-    1530016079046,
-];
 

@@ -60,13 +60,12 @@ class ResultsScene extends Component {
             )
         }
 
-
-        const mainVal = this.props.main.value || this.props.successVisits;
-        const mainText = this.props.main.label || I18n.t("reports.underNum");
+        const mainVal = this.props.main.value;
+        const mainText = this.props.main.label;
 
         let items = [
-            this.renderItem(I18n.t("reports.underNum"), this.props.successVisits),
-            this.renderItem(I18n.t("reports.unassigned"), this.props.failedVisits)
+            //this.renderItem(I18n.t("reports.underNum"), this.props.successVisits),
+            //this.renderItem(I18n.t("reports.unassigned"), this.props.failedVisits)
         ];
 
         if (_.isArray(this.props.details) && this.props.details.length > 0) {
@@ -77,7 +76,7 @@ class ResultsScene extends Component {
         }
 
         let resultBlock;
-        if (this.props.date.length === 0) {
+        if (this.props.date && this.props.date.length === 0) {
             resultBlock = <View style={{marginTop: 25}}>
                 <ActivityIndicator/>
             </View>
@@ -86,11 +85,11 @@ class ResultsScene extends Component {
         }
 
         return (
-            <ScrollView>
+            <ScrollView style={{backgroundColor: "white"}}>
                 <View style={styles.greenContainer}>
                     {Platform.OS === 'ios' ? <View style={{height: getStatusBarHeight()}}/> : null}
                     <Text style={styles.date}>{this.props.date}</Text>
-                    <TouchableWithoutFeedback onLongPress={this.onDebug}>
+                    <TouchableWithoutFeedback>
                         <Image style={styles.like} source={likeBigIcon}/>
                     </TouchableWithoutFeedback>
                     <Text style={styles.number}>{mainVal}</Text>

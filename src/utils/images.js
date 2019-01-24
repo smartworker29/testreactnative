@@ -20,6 +20,13 @@ export const addIcon = require('../assets/images/circle-add.png');
 export const logo = require('../assets/images/logo.png');
 export const profileIcon = require('../assets/images/icProfile.png');
 export const tasksIcon = require('../assets/images/icTasks.png');
+export const shopsIcon = require('../assets/images/icShops.png');
+export const shopsActiveIcon = require('../assets/images/icShop.png');
+export const distanceIcon = require('../assets/images/distance.png');
+export const likeOnIcon = require('../assets/images/likeOn.png');
+export const likeOnBigIcon = require('../assets/images/icLikeOn.png');
+export const likeOffIcon = require('../assets/images/likeOff.png');
+export const likeOffBigIcon = require('../assets/images/icLikeOff.png');
 export const resultsIcon = require('../assets/images/icResults.png');
 export const reportsIcon = require('../assets/images/icReports.png');
 export const tasksImage = require('../assets/images/picTasks.png');
@@ -31,9 +38,30 @@ export const cameraButton = require('../assets/images/camera-button.png');
 export const deleteIcon = require('../assets/images/icDelete.png');
 export const editIcon = require('../assets/images/icEdit.png');
 
-export const flashOn = require('../assets/images/flashOn.png');
-export const flashOff = require('../assets/images/flashOff.png');
-export const flashAuto = require('../assets/images/flashAuto.png');
+export const flashOn = require('../assets/images/flash-on.png');
+export const flashOff = require('../assets/images/flash-off.png');
+export const flashAuto = require('../assets/images/flash-auto.png');
 
 export const triangleUp = require('../assets/images/small-triangle-up.png');
 export const triangleDown = require('../assets/images/small-triangle-down.png');
+export const uploadSuccess = require('../assets/images/uploadSuccess.png');
+export const uploadSuccessGreen = require('../assets/images/uploadSuccessGreen.png');
+export const irSuccess = require('../assets/images/irSuccess.png');
+export const irSuccessGreen = require('../assets/images/irSuccessGreen.png');
+export const problem = require('../assets/images/problem.png');
+export const problemRed = require('../assets/images/problemRed.png');
+export const conversation = require('../assets/images/conversation.png');
+
+export const radioUnselected = require('../assets/images/radio.png');
+export const radioSelected = require('../assets/images/radioSelected.png');
+export const check = require('../assets/images/check.png');
+export const checkSelected = require('../assets/images/checkSelected.png');
+
+export const barcode = require('../assets/images/icBarcode.png');
+
+
+export const fiveImage = require('../assets/images/5KaLogo.png');
+export const magnitLogo = require('../assets/images/magnitLogo.png');
+export const cocacolaImage = require('../assets/images/cocacolaLogo.png');
+
+export const arrowRight = require('../assets/images/chevron.png');

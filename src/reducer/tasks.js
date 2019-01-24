@@ -1,9 +1,16 @@
-import { List } from "immutable";
-import { GET_TASKS_REQUEST_END, GET_TASKS_REQUEST_START, SET_TASKS } from "../utils/constants";
+import {List, Map} from "immutable";
+import {
+    ADD_TASK_NAME,
+    GET_TASKS_REQUEST_END,
+    GET_TASKS_REQUEST_START,
+    SET_TASK_NAMES,
+    SET_TASKS
+} from "../utils/constants";
 
 export const init = {
     isFetch: false,
-    list: List()
+    list: List(),
+    taskNames: Map(),
 };
 
 export default (state = init, action) => {
@@ -15,6 +22,10 @@ export default (state = init, action) => {
         case SET_TASKS:
             //alert(action.payload);
             return {...state, list: List(action.payload)};
+        case SET_TASK_NAMES:
+            return {...state, taskNames: Map(action.payload)};
+        case ADD_TASK_NAME:
+            return {...state, taskNames: state.taskNames.set(action.payload.id, action.payload.name)};
         default:
             return state
     }

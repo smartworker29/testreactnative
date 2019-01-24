@@ -5,8 +5,9 @@ import {feedbackNavigationOptions} from "../navigators/options";
 import I18n from "react-native-i18n";
 import GradientButton from "../component/GradientButton";
 import {clearFeedbackError, sendFeedback} from "../actions/visist";
-import {back} from "../actions/navigation"
+import {back, backToDetails} from "../actions/navigation"
 import {updateDeviceInfo} from "../actions/app";
+import uuidv4 from 'uuid/v4';
 
 class FeedbackScene extends Component {
     static navigationOptions = ({navigation}) => feedbackNavigationOptions(navigation);
@@ -14,31 +15,39 @@ class FeedbackScene extends Component {
     constructor() {
         super();
         this.state = {
+            focus: true,
             text: "",
-            keyboardHeight: 0
+            keyboardHeight: 0,
+            uuid: null
         }
     }
+
+    timeout = () => {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve()
+            }, 3000)
+        })
+    };
 
     sendFeedback = async () => {
         if (this.state.text.length === 0) {
             return;
         }
-        const {id} = this.props.navigation.state.params;
-        const response = await this.props.sendFeedback(id, this.state.text);
-        await this.props.updateDeviceInfo(true);
-        if (response !== null) {
-            this.hideKeyboard();
-            Alert.alert(I18n.t("error.attention"), I18n.t("feedback.success"));
-            this.props.navigation.dispatch(back());
-        } else {
-            Alert.alert(I18n.t("error.attention"), I18n.t("feedback.error"));
-            this.props.clearFeedbackError();
+        this.hideKeyboard();
+        const {id, category} = this.props.navigation.state.params;
+        try {
+            await this.props.sendFeedback(id, this.state.text, category === 'APP_ERROR', category, this.state.uuid);
+        } catch (error) {
+            Alert.alert("Ошибка", error.message)
         }
+        this.props.navigation.pop(2)
     };
 
     componentDidMount() {
         Keyboard.addListener('keyboardWillShow', this.onShowKeyboard);
-        Keyboard.addListener('keyboardWillHide', this.onHideKeyboard)
+        Keyboard.addListener('keyboardWillHide', this.onHideKeyboard);
+        this.setState({uuid: uuidv4()})
     }
 
     hideKeyboard = () => {
@@ -50,7 +59,7 @@ class FeedbackScene extends Component {
     };
 
     onHideKeyboard = (data) => {
-        this.setState({keyboardHeight: 0});
+        this.setState({keyboardHeight: 0, focus: false});
     };
 
     changeText = (text) => {
@@ -73,8 +82,9 @@ class FeedbackScene extends Component {
 
         return (
             <View style={styles.container}>
-                <TextInput multiline={true} underlineColorAndroid="transparent" placeholder={I18n.t("feedback.describe")}
-                           onChangeText={this.changeText} value={this.state.text} autoFocus={true}
+                <TextInput multiline={true} underlineColorAndroid="transparent"
+                           placeholder={I18n.t("feedback.describe")}
+                           onChangeText={this.changeText} value={this.state.text} autoFocus={this.state.focus}
                            style={styles.textContainer}/>
                 <GradientButton style={[styles.takePhotoBtn, padding]} text={I18n.t('feedback.send')}
                                 onPress={this.sendFeedback}/>

@@ -1,12 +1,14 @@
 import * as API from "../api";
 import {AsyncStorage} from 'react-native'
-import {GET_TASKS_REQUEST_END, GET_TASKS_REQUEST_START, SET_TASKS} from "../utils/constants";
+import {GET_TASKS_REQUEST_END, GET_TASKS_REQUEST_START, SET_TASK_NAMES, SET_TASKS} from "../utils/constants";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 
 export const initTasks = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
     const tasks = JSON.parse(await AsyncStorage.getItem(`@${pin}_tasks`)) || [];
-    dispatch({type: SET_TASKS, payload: tasks})
+    dispatch({type: SET_TASKS, payload: tasks});
+    const taskNames = JSON.parse(await AsyncStorage.getItem(`@${pin}_task_names`)) || {};
+    dispatch({type: SET_TASK_NAMES, payload: taskNames});
 };
 
 export const getTasksList = () => async (dispatch, getState) => {

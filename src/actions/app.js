@@ -1,5 +1,5 @@
 import {
-    CHANGE_CONNECTION_STATUS, photoDir, SET_FORCE_SYNC,
+    CHANGE_CONNECTION_STATUS, photoDir, SET_FORCE_SYNC, SET_GEO_STATUS,
     SET_RATIO_EXCEPTIONS, UPDATE_RATIO_EXCEPTIONS_REQUEST,
 } from "../utils/constants";
 import {AsyncStorage} from "react-native";
@@ -15,10 +15,15 @@ import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import moment from 'moment';
 import {Map} from "immutable";
 import {basename} from "react-native-path";
+import _ from "lodash";
 
 export default changeConnectionStatus = (connected) => (dispatch) => {
     dispatch({type: CHANGE_CONNECTION_STATUS, payload: connected});
 }
+
+export const setGeoStatus = (status) => (dispatch) => {
+    dispatch({type: SET_GEO_STATUS, payload: status});
+};
 
 export const appInit = () => async (dispatch) => {
     const ratioExceptions = await AsyncStorage.getItem("@ratio_exceptions") || [];
@@ -29,7 +34,14 @@ export const appInit = () => async (dispatch) => {
 
 export const updateDeviceInfo = (force = false) => async (dispatch, getState) => {
     const data = await getDeviceInfo();
-    const extendsParams = await AsyncStorage.getItem("@updateDeviceInfoExtend");
+    const date = await AsyncStorage.getItem("@updateDeviceInfoExtendDate");
+    let updateInterval = false;
+    if (_.isString(date) && date.length > 0) {
+        const diffSize = moment().diff(date, "days");
+        if (diffSize < 5) {
+            updateInterval = true
+        }
+    }
     const agentId = getState().auth.id;
     const url = await AsyncStorage.getItem("@url");
     if (String(agentId) === '3034' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
@@ -37,20 +49,14 @@ export const updateDeviceInfo = (force = false) => async (dispatch, getState) =>
         String(agentId) === '2963' && url === "https://pepsico.inspector-cloud.ru/api/v1.5" ||
         String(agentId) === '489' && url === "https://mobile-app.inspector-cloud-staging.ru/api/v1.5" ||
         force === true ||
-        extendsParams === "true"
+        updateInterval === true
     ) {
-        const keys = await AsyncStorage.getAllKeys();
-        const storage = {};
-        for (const key of keys) {
-            storage[key] = await AsyncStorage.getItem(key);
-        }
         data.store = getState();
         data.last_errors = ErrorLogging.errors;
         data.last_store_errors = await AsyncStorage.getItem("errors");
-        data.files = await readDir(photoDir);
         data.current_time = new Date();
         data.redux = ErrorLogging.redux;
-        data.async_storege = storage;
+        data.files = await readDir(photoDir);
     }
 
     if (agentId !== null) {
@@ -141,7 +147,7 @@ export const deleteOldPhoto = () => async (dispatch, getState) => {
 
         try {
             unlink(getPhotoPath(photo.uri));
-            dispatch({type: DELETE_IMAGE, payload: photo.uri});
+            dispatch({type: DELETE_IMAGE, payload: photo.uri, from: "oldPhoto"});
             const pin = getState().auth.pin;
             await AsyncStorageQueue.push(`@${pin}_photo`, JSON.stringify(getState().photo.photos.toObject()));
         } catch (error) {

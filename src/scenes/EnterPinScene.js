@@ -1,15 +1,14 @@
 import React, {Component} from 'react'
 import {pinNavigationOptions} from "../navigators/options";
-import {Image, View, StyleSheet, Text, TextInput, Keyboard, ActivityIndicator, TouchableOpacity, Linking} from 'react-native'
+import {Image, View, StyleSheet, Text, TextInput, Keyboard, ActivityIndicator, TouchableOpacity, Linking, Platform} from 'react-native'
 import {logo} from "../utils/images";
 import I18n from "react-native-i18n";
 import {connect} from "react-redux";
 import {checkPin} from "../actions/auth";
-import AppLink from 'react-native-app-link';
 
 class EnterPinScene extends Component {
 
-    static navigationOptions = ({navigation}) => pinNavigationOptions(navigation)
+    static navigationOptions = ({navigation}) => pinNavigationOptions(navigation);
 
     constructor(props) {
         super(props);
@@ -196,8 +195,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
     description: {
-        paddingHorizontal: 10,
-        marginTop: 32,
+        paddingHorizontal: 32,
+        marginTop: 10,
         color: "#636363",
         textAlign: "center",
         fontSize: 15,

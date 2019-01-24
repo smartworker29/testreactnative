@@ -1,13 +1,21 @@
 import _ from "lodash"
 import {
+    CHANGE_VISIT_ID_RESPONSE,
     CREATE_VISIT_ERROR,
     CREATE_VISIT_REQUEST, CREATE_VISIT_RESPONSE, DELETE_OFFLINE_VISIT, GET_VISIT_DETAILS_RESPONSE,
     GET_VISIT_REQUEST, GET_VISIT_RESPONSE, REFRESH_VISIT_ERROR, REFRESH_VISIT_REQUEST, REFRESH_VISIT_RESPONSE,
-    SET_LAST_CREATED_ID,
+    SET_LAST_CREATED_ID, SET_STORED_VISITS,
     SET_SYNC_VISIT,
     SET_VISIT_OFFLINE, SYNC_VISIT_END, SYNC_VISIT_REQUEST, SYNC_VISIT_RESPONSE, SYNC_VISIT_START
 } from "../utils/constants";
-import { Map } from "immutable";
+import {Map, OrderedMap, List, OrderedSet} from "immutable";
+import {SET_QUESTIONS, SET_UUID_VALUES} from "../actions/questions";
+import {
+    ADD_FEEDBACK_OFFLINE,
+    DELETE_FEEDBACK_OFFLINE,
+    INIT_FEEDBACK_OFFLINE, SET_FEEDBACK_ERROR,
+    SET_FEEDBACK_SYNC
+} from "../actions/visist";
 
 export const init = {
     isFetch: false,
@@ -22,9 +30,18 @@ export const init = {
     lastCreatedId: null,
     error: null,
     count: 0,
+    visitLimit: 30,
     page: '1',
     result: [],
     sync: {},
+    visitsQuestions: Map(),
+    storedVisits: OrderedMap(),
+    questions: Map(),
+    uuidValues: Map(),
+    isFeedbackSync: false,
+    feedbackOffline: Map(),
+    feedbackError: null,
+    feedbackRequest: null,
     entities: {
         visit: {},
         offline: {}
@@ -62,13 +79,30 @@ export default (state = init, action) => {
             return {...state, lastCreatedId: action.payload};
 
         case REFRESH_VISIT_RESPONSE:
-            const refreshVisits = Map(action.payload.entities.visit).take(30).toObject();
+            const limit = action.limit || state.visitLimit;
+            const limitVisits = OrderedMap(action.payload.entities.visit).reverse().take(30);
+            const refreshVisits = limitVisits.toObject();
             let tmpVisits = state.entities.offline || {};
             let tmpIds = [];
             if (state.entities.offline) {
-                tmpIds = Object.keys(state.entities.offline)
+                OrderedMap(state.entities.offline).forEach((val, key) => {
+                    tmpIds.push(parseInt(key))
+                })
             }
-            let ids = [...tmpIds, ...action.payload.result].reduce((x, y) => x.includes(y) ? x : [...x, y], []);
+
+            let storedVisits = state.storedVisits;
+            let additionalVisits = OrderedMap();
+            let additionalIds = [];
+            limitVisits.forEach(visit => {
+                storedVisits = storedVisits.update(visit.id, _ => visit);
+                additionalVisits = storedVisits.delete(visit.id)
+            });
+            additionalIds = additionalVisits.keySeq().sort().reverse().toArray();
+
+
+            let ids = OrderedSet([...tmpIds, ...action.payload.result, ...additionalIds]).sort().reverse().take(limit).toArray();
+            const _needSync = state.entities.offline ? _.keys(state.entities.offline).length : 0;
+            let newVisits = OrderedMap().concat(tmpVisits).concat(refreshVisits).concat(additionalVisits);
 
             return {
                 ...state,
@@ -76,12 +110,17 @@ export default (state = init, action) => {
                 error: null,
                 isFetch: false,
                 result: [...ids],
-                needSync: (tmpIds.length > 0),
-                entities: {visit: {...tmpVisits, ...refreshVisits}, offline: tmpVisits},
+                needSync: (_needSync > 0),
+                entities: {visit: {...newVisits.toObject()}, offline: tmpVisits},
                 count: action.payload.count,
                 page: action.payload.page,
+                storedVisits,
                 hasMore: action.payload.hasMore
             };
+
+        case GET_VISIT_DETAILS_RESPONSE:
+            storedVisits = state.storedVisits.update(action.payload.id, _ => action.payload);
+            return {...state, storedVisits};
 
         case CREATE_VISIT_REQUEST:
             return {...state, isCreateFetch: true, error: null};
@@ -91,7 +130,6 @@ export default (state = init, action) => {
 
         case CREATE_VISIT_RESPONSE:
             let offline = {...state.entities.offline};
-
             if (action.offline === true) {
                 offline = {...offline, [action.payload.id]: action.payload}
             }
@@ -100,14 +138,16 @@ export default (state = init, action) => {
                 action.payload.local_started_date = (new Date()).toJSON();
             }
 
+            let visitMap = Map(state.entities.visit).update(action.payload.id, _ => action.payload);
             return {
                 ...state,
                 isFetch: false,
                 error: null,
                 isCreateFetch: false,
                 lastCreatedId: action.payload.id,
-                entities: {visit: {...state.entities.visit, [action.payload.id]: action.payload}, offline},
+                entities: {visit: {...visitMap.toObject()}, offline},
                 needSync: (action.offline === true),
+                storedVisits: state.storedVisits.update(action.payload.id, _ => action.payload),
                 result: [action.payload.id, ...state.result],
             };
 
@@ -116,7 +156,8 @@ export default (state = init, action) => {
             delete newOffline[action.payload];
             return {
                 ...state,
-                entities: {visit: {...state.entities.visit}, offline: {...newOffline}}
+                entities: {visit: {...state.entities.visit}, offline: {...newOffline}},
+                storedVisits: state.storedVisits.delete(action.payload)
             };
 
         case SYNC_VISIT_REQUEST:
@@ -124,7 +165,7 @@ export default (state = init, action) => {
 
         case SYNC_VISIT_RESPONSE:
 
-            const needSync = (Object.keys(state.entities.offline).length > 0);
+            const needSync = (0 > 0);
 
             const visit = _.cloneDeep(state.entities.visit);
             visit[action.payload.id] = action.payload;
@@ -137,7 +178,8 @@ export default (state = init, action) => {
                 entities: {visit, offline: {...state.entities.offline}},
                 sync: {...state.sync, [action.syncId]: action.payload.id},
                 needSync,
-                result: Object.keys(visit).reverse(),
+                result: List(state.result).delete(action.syncId).toArray(),
+                storedVisits: state.storedVisits.update(action.payload.id, _ => action.payload).delete(action.syncId),
                 syncVisitError: null
             };
 
@@ -153,14 +195,39 @@ export default (state = init, action) => {
         case SYNC_VISIT_END:
             return {...state, syncProcess: false, syncVisitId: null};
 
-        case GET_VISIT_DETAILS_RESPONSE:
+        case CHANGE_VISIT_ID_RESPONSE:
+            const entities = _.cloneDeep(state.entities);
+            entities.visit[action.payload.id] = action.payload;
             return {
                 ...state,
-                isFetch: false,
-                error: null,
-                entities: {visit: {...state.entities.visit, [action.payload.id]: action.payload}}
+                entities,
+                storedVisits: state.storedVisits.update(action.payload.id, _ => action.payload)
             };
 
+        case SET_STORED_VISITS:
+            const _state = _.cloneDeep(state);
+            _state.storedVisits = OrderedMap(action.payload);
+            return _state;
+        case SET_QUESTIONS:
+            const [uuid, questions] = action.payload;
+            return {...state, questions: state.questions.set(uuid, questions)};
+        case SET_UUID_VALUES:
+            return {...state, uuidValues: state.uuidValues.merge(action.payload)};
+        case ADD_FEEDBACK_OFFLINE:
+            return {...state, feedbackOffline: state.feedbackOffline.set(action.payload.key, action.payload.data)};
+        case SET_FEEDBACK_SYNC:
+            return {...state, isFeedbackSync: action.payload};
+        case DELETE_FEEDBACK_OFFLINE:
+            return {
+                ...state,
+                feedbackOffline: state.feedbackOffline.delete(action.payload),
+                feedbackError: null,
+                feedbackRequest: null
+            };
+        case INIT_FEEDBACK_OFFLINE:
+            return {...state, feedbackOffline: Map(action.payload)};
+        case SET_FEEDBACK_ERROR:
+            return {...state, feedbackError: action.payload, feedbackRequest: action.meta};
 
         // case types.GET_VISIT_DETAILS_REQUEST:
         //     return {...state, isFetch: true, error: null}

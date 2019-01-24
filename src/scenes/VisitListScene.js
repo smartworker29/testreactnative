@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     ActivityIndicator,
     RefreshControl,
@@ -8,19 +8,19 @@ import {
     Text,
     StyleSheet, ScrollView, Image, SectionList,
 } from 'react-native';
-import { Container, Header, Left, Body, Right, Icon, Title, Button, Fab, Toast } from 'native-base';
+import {Container, Header, Left, Body, Right, Icon, Title, Button, Fab, Toast} from 'native-base';
 import ListItem from '../component/ListItem'
-import { connect } from 'react-redux';
-import { goToCreateVisit, goToProfile, goToVisitDetails } from '../actions/navigation'
-import { syncPhoto } from '../actions/photo'
-import { initVisits, refreshVisitsList, syncVisitList } from '../actions/visist'
+import {connect} from 'react-redux';
+import {goToCreateVisit, goToProfile, goToVisitDetails} from '../actions/navigation'
+import {syncPhoto} from '../actions/photo'
+import {initVisits, refreshVisitsList, syncVisitList} from '../actions/visist'
 import I18n from 'react-native-i18n'
-import { visitsNavigationOptions } from "../navigators/options";
-import { addIcon, photoSyncIcon, shopImage } from "../utils/images";
+import {visitsNavigationOptions} from "../navigators/options";
+import {addIcon, photoSyncIcon, shopImage} from "../utils/images";
 import GradientButton from "../component/GradientButton";
 import Orientation from 'react-native-orientation';
 import moment from "moment"
-import { allowAction } from "../utils/util";
+import {allowAction} from "../utils/util";
 
 const heightCenter = Dimensions.get('window').height * 0.5;
 
@@ -74,7 +74,7 @@ export class VisitListScene extends Component {
         if (allowAction("create_visit")) {
             this.props.goToCreateVisit();
         }
-    }
+    };
 
     /**
      * Button to create new visit
@@ -104,17 +104,26 @@ export class VisitListScene extends Component {
         const sections = [];
         const todaySection = {data: [], title: I18n.t("visits_list.today")};
         const beforeSection = {data: [], title: I18n.t("visits_list.before")};
-
+        const storedVisits = this.props.storedVisits;
         for (const id of result) {
-            if (!visits[id]) {
-                //console.log("not visit", id, visits[id]);
+            let visit;
+            if (visits[id] !== undefined) {
+                visit = visits[id];
+            }
+            if (storedVisits.has(id)) {
+                visit = storedVisits.get(id)
+            }
+            if (storedVisits.has(String(id))) {
+                visit = storedVisits.get(String(id))
+            }
+            if (!visit) {
                 continue;
             }
-            const days = Math.abs(moment(visits[id].started_date).startOf('day').diff(moment(new Date()).startOf('day'), 'days'));
+            const days = Math.abs(moment(visit.started_date).startOf('day').diff(moment(new Date()).startOf('day'), 'days'));
             if (days < 1) {
-                todaySection.data.push(visits[id]);
+                todaySection.data.push(visit);
             } else {
-                beforeSection.data.push(visits[id]);
+                beforeSection.data.push(visit);
             }
         }
 
@@ -212,6 +221,7 @@ export default connect(state => {
         hasMore: visits.hasMore,
         error: visits.error,
         isSync: visits.isSync,
+        storedVisits: visits.storedVisits,
         needSync: photo.needSync || visits.needSync,
     }
 }, {

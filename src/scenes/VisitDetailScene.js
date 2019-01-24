@@ -1,26 +1,68 @@
 import React, {Component, Fragment} from 'react'
-import {StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Platform, AlertIOS} from 'react-native'
-import {Button, Container, Icon, ListItem, Title} from 'native-base'
+import {
+    StyleSheet,
+    Text,
+    View,
+    ScrollView,
+    Image,
+    TouchableOpacity,
+    Platform,
+    AlertIOS,
+    InteractionManager, ActivityIndicator, Modal, Clipboard,
+    Button, Dimensions
+} from 'react-native'
 import {connect} from 'react-redux'
-import {goToPhoto, backTo, gotToPhotoView, goToFeedback} from '../actions/navigation'
-import {changeRoute, clearVisitDetails} from '../actions/visitDetails'
+import {
+    goToPhoto,
+    backTo,
+    gotToPhotoView,
+    goToFeedback,
+    goToFeedbackCategories,
+    goToQuestionnaire
+} from '../actions/navigation'
+import {
+    addReasonForSync,
+    changeRoute,
+    clearVisitDetails,
+    getVisitDetails,
+    getVisitPosition,
+    sendReason
+} from '../actions/visitDetails'
 import I18n from 'react-native-i18n'
 import ImageView from '../component/ImageView'
 import {visitNavigationOptions} from '../navigators/options'
 import {
-    badIcon, cameraIcon, dislikeIcon, editIcon, foodImage, goodIcon, likeIcon, pinIcon, syncIcon, timeIcon, unknownIcon,
+    badIcon,
+    cameraIcon, conversation,
+    dislikeIcon,
+    editIcon,
+    foodImage,
+    goodIcon,
+    likeIcon,
+    magnitLogo,
+    pinIcon,
+    syncIcon,
+    timeIcon, triangleDown,
+    unknownIcon,
     unsyncIcon
 } from '../utils/images'
 import GradientButton from '../component/GradientButton'
 import moment from 'moment'
 import _ from "lodash"
 import ru from "moment/locale/ru";
-import {allowAction} from "../utils/util";
+import {allowAction, copyToClipboard, getPhotoFromVisit} from "../utils/util";
 import Permissions from 'react-native-permissions';
 import DialogAndroid from 'react-native-dialogs';
 import HTMLView from 'react-native-htmlview';
 import {CachedImage} from "react-native-img-cache";
 import ComponentParser from "../utils/ComponentParser";
+import DeviceInfo from "react-native-device-info";
+import RNPickerSelect from "react-native-picker-select";
+import EventEmitter from "react-native-eventemitter";
+import {List, Set} from "immutable";
+import striptags from "striptags";
+
+let {height, width} = Dimensions.get('window');
 
 export class VisitDetailScene extends Component {
 
@@ -41,13 +83,30 @@ export class VisitDetailScene extends Component {
 
         this.state = {
             date: undefined,
-            showBtn: true
+            showBtn: true,
+            afterTransition: false,
+            showPicture: false,
+            pictureUrl: null,
+            pictureLoading: false
         }
     }
 
     componentWillUnmount() {
+        EventEmitter.emit("updateTasksTime");
         clearInterval(this.timer)
         //this.props.clearVisitDetails()
+    }
+
+    componentWillMount() {
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({afterTransition: true})
+        });
+
+        const id = this.props.navigation.getParam("id");
+        const pos = this.props.getVisitPosition(id);
+        if (pos > 30) {
+            this.props.getVisitDetails(id);
+        }
     }
 
     componentDidMount() {
@@ -55,6 +114,8 @@ export class VisitDetailScene extends Component {
         if (openCamera === true) {
             this.goToPhoto(id).then().catch(console.log);
         }
+        ComponentParser.sendReason = this.props.sendReason;
+        ComponentParser.addReasonForSync = this.props.addReasonForSync;
     }
 
     renderShopDetail(visit) {
@@ -68,21 +129,172 @@ export class VisitDetailScene extends Component {
             <View style={styles.topRow}>
                 {(logo) ? <CachedImage style={styles.icon} source={{uri: logo}} resizeMode="contain"/> : null}
                 <View style={{flex: 1, justifyContent: "center"}}>
-                    <View>
+                    <View style={styles.rowTitleFavorite}>
                         <Text style={styles.title}>{visit.shop_name}</Text>
                     </View>
-                    <View style={styles.location}>
+                    {/*<View style={styles.location}>
                         <Image source={pinIcon} style={styles.pinIcon}/>
                         <Text style={styles.description}>{visit.shop_area}</Text>
+                    </View>*/}
+                </View>
+            </View>
+        );
+    }
+
+    renderQuestionnaire(task, visitUuid) {
+        if (!task || !task.question_group) {
+            return null;
+        }
+
+        if (_.isArray(task.question_group) && task.question_group.length === 0 || visitUuid === undefined) {
+            return null
+        }
+
+        const questions = this.props.questions.get(visitUuid);
+        if (questions === undefined || _.isArray(questions) && questions.length === 0) {
+            return (
+                <View>
+                    <View style={styles.delimiter}/>
+                    <Text style={styles.infoTitle}>{I18n.t("questions.questionnaire")}</Text>
+                    {this.renderEmptyQuestions()}
+                    <TouchableOpacity style={[styles.QuestionnaireButton, {borderColor: "#c40010"}]}
+                                      onPress={() => this.goToQuestionnaire(task.question_group, visitUuid)}>
+                        <Text
+                            style={[styles.QuestionnaireText, {color: "#c40010"}, {borderColor: "#c40010"}]}>{I18n.t("questions.answerButton")}</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+        const [questionsRender, syncStatuses] = this.renderQuestions(questions, visitUuid);
+        const [textColor, borderColor] = syncStatuses.has(null)
+        || syncStatuses.has("empty")
+        || syncStatuses.has("required") ? [{color: "#c40010"}, {borderColor: "#c40010"}] : [{color: "#cfcfcf"}, {borderColor: "#cfcfcf"}];
+        const textStyle = {color: '#c40010'};
+        return (
+            <View>
+                <View style={styles.delimiter}/>
+                <Text style={styles.infoTitle}>{I18n.t("questions.questionnaire")}</Text>
+                {questionsRender}
+                <TouchableOpacity style={[styles.QuestionnaireButton, borderColor]}
+                                  onPress={() => this.goToQuestionnaire(task.question_group, visitUuid)}>
+                    <Text style={[styles.QuestionnaireText, textColor]}>{I18n.t("questions.answerButton")}</Text>
+                </TouchableOpacity>
+                {syncStatuses.has(null) &&
+                <View style={{flex: 1, alignItems: "center", marginTop: 10}}>
+                    <Text style={textStyle}>{I18n.t("questions.saveToServer")}</Text>
+                </View>}
+                {syncStatuses.has(false) &&
+                <View style={styles.rowSync}>
+                    <ActivityIndicator style={{marginRight: 10}}/>
+                    <Text style={{alignItems: 'center'}}>{I18n.t("questions.savingToServer")}</Text>
+                </View>}
+            </View>
+        )
+    }
+
+    renderQuestions(questions, visitUuid) {
+        const groups = [];
+        let syncStatuses = Set();
+        if (questions === undefined) {
+            syncStatuses = syncStatuses.add("empty");
+            return [this.renderEmptyQuestions(), syncStatuses];
+        }
+        for (const [group, _questions] of questions) {
+            const questions = [];
+            for (const [index, question] of List(_questions).entries()) {
+                if (!this.props.answers.has(visitUuid + '_' + question)) {
+                    if (this.props.questionsRequired.has(question)) {
+                        syncStatuses = syncStatuses.add("required");
+                    }
+                    continue
+                }
+                const syncStatus = this.props.questionsSync.get(visitUuid + '_' + question);
+                syncStatuses = syncStatuses.add(syncStatus);
+                const textStyle = syncStatus === null ? {color: '#c40010'} : syncStatus === false ? {color: 'orange'} : {color: 'green'};
+                const required = this.props.questionsRequired.has(question);
+                const requiredMark = required ? <Text style={stylesQuestions.requireMark}>*</Text> : null;
+                questions.push(
+                    <View key={question}
+                          style={stylesQuestions.answerContainer}>
+                        <Text style={textStyle}>{index + 1}.</Text>
+                        <View style={{marginLeft: 10}}>
+                            <Text
+                                style={stylesQuestions.titleQuestion}>{this.props.uuidValues.get(question)} {requiredMark}</Text>
+                            {this.renderAnswer(question, visitUuid)}
+                        </View>
                     </View>
+                )
+            }
+            if (questions.length > 0) {
+                groups.push(
+                    <View key={group}>
+                        <Text style={stylesQuestions.titleGroup}>{this.props.uuidValues.get(group)}</Text>
+                        {questions}
+                    </View>
+                );
+            }
+        }
+
+        if (groups.length === 0) {
+            return [this.renderEmptyQuestions(), syncStatuses]
+        }
+        return [groups, syncStatuses];
+    }
+
+    renderEmptyQuestions() {
+        return (
+            <View>
+                <View style={styles.conversationImageContainer}>
+                    <Image style={styles.conversationImage} source={conversation}/>
+                </View>
+                <View style={{marginTop: 18, alignItems: "center"}}>
+                    <Text style={{textAlign: "center", fontSize: 16}}>
+                        {I18n.t("questions.text")}
+                    </Text>
                 </View>
             </View>
         )
     }
 
+    renderAnswer(questionUUID, visitUuid) {
+        const answer = this.props.answers.get(visitUuid + '_' + questionUUID);
+
+        if (!answer) {
+            return null
+        }
+        if (answer.select_one !== undefined) {
+            return <Text style={stylesQuestions.answerValue}>{this.props.uuidValues.get(answer.select_one)}</Text>
+        }
+        if (answer.text !== undefined) {
+            return <Text style={stylesQuestions.answerValue}>{answer.text}</Text>
+        }
+        if (answer.bool !== undefined) {
+            return <Text style={stylesQuestions.answerValue}>{answer.bool ? "Да" : "Нет"}</Text>
+        }
+        if (answer.select_multiple !== undefined && _.isArray(answer.select_multiple)) {
+            const answers = [];
+            for (const _answer of answer.select_multiple) {
+                answers.push(<Text key={_answer}
+                                   style={stylesQuestions.answerValue}>{this.props.uuidValues.get(_answer)}</Text>)
+            }
+            return answers
+        }
+        return null;
+    }
+
+    showProductPicture = (url) => {
+        if (!url) {
+            return;
+        }
+        this.setState({
+            showPicture: true,
+            pictureUrl: url
+        })
+    };
+
     renderResultsBlock(results, id) {
 
-        if (!results) {
+        if (!results || !this.state.afterTransition) {
             return (
                 <View style={styles.result}>
                     <View style={styles.delimiter}/>
@@ -91,14 +303,24 @@ export class VisitDetailScene extends Component {
             )
         }
 
+        const {instance} = this.props;
         const date = this.moment(results.created_date).format('D MMMM, HH:mm');
+        const data = {
+            visitId: id,
+            skuReasons: this.props.skuReasons,
+            instanceReasons: instance["oos_reason"],
+            showProductPicture: this.showProductPicture
+        };
+        const message = (results.message_type === "MULTIMEDIA") ? ComponentParser.parse(results.message, data) :
+            <TouchableOpacity onPress={() => {
+                copyToClipboard(results.message)
+            }}>
+                <HTMLView value={results.message}/>
+            </TouchableOpacity>;
 
-        const message = (results.message_type === "MULTIMEDIA") ? ComponentParser.parse(results.message) :
-            <HTMLView value={results.message}/>;
-
+        const style = (Platform.OS === "ios") ? {marginTop: 20} : {};
         const lastMessage = (
-            <View style={styles.statusBlock}>
-                <Text style={styles.statusBlockDate}>{date}</Text>
+            <View style={[style, {paddingTop: (Platform.OS === "android") ? 20 : 0}]}>
                 {message}
             </View>
         );
@@ -106,7 +328,10 @@ export class VisitDetailScene extends Component {
         return (
             <View style={styles.result}>
                 <View style={styles.delimiter}/>
-                <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
+                <View style={styles.resultRow}>
+                    <Text style={styles.infoTitle}>{I18n.t('visitDetail.visitResult')}</Text>
+                    <Text style={styles.statusBlockDate}>{date}</Text>
+                </View>
                 {lastMessage}
             </View>
         )
@@ -114,7 +339,7 @@ export class VisitDetailScene extends Component {
 
     renderModerationBlock(moderation) {
 
-        if (!moderation) {
+        if (!moderation || !this.state.afterTransition) {
             return null;
         }
 
@@ -156,7 +381,7 @@ export class VisitDetailScene extends Component {
 
         const date = this.moment(moderation.created_date).format('D MMMM, HH:mm');
         const message = (moderation.message_type === "MULTIMEDIA") ? ComponentParser.parse(moderation.message) :
-            <HTMLView value={moderation.message}/>
+            <HTMLView value={moderation.message}/>;
 
         return (
             <View style={styles.result}>
@@ -185,11 +410,11 @@ export class VisitDetailScene extends Component {
         return (
             <View style={{paddingHorizontal: 16}}>
                 <View style={styles.delimiter}/>
-                <Text style={styles.infoTitle}>{I18n.t('feedback.support')}</Text>
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoTitle}>{I18n.t('feedback.support')}</Text>
+                    <Text style={styles.statusDate}>{date}</Text>
+                </View>
                 <View style={styles.statusBlock}>
-                    <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-                        <Text style={styles.statusBlockComment}>{date}</Text>
-                    </View>
                     <HTMLView value={helpdesk.message}/>
                 </View>
             </View>
@@ -198,27 +423,15 @@ export class VisitDetailScene extends Component {
 
     componentWillReceiveProps(props) {
         const {sync} = this.props;
-        const {id} = this.props.navigation.state.params;
 
         if (this.props.sync !== props.sync) {
-            if (props.sync[id]) {
-                this.props.navigation.setParams({
-                    sync,
-                    id: props.sync[id],
-                    tmp: false
-                });
-            } else {
-                this.props.navigation.setParams({
-                    sync
-                });
-            }
-
+            this.props.navigation.setParams({sync});
         }
     }
 
-    goToPreview(uri, photos, index, count, photoId) {
+    goToPreview(uri, photos, index, count, photoId, id, photoUUID) {
         if (allowAction("goToPreview")) {
-            this.props.navigation.navigate("Preview", {uri, photos, index, count, photoId});
+            this.props.navigation.navigate("Preview", {uri, photos, index, count, photoId, id, photoUUID});
         }
     };
 
@@ -232,20 +445,7 @@ export class VisitDetailScene extends Component {
     renderPhotoArea(visit, isLast) {
         const {sync} = this.props;
         const {id} = this.props.navigation.state.params;
-        const photos = this.props.photos.filter(photo => {
-            return photo.visit === id || photo.tmpId === id || sync[photo.visit] === id;
-        }).sort((a, b) => {
-            if (a.timestamp < b.timestamp) {
-                return -1;
-            }
-            if (a.timestamp > b.timestamp) {
-                return 1;
-            }
-            if (a.timestamp === b.timestamp) {
-                return 0;
-            }
-        }).toList();
-        const hours = Math.abs(moment(visit.started_date).diff(new Date(), 'hours'));
+        const photos = getPhotoFromVisit(id, this.props.photos, sync);
         let photosCount = photos.count();
 
         if (isLast !== true && photosCount === 0) {
@@ -275,9 +475,12 @@ export class VisitDetailScene extends Component {
         }
 
         const imageBlocks = [];
-
-
         for (const image of photos) {
+            const irData = _.find(visit.images, {id: image.id});
+            if (irData) {
+                image.ir_message = irData.ir_message;
+                image.ir_status = irData.ir_status;
+            }
             const index = photos.findIndex(photo => photo.uri === image.uri);
             const progressData = this.props.loadedProgress.get(image.uri);
             const loaded = (progressData) ? progressData.loaded : null;
@@ -286,7 +489,7 @@ export class VisitDetailScene extends Component {
             imageBlocks.push(
                 <ImageView style={styles.imageView} key={image.uri} photo={image}
                            loaded={loaded} total={total}
-                           onPress={() => this.goToPreview(image.uri, photos, index, count, image.id)}/>
+                           onPress={() => this.goToPreview(image.uri, photos, index, count, image.id, id, image.uuid)}/>
             )
         }
 
@@ -322,11 +525,24 @@ export class VisitDetailScene extends Component {
         }
     };
 
-    editRoute = () => {
+    getRouteName = (def) => {
+        const {instance} = this.props;
+        let hasRoute;
+        let routeName = def;
+        if (instance.agent_fields) {
+            hasRoute = _.find(instance.agent_fields, {name: "route"});
+        }
+        let [lang] = DeviceInfo.getDeviceLocale().split("-");
+        if (lang && hasRoute && hasRoute[`label_${lang}`]) {
+            routeName = hasRoute[`label_${lang}`]
+        }
+        return routeName;
+    };
 
+    editRoute = () => {
         if (Platform.OS === "ios") {
             AlertIOS.prompt(
-                I18n.t("alerts.changeRoute"),
+                `${I18n.t("alerts.enter")} ${this.getRouteName()}`,
                 null,
                 text => {
                     const {id} = this.props.navigation.state.params;
@@ -336,7 +552,7 @@ export class VisitDetailScene extends Component {
         } else {
             const dialog = new DialogAndroid();
             dialog.set({
-                title: I18n.t("alerts.changeRoute"),
+                title: `${I18n.t("alerts.enter")} ${this.getRouteName()}`,
                 input: {
                     callback: (routeId) => {
                         const {id} = this.props.navigation.state.params;
@@ -352,76 +568,90 @@ export class VisitDetailScene extends Component {
 
     };
 
-    renderPhotoInfo() {
-        const {sync, offline} = this.props;
-        const {id} = this.props.navigation.state.params;
-        const photos = this.props.photos.filter(photo => {
-            return photo.visit === id || photo.tmpId === id || sync[photo.visit] === id;
-        }).sort((a, b) => {
-            if (a.timestamp < b.timestamp) {
-                return -1;
-            }
-            if (a.timestamp > b.timestamp) {
-                return 1;
-            }
-            if (a.timestamp === b.timestamp) {
-                return 0;
-            }
-        }).toList();
-
-        return (
-            <View>
-                <Text>{`id = ${id}`}</Text>
-                <Text>{`offline = ${JSON.stringify(offline)}`}</Text>
-                <Text>{`sync = ${JSON.stringify(sync)}`}</Text>
-                <Text>{`sync id = ${sync[id]}`}</Text>
-                <Text>{`photos count = ${photos.count()}`}</Text>
-                <Text>{`photos array = ${JSON.stringify(photos.toArray())}`}</Text>
-            </View>
-        )
-    }
-
     goToFeedback = () => {
         if (allowAction("goToFeedback")) {
             const {id} = this.props.navigation.state.params;
-            this.props.goToFeedback(id);
+            this.props.goToFeedbackCategories(id);
+        }
+    };
+
+    goToQuestionnaire = (questions, uuid) => {
+        if (allowAction("goToQuestionnaire")) {
+            this.props.goToQuestionnaire(questions, uuid);
         }
     };
 
     renderFeedbackButton() {
         return (
-            <TouchableOpacity style={styles.feedbackButton} onPress={this.goToFeedback}>
-                <Text style={styles.feedbackText}>{I18n.t('visitDetail.feedback')}</Text>
-            </TouchableOpacity>
+            <View>
+                {this.props.feedbackOffline.count() > 0 ? <View style={styles.rowSync}>
+                    <ActivityIndicator style={{marginRight: 10}}/>
+                    <Text style={{alignItems: 'center'}}>Синхронизация жалоб...</Text>
+                </View> : null}
+                {this.props.feedbackError !== null ? <View style={styles.rowSync}>
+                    <Text style={{
+                        alignItems: 'center',
+                        color: "#c40010"
+                    }}>{JSON.stringify(this.props.feedbackError)}</Text>
+                </View> : null}
+                <TouchableOpacity style={styles.feedbackButton} onPress={this.goToFeedback}>
+                    <Text style={styles.feedbackText}>{I18n.t('visitDetail.feedback')}</Text>
+                </TouchableOpacity>
+            </View>
         )
     }
 
     render() {
         const {id} = this.props.navigation.state.params;
         const visit = this.props.visits[id] || this.props.visits[this.props.sync[id]];
-        const {photos, sync, lastCreatedId} = this.props;
+        const {photos, sync, lastCreatedId, instance, routeChangeProcessing} = this.props;
 
         if (!visit) {
             return null
         }
 
+        let hasRoute = null;
+        if (instance.agent_fields) {
+            hasRoute = _.find(instance.agent_fields, {name: "route"});
+        }
+
+        let [lang] = DeviceInfo.getDeviceLocale().split("-");
+        let routeName = I18n.t("visitDetail.pathId");
+
+        if (lang && hasRoute && hasRoute[`label_${lang}`]) {
+            routeName = hasRoute[`label_${lang}`]
+        }
+
         const needPhotoSync = photos.find(photo => {
             return (
                 (photo.visit === id || photo.tmpId === id || sync[photo.visit]) &&
-                (photo.isUploaded === false || photo.isUploading === true))
+                (photo.isUploaded === false || photo.isUploading === true)) &&
+                photo.isProblem !== true
         });
 
         const sync_icon = (visit.tmp || needPhotoSync) ? unsyncIcon : syncIcon;
-        const shopId = (visit.shop !== null) ? visit.shop : '- - -';
+        const shopId = (visit.shop && visit.tmp !== true) ? visit.shop : visit.customer_id;
         const route = visit.current_agent_route;
-        const task = this.props.tasks.find(task => task.id === visit.task);
-        const taskName = (task) ? task.name : "";
+        const taskName = this.props.taskNames.get(`${visit.shop}_${visit.task}`);
 
         let isLast = false;
         if (lastCreatedId === id) {
             isLast = true;
         } else if (id === sync[lastCreatedId]) {
             isLast = true;
+        }
+
+        const hourDiff = moment().diff(moment(visit.started_date), "hours");
+        let allowPhotoByHours = hourDiff < 24;
+
+        if (visit.gps_shop) {
+            if (String(visit.gps_shop.customer_id) !== String(this.props.lastCustomer)) {
+                allowPhotoByHours = false;
+            }
+        } else {
+            if (String(visit.shop) !== String(this.props.lastCustomer)) {
+                allowPhotoByHours = false;
+            }
         }
 
         const _photos = this.props.photos.filter(photo => photo.visit === id || photo.tmpId === id || sync[photo.visit]).toList();
@@ -431,13 +661,59 @@ export class VisitDetailScene extends Component {
             photosCount += visit.images.length;
         }
 
-        this.id = id;
+        let taskQuestions = null;
+        if (visit.task) {
+            taskQuestions = this.props.tasks.find(task => parseInt(task.id) === parseInt(visit.task)) || null
+        }
 
+        this.id = id;
         const time = (visit.started_date) ? visit.started_date : visit.local_date;
+
+        const routeValue = !routeChangeProcessing ? <Text style={styles.value}>{route}</Text> :
+            <ActivityIndicator/>;
+        let modalWidth = width * 80 / 100;
+        if (modalWidth > 300) {
+            modalWidth = 300;
+        }
 
         return (
             <View style={{flex: 1}}>
-                {isLast && this.state.showBtn ?
+                <Modal visible={this.props.reasonSending} animationType="fade"
+                       onRequestClose={() => {
+                       }}
+                       transparent={true}>
+                    <View style={styles.alertArea}>
+                        <View style={styles.alertWindow} elevate={5}>
+                            <View style={{alignItems: "center"}}>
+                                <Text style={styles.requestText}>{"Оправка причины отсуствия"}</Text>
+                                <ActivityIndicator size="small"/>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+                <Modal visible={this.state.showPicture}
+                       animationType="fade"
+                       onRequestClose={() => {
+                       }}
+                       transparent={true}>
+                    <View style={styles.alertArea}>
+                        <View style={styles.pictureWindow} elevate={5}>
+                            {this.state.pictureLoading ?
+                                <ActivityIndicator style={{position: "absolute"}} size="large"/> : null}
+                            <Image source={{uri: this.state.pictureUrl}} style={{width: modalWidth, height: 300}}
+                                   resizeMode="contain" onLoadEnd={() => this.setState({pictureLoading: false})}
+                                   onLoadStart={() => this.setState({pictureLoading: true})}/>
+                            <View style={{marginTop: 30}}>
+                                <Button
+                                    onPress={() => this.setState({showPicture: false})}
+                                    style={{width: "100%", height: 20}}
+                                    title="Закрыть"
+                                    color="rgb(0,122,255)"/>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+                {allowPhotoByHours && this.state.showBtn ?
                     <GradientButton icon={cameraIcon} style={styles.takePhotoBtn} text={I18n.t('photo.makePhoto')}
                                     onPress={() => this.goToPhoto(id)}/> : null}
                 <ScrollView style={styles.container}>
@@ -456,23 +732,25 @@ export class VisitDetailScene extends Component {
                                 <Text style={styles.titleValue}>{`${I18n.t("visitDetail.shopId")}: `}</Text>
                                 <Text style={styles.value}>{shopId}</Text>
                             </View>
-                            <View style={styles.updateRow}>
-                                <Text style={styles.titleValue}>{`${I18n.t("visitDetail.pathId")}: `}</Text>
-                                <Text style={styles.value}>{route}</Text>
-                                <TouchableOpacity style={styles.updateArea}
-                                                  hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}
-                                                  onPress={this.editRoute}>
-                                    <Image source={editIcon}/>
-                                </TouchableOpacity>
-                            </View>
+                            {hasRoute ?
+                                <View style={styles.updateRow}>
+                                    <Text style={styles.titleValue}>{`${routeName}: `}</Text>
+                                    {routeValue}
+                                    {!routeChangeProcessing ?
+                                        <TouchableOpacity style={styles.updateArea}
+                                                          hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}
+                                                          onPress={this.editRoute}>
+                                            <Image source={editIcon}/>
+                                        </TouchableOpacity> : null}
+                                </View> : null}
                             {(photosCount > 0 && !visit.tmp) && this.renderResultsBlock(visit.results, visit.id)}
+                            {this.renderQuestionnaire(taskQuestions, visit.uuid)}
                             {(photosCount > 0 && !visit.tmp) && this.renderModerationBlock(visit.moderation)}
                         </View>
-                        {/*this.renderPhotoInfo()*/}
                         {this.renderPhotoArea(visit, isLast)}
                         {this.renderFeedbackAnswer(visit.helpdesk)}
                         {this.renderFeedbackButton()}
-                        {isLast && this.state.showBtn ?
+                        {allowPhotoByHours && this.state.showBtn ?
                             <View style={{flex: 1, height: 80}}/> : null}
                     </View>
                 </ScrollView>
@@ -483,33 +761,125 @@ export class VisitDetailScene extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const {nav, visitDetails, photo, visits, tasks} = state;
+    const {nav, visitDetails, photo, visits, tasks, shops, auth, questions} = state;
     return {
         nav: nav,
         isFetch: visitDetails.isFetch,
         visits: visits.entities.visit,
         offline: visits.entities.offline,
-        result: visits.result,
         photos: photo.photos,
         sync: visits.sync,
         lastCreatedId: visits.lastCreatedId,
         detail: visitDetails.visit,
-        tasks: tasks.list,
+        routeChangeProcessing: visitDetails.routeChangeProcessing,
+        taskNames: tasks.taskNames,
+        tasks: state.tasks.list,
         needSync: photo.needSync || visits.needSync,
-        loadedProgress: photo.loadedProgress
+        loadedProgress: photo.loadedProgress,
+        instance: auth.instance,
+        reasonSending: visitDetails.reasonSending,
+        skuReasons: visitDetails.skuReasons,
+        lastCustomer: shops.lastCustomer,
+        questions: questions.questions,
+        answers: questions.answers,
+        uuidValues: questions.uuidValues,
+        questionsSync: questions.sync,
+        questionsRequired: questions.required,
+        feedbackOffline: visits.feedbackOffline,
+        feedbackError: visits.feedbackError,
     }
 };
 
 export default connect(mapStateToProps, {
     goToPhoto,
-    goToFeedback,
+    goToFeedbackCategories,
+    goToQuestionnaire,
     backTo,
     clearVisitDetails,
     gotToPhotoView,
-    changeRoute
+    changeRoute,
+    getVisitDetails,
+    getVisitPosition,
+    sendReason,
+    addReasonForSync
 })(VisitDetailScene)
 
+const stylesQuestions = StyleSheet.create({
+    titleGroup: {
+        color: "black",
+        fontSize: 15,
+        marginTop: 24,
+        fontWeight: "bold",
+    },
+    answerContainer: {
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        marginTop: 10
+    },
+    answerValue: {
+        marginTop: 5,
+        fontSize: 14,
+        color: "black",
+        fontWeight: "bold",
+    },
+    titleQuestion: {
+        color: "black",
+        fontSize: 14,
+    },
+    requireMark: {
+        color: "#c40010"
+    },
+});
+
 const styles = StyleSheet.create({
+    rowSync: {
+        flex: 1,
+        alignItems: "center",
+        marginTop: 15,
+        flexDirection: "row",
+        justifyContent: 'center'
+    },
+    alertArea: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)"
+    },
+    alertWindow: {
+        width: 250,
+        height: 100,
+        borderRadius: 5,
+        backgroundColor: "white",
+        justifyContent: "center",
+        shadowOffset: {
+            width: 0,
+            height: 0.2
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.15,
+        elevation: 5
+    },
+    pictureWindow: {
+        alignItems: "center",
+        borderRadius: 5,
+        padding: 10,
+        paddingTop: 30,
+        backgroundColor: "white",
+        justifyContent: "center",
+        shadowOffset: {
+            width: 0,
+            height: 0.2
+        },
+        shadowRadius: 5,
+        shadowOpacity: 0.15,
+        elevation: 5
+    },
+    requestText: {
+        color: "black",
+        fontWeight: "bold",
+        marginBottom: 15
+    },
     container: {
         backgroundColor: 'white',
     },
@@ -616,6 +986,18 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: '#d8d8d8'
     },
+    delimiterMini: {
+        marginVertical: 10,
+        borderStyle: 'solid',
+        borderBottomWidth: 1,
+        borderColor: '#d8d8d8'
+    },
+    infoRow: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     infoTitle: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -640,15 +1022,19 @@ const styles = StyleSheet.create({
         fontStyle: 'normal'
     },
     statusBlock: {
-        flex: 1,
         marginTop: 19,
-        borderRadius: 4,
-        //backgroundColor: '#f5f5f7',
     },
     statusBlockComment: {
         opacity: 0.6,
         fontSize: 12,
         marginBottom: 10,
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        color: '#000000'
+    },
+    statusDate: {
+        opacity: 0.6,
+        fontSize: 12,
         fontWeight: 'normal',
         fontStyle: 'normal',
         color: '#000000'
@@ -689,6 +1075,12 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0
     },
+    resultRow: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
     photoArea: {
         flex: 1,
         marginTop: 10,
@@ -712,6 +1104,16 @@ const styles = StyleSheet.create({
     emptyPhotoImage: {
         width: 166,
         height: 172
+    },
+    conversationImageContainer: {
+        marginTop: 10,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    conversationImage: {
+        width: 56,
+        height: 56
     },
     emptyPhotoTitle: {
         marginTop: 10,
@@ -751,6 +1153,20 @@ const styles = StyleSheet.create({
         letterSpacing: 0,
         textAlign: "center",
         color: "#b4b4b4"
+    },
+    QuestionnaireButton: {
+        height: 44,
+        borderRadius: 22,
+        borderWidth: 2,
+        marginTop: 20,
+        justifyContent: "center"
+    },
+    QuestionnaireText: {
+        fontSize: 16,
+        fontWeight: "600",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        textAlign: "center"
     },
     empty: {flex: 1, justifyContent: 'center', alignItems: 'center'}
 });

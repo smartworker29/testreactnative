@@ -1,13 +1,13 @@
 import {
     AGENT_FETCH,
     SET_AUTH_ID,
-    SET_PROFILE_CONTACT_NUMBER, SET_PROFILE_DATA,
+    SET_PROFILE_CONTACT_NUMBER, SET_PROFILE_DATA, SET_PROFILE_FIELD_VALUE,
     SET_PROFILE_NAME,
     SET_PROFILE_PATH_NUMBER,
     SET_PROFILE_PATRONYMIC,
     SET_PROFILE_SURMANE, SHOW_TOAST
 } from "../utils/constants";
-import {AsyncStorage, Alert} from "react-native";
+import {AsyncStorage, Alert, View, Text} from "react-native";
 import {resetToList} from "./navigation";
 import * as API from "../api";
 import I18n from "react-native-i18n";
@@ -17,26 +17,68 @@ import bugsnag from '../bugsnag';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import uuidv4 from 'uuid/v4';
+import {Input} from "native-base";
+import {validate as emailValidate} from 'email-validator';
+import React from "react";
 
-export const saveData = (action) => async (dispatch, getState) => {
+export const saveData = (action, alert = true) => async (dispatch, getState) => {
 
     const data = getState().profile;
     const authId = getState().auth.id;
 
-    if (data.surname.length === 0) {
-        return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptySurname"));
+
+    const nameFields = getState().auth.instance.agent_name_fields;
+    if (nameFields) {
+        let [lang] = DeviceInfo.getDeviceLocale().split("-");
+        for (const name of nameFields) {
+            const value = String(name[`label_${lang}`]).toUpperCase();
+            if (value === "FIRST NAME" || value === "ФАМИЛИЯ") {
+                if (data.surname.length === 0) {
+                    return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptySurname"));
+                }
+            }
+            if (value === "SECOND NAME" || value === "ИМЯ") {
+                if (data.name.length === 0) {
+                    return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyName"));
+                }
+            }
+            if (value === "MIDDLE NAME" || value === "ОТЧЕСТВО") {
+                if (data.patronymic.length === 0) {
+                    return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyPatronymic"));
+                }
+            }
+        }
+    } else {
+        if (data.surname.length === 0) {
+            return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptySurname"));
+        }
+
+        if (data.name.length === 0) {
+            return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyName"));
+        }
+
+        if (data.patronymic.length === 0) {
+            return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyPatronymic"));
+        }
     }
 
-    if (data.name.length === 0) {
-        return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyName"));
+    let [lang] = DeviceInfo.getDeviceLocale().split("-");
+
+    const agent_fields = getState().auth.instance.agent_fields;
+    if (agent_fields) {
+        for (const field of agent_fields) {
+            if (field.required === true && (data.fields[field.name] === undefined || _.trim(data.fields[field.name]).length === 0)) {
+                const name = field[`label_${lang}`] || field.name;
+                return Alert.alert(I18n.t("error.attention"), `Пожалуйста, заполните обязательное поле профиля ${name}`);
+            }
+            if (field.name === "email" && !emailValidate(data.fields[field.name])) {
+                return Alert.alert(I18n.t("error.attention"), `Введите правильный Email`);
+            }
+        }
     }
 
-    if (data.patronymic.length === 0) {
-        return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyPatronymic"));
-    }
-
-    if (data.pathNumber.length === 0) {
-        return Alert.alert(I18n.t("error.attention"), I18n.t("error.emptyPathNumber"));
+    if (data.fields["route"] !== undefined) {
+        data.pathNumber = data.fields["route"];
     }
 
     const name = `${_.trim(data.surname)} ${_.trim(data.name)} ${_.trim(data.patronymic)}`;
@@ -76,15 +118,31 @@ export const saveData = (action) => async (dispatch, getState) => {
         });
         if (result !== null) {
             await AsyncStorageQueue.push(`@${pin}_agent`, String(result.data.id));
+            _.forEach(agent_fields, field => {
+                if (result.data[field.name] !== undefined || result.data[field.name] !== null) {
+                    AsyncStorageQueue.push(`@${pin}_profile_field_${field.name}`, String(result.data[field.name])).then();
+                }
+            });
             dispatch({type: SET_AUTH_ID, payload: String(result.data.id)});
             dispatch({type: AGENT_FETCH, payload: false});
             return dispatch(resetToList());
         } else {
-            Alert.alert(I18n.t("error.attention"), I18n.t("error.createAgent"));
+            alert && Alert.alert(I18n.t("error.attention"), I18n.t("error.createAgent"));
         }
     } else {
-        if (await API.updateAgent(authId, name) === null) {
-            Alert.alert(I18n.t("error.attention"), I18n.t("error.updateAgent"));
+        const fields = _.clone(data.fields);
+        _.forEach(data.fields, (val, key) => {
+            fields[key] = _.isArray(val) ? JSON.stringify(val) : val;
+        });
+        const result = await API.updateAgent(authId, name, fields);
+        if (result === null) {
+            alert && Alert.alert(I18n.t("error.attention"), I18n.t("error.updateAgent"));
+        } else {
+            _.forEach(agent_fields, field => {
+                if (result.data[field.name] !== undefined || result.data[field.name] !== null) {
+                    AsyncStorageQueue.push(`@${pin}_profile_field_${field.name}`, String(result.data[field.name])).then();
+                }
+            });
         }
     }
 
@@ -96,9 +154,17 @@ export const saveData = (action) => async (dispatch, getState) => {
     }
 };
 
+const validateEmail = (email) => {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+};
+
 export const loadData = () => async (dispatch, getState) => {
     const pin = getState().auth.pin;
     const data = JSON.parse(await AsyncStorage.getItem(`@${pin}_profile`)) || {};
+    if (data.fields !== undefined && data.fields.route !== undefined) {
+        data.pathNumber = data.fields.route;
+    }
     dispatch({type: SET_PROFILE_DATA, payload: data});
 };
 
@@ -116,4 +182,8 @@ export const setPatronymic = (text) => (dispatch) => {
 
 export const setPathNumber = (text) => (dispatch) => {
     dispatch({type: SET_PROFILE_PATH_NUMBER, payload: _.trim(text)});
+};
+
+export const setFieldValue = (field, value) => (dispatch) => {
+    dispatch({type: SET_PROFILE_FIELD_VALUE, payload: {field, value: _.trim(value)}});
 };

@@ -3,7 +3,7 @@ import visits from "../reducer/visits";
 
 export const back = () => dispatch => dispatch(NavigationActions.back({key: ""}));
 export const backToList = () => dispatch => dispatch(NavigationActions.back({key: 'list'}));
-
+export const backToDetails = () => dispatch => dispatch(NavigationActions.back({key: 'details'}));
 export const backTo = (scene) => dispatch => dispatch(NavigationActions.reset({
     index: 0,
     actions: [NavigationActions.navigate({routeName: scene})]
@@ -40,10 +40,11 @@ export const resetToProfile = () => NavigationActions.reset({
     ]
 });
 
-export const visitDetailsAndReset = (id, tmp, openCamera) => NavigationActions.reset({
-    index: 1,
+export const visitDetailsAndReset = (id, tmp, openCamera, shop, favorites) => NavigationActions.reset({
+    index: 2,
     actions: [
-        NavigationActions.navigate({routeName: 'VisitList'}),
+        NavigationActions.navigate({routeName: 'VisitList', params: {shop, favorites}}),
+        NavigationActions.navigate({routeName: 'Tasks', params: {shop, favorites}}),
         NavigationActions.navigate({routeName: 'VisitDetails', params: {id, tmp, openCamera}})
     ]
 });
@@ -54,23 +55,34 @@ export const visitDetailsAndReset = (id, tmp, openCamera) => NavigationActions.r
  */
 export const goToVisitDetails = (id, isOffline) => dispatch => dispatch(visitDetails(id, isOffline));
 
-/**
- * Got to photo scene
- * @param id visit's id
- */
-export const goToPhoto = (id, backHandler) => dispatch => dispatch(NavigationActions.navigate({
+export const goToPhoto = (id, backHandler, photoUUID = null, photoIndex = null) => dispatch => dispatch(NavigationActions.navigate({
     routeName: 'Photo',
     params: {
         id,
-        backHandler
+        backHandler,
+        photoUUID,
+        photoIndex
     }
 }));
 
-export const goToFeedback = (visitId) => dispatch => dispatch(NavigationActions.navigate({
+export const goToFeedback = (visitId, category) => dispatch => dispatch(NavigationActions.navigate({
     routeName: 'Feedback',
+    params: {
+        id: visitId,
+        category
+    }
+}));
+
+export const goToFeedbackCategories = (visitId) => dispatch => dispatch(NavigationActions.navigate({
+    routeName: 'Categories',
     params: {
         id: visitId
     }
+}));
+
+export const goToQuestionnaire = (questions, uuid) => dispatch => dispatch(NavigationActions.navigate({
+    routeName: 'Questionnaire',
+    params: {questions, visitUuid: uuid}
 }));
 
 export const gotToPhotoView = (uri) => NavigationActions.navigate({

@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {ActivityIndicator, Button, ImageBackground, Modal, StyleSheet, View} from 'react-native';
-import {addPhoto, uploadPhoto} from '../actions/photo';
-import I18n from "react-native-i18n";
+import {addPhoto, uploadPhoto} from '../actions/photo'
 
 class MainScene extends Component {
     constructor(props) {
@@ -57,15 +56,8 @@ class MainScene extends Component {
                 <ImageBackground style={styles.image}
                                  source={{uri: uri ? uri : ''}}>
                 </ImageBackground>
-                <Button title={I18n.t("photo.makePhoto")} onPress={() => this.showCamera(true)}/>
+                <Button title='Сделать фото' onPress={() => this.showCamera(true)}/>
                 {this.renderUpload()}
-                <Modal
-                    animationType="slide"
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => this.showCamera(false)}
-                >
-
-                </Modal>
 
             </View>
         )

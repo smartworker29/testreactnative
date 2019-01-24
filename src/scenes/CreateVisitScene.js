@@ -10,6 +10,7 @@ import GradientButton from "../component/GradientButton";
 import {allowAction} from "../utils/util";
 import Permissions from 'react-native-permissions'
 import Geolocation from 'react-native-geolocation-service';
+import _ from "lodash";
 
 export class CreateVisitScene extends Component {
 
@@ -60,8 +61,7 @@ export class CreateVisitScene extends Component {
                 switch (error.code) {
                     case 3:
                         errMsg = I18n.t("error.geoTimeout");
-                        clearInterval(this.check);
-                        return this.setState({geoAllow: true, fetchGeo: false, geoError: ""});
+                        break;
                     case 4:
                         errMsg = I18n.t("error.geoPlayService");
                         break;
@@ -92,17 +92,20 @@ export class CreateVisitScene extends Component {
     }
 
     createVisit = async () => {
-        if (this.state.text.length === 0 || this.props.isFetch === true) {
+        if (this.props.isFetch === true) {
             return;
         }
 
-        if (!this.state.geoAllow) {
+        if (!this.state.geoAllow || this.state.coordinates === null) {
             return
         }
-        const taskId = this.props.navigation.state.params.taskId;
+
+        const {shop, taskId, taskName} = this.props.navigation.state.params;
+        console.log("CreateVisitScene", typeof shop);
+        const shopId = _.isString(shop) ? shop : shop.customer_id;
         if (allowAction("create_visit_process")) {
             Keyboard.dismiss();
-            this.props.createVisit(this.state.text, taskId, 5000, this.state.coordinates);
+            this.props.createVisit(shopId, taskId, 5000, this.state.coordinates, taskName);
         }
     };
 
@@ -138,20 +141,10 @@ export class CreateVisitScene extends Component {
                     <Text style={styles.description}>{I18n.t("CreateVisit.description")}</Text>
                     <View style={styles.input}>
                         {geoText}
-                        <TextInput onChangeText={(text) => this.setState({text: text.replace(/[^0-9]/g, '')})}
-                                   ref={(cmp) => this.input = cmp}
-                                   maxLength={9}
-                                   autoFocus={false}
-                                   keyboardType="numeric"
-                                   style={styles.inputCmp}
-                                   underlineColorAndroid="transparent"
-                                   placeholder={I18n.t('CreateVisit.label')}
-                                   value={this.state.text}
-                        />
                     </View>
                     <View style={{marginTop: 15}}>
                         <GradientButton
-                            disable={this.state.text.length === 0 || this.props.isFetch === true || !this.state.geoAllow}
+                            disable={this.props.isFetch === true || !this.state.geoAllow || !this.state.coordinates}
                             text={I18n.t('CreateVisit.createAction')}
                             onPress={this.createVisit}/>
                     </View>
@@ -167,7 +160,6 @@ export default connect(state => {
         nav: nav,
         error: visits.error,
         isFetch: visits.isCreateFetch,
-        result: visits.result
     }
 }, {back, createVisit, goToVisitDetails})(CreateVisitScene)
 

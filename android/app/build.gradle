@@ -68,16 +68,16 @@ import com.android.build.OutputFile
  *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
- *   extraPackagerArgs: ["--sourcemap-output", "$buildDir/intermediates/assets/release/index.android.bundle.map"]
+ *   extraPackagerArgs: []
  * ]
  */
 
 project.ext.react = [
-    entryFile: "index.js",
-    extraPackagerArgs: ["--sourcemap-output", "$buildDir/intermediates/assets/release/index.android.bundle.map"]
+    entryFile: "index.js"
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-sentry/sentry.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -105,8 +105,9 @@ android {
         applicationId "inspector.cloud"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 94
+        versionCode 209
         versionName "1.0"
+        archivesBaseName = "inspectorcloud-v$versionCode"
 
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -157,10 +158,8 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-sentry')
     compile project(':react-native-fetch-blob')
-    compile (project(':react-native-camera')) {
-        exclude group: "com.android.support", module: 'support-v4'
-    }
     compile project(':react-native-gesture-handler')
     compile project(':react-native-photo-view')
     compile project(':react-native-google-api-availability-bridge')
@@ -174,6 +173,9 @@ dependencies {
     compile project(':react-native-linear-gradient')
     compile project(':react-native-i18n')
     compile project(':react-native-fs')
+    compile (project(':react-native-camera')) {
+        exclude group: "com.android.support", module: 'support-v4'
+    }
     compile project(':bugsnag-react-native')
     compile fileTree(dir: "libs", include: ["*.jar"])
 
