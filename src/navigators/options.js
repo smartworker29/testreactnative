@@ -324,7 +324,9 @@ export const previewNavigationOptions = (navigation) => {
                     </TouchableOpacity> : null}
                     <TouchableOpacity
                         onPress={() => {
-                            alertQuestion(deleteHandler, photo.uri, photo.id)
+                            if (photo !== undefined) {
+                                alertQuestion(deleteHandler, photo.uri, photo.id)
+                            }
                         }}>
                         <Image resizeMode="contain" source={deleteIcon} style={{tintColor: "white"}}/>
                     </TouchableOpacity>

@@ -47,6 +47,9 @@ export default (state = init, action) => {
     let photos = state.photos;
     switch (action.type) {
         case types.UPLOAD_PHOTO_REQUEST:
+            if (action.payload === undefined) {
+                return state;
+            }
             photos = photos.updateIn([action.payload.uri], photo => {
                 photo.isUploading = true;
                 photo.visit = action.payload.id;
@@ -55,6 +58,9 @@ export default (state = init, action) => {
             return {...state, isFetch: true, error: null, photos};
 
         case types.UPLOAD_PHOTO_RESPONSE:
+            if (action.payload === undefined) {
+                return state;
+            }
             photos = photos.updateIn([action.payload.uri], photo => {
                 photo.visit = action.payload.visit;
                 photo.tmpId = action.payload.tmpId;
@@ -80,6 +86,9 @@ export default (state = init, action) => {
             };
 
         case types.UPLOAD_PHOTO_ERROR:
+            if (action.payload === undefined) {
+                return state;
+            }
             photos = photos.updateIn([action.payload.uri], photo => {
                 if (photo !== undefined) {
                     photo.isUploading = false;
@@ -96,6 +105,9 @@ export default (state = init, action) => {
             return {...state, syncProcess: false, needSync: checkNeedSync(state.photos)};
 
         case types.ADD_PHOTO:
+            if (action.payload === undefined) {
+                return state;
+            }
             photos = photos.set(action.payload.uri, {
                 isUploaded: false,
                 isUploading: false,
@@ -128,6 +140,9 @@ export default (state = init, action) => {
                 loadedTokens: state.loadedTokens.set(action.payload, action.controller)
             };
         case UPLOAD_PROGRESS:
+            if (action.payload === undefined) {
+                return state;
+            }
             return {
                 ...state,
                 loadedProgress: state.loadedProgress.set(action.payload.uri, action.payload.data)

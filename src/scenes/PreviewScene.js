@@ -75,6 +75,9 @@ class PreviewScene extends Component {
         const {id, photoUUID} = this.props.navigation.state.params;
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
         const photo = photos.find(photo => photo.uuid === photoUUID);
+        if (photo === undefined) {
+            return;
+        }
         this.props.navigation.setParams({
             count: photos.count(),
             currentPhotoUri: photo.uri,
@@ -174,6 +177,9 @@ class PreviewScene extends Component {
 
         let items = [];
         for (const photo of photos) {
+            if (photo === undefined) {
+                continue;
+            }
             const filPath = getPhotoPathWithPrefix(photo.uri);
             items.push(
                 <View style={{flex: 1}} key={filPath}>
