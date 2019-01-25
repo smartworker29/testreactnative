@@ -74,7 +74,10 @@ class PreviewScene extends Component {
     initData = () => {
         const {id, photoUUID} = this.props.navigation.state.params;
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
-        const photo = photos.find(photo => photo.uuid === photoUUID);
+        const photo = photos.find(photo => photo && photo.uuid === photoUUID);
+        if (!photo) {
+            return;
+        }
         this.props.navigation.setParams({
             count: photos.count(),
             currentPhotoUri: photo.uri,
@@ -173,7 +176,8 @@ class PreviewScene extends Component {
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
 
         let items = [];
-        for (const photo of photos) {
+        const filteredPhoto = photos.filter(photo => !!photo);
+        for (const photo of filteredPhoto) {
             const filPath = getPhotoPathWithPrefix(photo.uri);
             items.push(
                 <View style={{flex: 1}} key={filPath}>

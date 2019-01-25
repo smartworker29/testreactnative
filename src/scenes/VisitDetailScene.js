@@ -475,7 +475,8 @@ export class VisitDetailScene extends Component {
         }
 
         const imageBlocks = [];
-        for (const image of photos) {
+        const filteredPhoto = photos.filter(photo => !!photo);
+        for (const image of filteredPhoto) {
             const irData = _.find(visit.images, {id: image.id});
             if (irData) {
                 image.ir_message = irData.ir_message;
