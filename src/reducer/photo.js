@@ -47,7 +47,7 @@ export default (state = init, action) => {
     let photos = state.photos;
     switch (action.type) {
         case types.UPLOAD_PHOTO_REQUEST:
-            if (action.payload === undefined) {
+            if (!action.payload) {
                 return state;
             }
             photos = photos.updateIn([action.payload.uri], photo => {
@@ -58,7 +58,7 @@ export default (state = init, action) => {
             return {...state, isFetch: true, error: null, photos};
 
         case types.UPLOAD_PHOTO_RESPONSE:
-            if (action.payload === undefined) {
+            if (!action.payload) {
                 return state;
             }
             photos = photos.updateIn([action.payload.uri], photo => {
@@ -86,11 +86,11 @@ export default (state = init, action) => {
             };
 
         case types.UPLOAD_PHOTO_ERROR:
-            if (action.payload === undefined) {
+            if (!action.payload) {
                 return state;
             }
             photos = photos.updateIn([action.payload.uri], photo => {
-                if (photo !== undefined) {
+                if (photo) {
                     photo.isUploading = false;
                     photo.isUploaded = false;
                     return photo;
@@ -105,7 +105,7 @@ export default (state = init, action) => {
             return {...state, syncProcess: false, needSync: checkNeedSync(state.photos)};
 
         case types.ADD_PHOTO:
-            if (action.payload === undefined) {
+            if (!action.payload) {
                 return state;
             }
             photos = photos.set(action.payload.uri, {
@@ -140,7 +140,7 @@ export default (state = init, action) => {
                 loadedTokens: state.loadedTokens.set(action.payload, action.controller)
             };
         case UPLOAD_PROGRESS:
-            if (action.payload === undefined) {
+            if (!action.payload) {
                 return state;
             }
             return {

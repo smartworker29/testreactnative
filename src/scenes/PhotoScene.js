@@ -270,9 +270,6 @@ class PhotoScene extends Component {
         const photoUUID = this.props.navigation.getParam("photoUUID", null);
         const photoIndex = this.props.navigation.getParam("photoIndex", null);
 
-        console.log("photoUUID", photoUUID);
-        console.log("photoIndex", photoIndex);
-
         this.fadeCamera();
         this.takePictureStatus = true;
         this.setState({processPhoto: true});
@@ -347,7 +344,7 @@ class PhotoScene extends Component {
 
         if (photoUUID) {
             try {
-                const oldPhoto = this.props.photos.find(photo => photo.uuid === photoUUID);
+                const oldPhoto = this.props.photos.find(photo => photo && photo.uuid === photoUUID);
                 if (oldPhoto === undefined) {
                     throw new Error("oldPhoto.uri not exists");
                 }

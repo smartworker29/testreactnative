@@ -324,7 +324,7 @@ export const previewNavigationOptions = (navigation) => {
                     </TouchableOpacity> : null}
                     <TouchableOpacity
                         onPress={() => {
-                            if (photo !== undefined) {
+                            if (photo) {
                                 alertQuestion(deleteHandler, photo.uri, photo.id)
                             }
                         }}>

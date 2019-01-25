@@ -29,8 +29,7 @@ class SyncScene extends Component {
     };
 
     photoTask = (image) => {
-        const title = (image.isUploading === true) ? "Синхронизация фото" : "Фото в очереди";
-        if (image === undefined) {
+        if (!image) {
             return null;
         }
         return (

@@ -74,8 +74,8 @@ class PreviewScene extends Component {
     initData = () => {
         const {id, photoUUID} = this.props.navigation.state.params;
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
-        const photo = photos.find(photo => photo.uuid === photoUUID);
-        if (photo === undefined) {
+        const photo = photos.find(photo => photo && photo.uuid === photoUUID);
+        if (!photo) {
             return;
         }
         this.props.navigation.setParams({
