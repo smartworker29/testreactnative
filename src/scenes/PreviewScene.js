@@ -176,10 +176,8 @@ class PreviewScene extends Component {
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
 
         let items = [];
-        for (const photo of photos) {
-            if (photo === undefined) {
-                continue;
-            }
+        const filteredPhoto = photos.filter(photo => !!photo);
+        for (const photo of filteredPhoto) {
             const filPath = getPhotoPathWithPrefix(photo.uri);
             items.push(
                 <View style={{flex: 1}} key={filPath}>

@@ -345,7 +345,7 @@ class PhotoScene extends Component {
         if (photoUUID) {
             try {
                 const oldPhoto = this.props.photos.find(photo => photo && photo.uuid === photoUUID);
-                if (oldPhoto === undefined) {
+                if (!oldPhoto) {
                     throw new Error("oldPhoto.uri not exists");
                 }
                 const result = await this.props.deleteImage(oldPhoto.uri, oldPhoto.id, true);
