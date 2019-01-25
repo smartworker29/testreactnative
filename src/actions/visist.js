@@ -316,8 +316,6 @@ export const sendFeedback = (visit, request, sendState, category, uuid) => async
     if (sendState === true) {
         deviceInfo.store = getState();
         deviceInfo.files = await readDir(photoDir);
-        //deviceInfo.redux = ErrorLogging.redux;
-        console.log(deviceInfo.redux);
         deviceInfo.last_errors = ErrorLogging.errors;
         deviceInfo.last_store_errors = await AsyncStorage.getItem("errors");
         deviceInfo.deleted_photos = ErrorLogging.deletedPhotos;
