@@ -49,8 +49,14 @@ class PreviewScene extends Component {
         }
         const {id} = this.props.navigation.state.params;
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
-        const photo = photos.find(photo => photo.uri === photoUri);
-        const photoIndex = photos.findIndex(photo => photo.uri === photoUri);
+        const photo = photos.find(photo => photo && photo.uri === photoUri);
+        if (!photo) {
+            return this.setState({renderSwiper: true});
+        }
+        const photoIndex = photos.findIndex(photo => photo && photo.uri === photoUri);
+        if (photoIndex === undefined) {
+            return this.setState({renderSwiper: true});
+        }
         this.setState({photoUri, initIndex: photoIndex, renderSwiper: false}, () => {
             this.props.navigation.setParams({
                 count: photos.count(),
@@ -67,8 +73,8 @@ class PreviewScene extends Component {
         const uri = this.props.navigation.getParam("uri");
         const id = this.props.navigation.getParam("id");
         const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
-        const index = photos.findIndex(photo => photo.uri === uri);
-        this.setState({photoUri: uri, initIndex: index});
+        const index = photos.findIndex(photo => photo && photo.uri === uri);
+        this.setState({photoUri: uri, initIndex: index || 0});
     }
 
     initData = () => {

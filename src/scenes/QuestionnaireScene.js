@@ -109,20 +109,28 @@ class QuestionnaireScene extends Component {
         )
     }
 
-    changeText(questionUuid, text) {
+    changeText(questionUuid, text, valueType) {
         this.setState(state => {
-            return {
-                answers: state.answers.set(this.state.visitUuid + '_' + questionUuid, {
+            let answers;
+            let needSync = state.needSync.set(this.state.visitUuid + '_' + questionUuid, null);
+            if (valueType === "text") {
+                answers = state.answers.set(this.state.visitUuid + '_' + questionUuid, {
                     question_uuid: questionUuid,
                     visit_uuid: state.visitUuid,
                     text: text
-                }),
-                needSync: state.needSync.set(this.state.visitUuid + '_' + questionUuid, null)
+                })
+            } else if (valueType === "number") {
+                answers = state.answers.set(this.state.visitUuid + '_' + questionUuid, {
+                    question_uuid: questionUuid,
+                    visit_uuid: state.visitUuid,
+                    number: text
+                });
             }
+            return {answers, needSync}
         })
     }
 
-    renderInputQuestion(object, index, group, type) {
+    renderInputQuestion(object, index, group, keyboardType, valueType) {
         const selected = this.state.answers.get(this.state.visitUuid + '_' + object.uuid, null);
         const value = selected && selected.text ? selected.text : "";
         const requiredMark = object.required === true ? <Text style={styles.requireMark}>*</Text> : null;
@@ -133,13 +141,13 @@ class QuestionnaireScene extends Component {
                     <View style={{flexDirection: "column", marginLeft: 13, flex: 1}}>
                         <Text style={styles.questionTitle}>{object.text} {requiredMark}</Text>
                         {Platform.OS === "android" ?
-                            <TextInput keyboardType={type} style={styles.answerInput}
+                            <TextInput keyboardType={keyboardType} style={styles.answerInput}
                                        value={value}
-                                       onChangeText={text => this.changeText(object.uuid, text)}/> :
+                                       onChangeText={text => this.changeText(object.uuid, text, valueType)}/> :
                             <View style={styles.answerContainerInput}>
-                                <TextInput keyboardType={type} style={styles.answerInput}
+                                <TextInput keyboardType={keyboardType} style={styles.answerInput}
                                            value={value}
-                                           onChangeText={text => this.changeText(object.uuid, text)}/>
+                                           onChangeText={text => this.changeText(object.uuid, text, valueType)}/>
                             </View>}
                     </View>
                 </View>
@@ -332,10 +340,10 @@ class QuestionnaireScene extends Component {
                     _questions.push(this.renderButtonsQuestion(question, index, group));
                     break;
                 case "TEXT":
-                    _questions.push(this.renderInputQuestion(question, index, group, "default"));
+                    _questions.push(this.renderInputQuestion(question, index, group, "default", "text"));
                     break;
                 case "NUMBER":
-                    _questions.push(this.renderInputQuestion(question, index, group, "decimal-pad"));
+                    _questions.push(this.renderInputQuestion(question, index, group, "decimal-pad", "number"));
                     break;
                 case "SELECT_ONE":
                     _questions.push(this.renderRadioQuestion(question, index, group));
