@@ -482,7 +482,7 @@ export class VisitDetailScene extends Component {
                 image.ir_message = irData.ir_message;
                 image.ir_status = irData.ir_status;
             }
-            const index = photos.findIndex(photo => photo.uri === image.uri);
+            const index = filteredPhoto.findIndex(photo => photo.uri === image.uri);
             const progressData = this.props.loadedProgress.get(image.uri);
             const loaded = (progressData) ? progressData.loaded : null;
             const total = (progressData) ? progressData.total : null;
