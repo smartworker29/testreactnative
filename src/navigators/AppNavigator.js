@@ -72,7 +72,9 @@ import {initSkuSync, syncReasons} from "../actions/visitDetails";
 import * as API from "../api";
 import {Sentry} from 'react-native-sentry';
 
-Sentry.config('https://11d80528d8d744ce9098692402b0339f@sentry.inspector-cloud.ru//6').install().then(console.log).catch(console.log);
+if (!__DEV__) {
+    Sentry.config('https://11d80528d8d744ce9098692402b0339f@sentry.inspector-cloud.ru//6').install().then(console.log).catch(console.log);
+}
 
 YellowBox.ignoreWarnings([
     'Warning: componentWillMount is deprecated',
