@@ -314,11 +314,11 @@ export const sendFeedback = (visit, request, sendState, category, uuid) => async
     const deviceInfo = await getDeviceInfo();
     deviceInfo.current_time = new Date();
     if (sendState === true) {
-        deviceInfo.store = getState();
-        deviceInfo.files = await readDir(photoDir);
-        deviceInfo.last_errors = ErrorLogging.errors;
-        deviceInfo.last_store_errors = await AsyncStorage.getItem("errors");
-        deviceInfo.deleted_photos = ErrorLogging.deletedPhotos;
+        //deviceInfo.store = getState();
+        //deviceInfo.files = await readDir(photoDir);
+        //deviceInfo.last_errors = ErrorLogging.errors;
+        //deviceInfo.last_store_errors = await AsyncStorage.getItem("errors");
+        //deviceInfo.deleted_photos = ErrorLogging.deletedPhotos;
         await AsyncStorageQueue.push(`@updateDeviceInfoExtendDate`, moment().toJSON());
     }
     const data = {visit, device_info: deviceInfo, request, uuid, category};

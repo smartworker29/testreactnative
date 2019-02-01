@@ -51,12 +51,12 @@ export const updateDeviceInfo = (force = false) => async (dispatch, getState) =>
         force === true ||
         updateInterval === true
     ) {
-        data.store = getState();
-        data.last_errors = ErrorLogging.errors;
-        data.last_store_errors = await AsyncStorage.getItem("errors");
-        data.current_time = new Date();
-        data.redux = ErrorLogging.redux;
-        data.files = await readDir(photoDir);
+        //data.store = getState();
+        //data.last_errors = ErrorLogging.errors;
+        //data.last_store_errors = await AsyncStorage.getItem("errors");
+        //data.current_time = new Date();
+        //data.redux = ErrorLogging.redux;
+        //data.files = await readDir(photoDir);
     }
 
     if (agentId !== null) {

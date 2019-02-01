@@ -60,7 +60,6 @@ import DeviceInfo from "react-native-device-info";
 import RNPickerSelect from "react-native-picker-select";
 import EventEmitter from "react-native-eventemitter";
 import {List, Set} from "immutable";
-import striptags from "striptags";
 
 let {height, width} = Dimensions.get('window');
 
@@ -119,11 +118,11 @@ export class VisitDetailScene extends Component {
     }
 
     renderShopDetail(visit) {
-        if (!visit.shop_name || !visit.shop_area) {
+        if (!visit || !visit.shop_name || !visit.shop_area) {
             return null
         }
 
-        const logo = (visit.gps_shop) ? visit.gps_shop.logo : null;
+        const logo = (visit && visit.gps_shop) ? visit.gps_shop.logo : null;
 
         return (
             <View style={styles.topRow}>
@@ -268,6 +267,9 @@ export class VisitDetailScene extends Component {
         if (answer.text !== undefined) {
             return <Text style={stylesQuestions.answerValue}>{answer.text}</Text>
         }
+        if (answer.number !== undefined) {
+            return <Text style={stylesQuestions.answerValue}>{answer.number}</Text>
+        }
         if (answer.bool !== undefined) {
             return <Text style={stylesQuestions.answerValue}>{answer.bool ? "Да" : "Нет"}</Text>
         }
@@ -349,16 +351,6 @@ export class VisitDetailScene extends Component {
                 <Text style={styles.statusText}>{I18n.t('visits_list.moderation')}</Text>
             </View>
         );
-
-        if (moderation === null) {
-            return (
-                <View style={styles.result}>
-                    <View style={styles.delimiter}/>
-                    <Text style={styles.infoTitle}>{I18n.t('visitDetail.moderationResult')}</Text>
-                    {moderationRow}
-                </View>
-            )
-        }
 
         switch (moderation.status) {
             case 'NEGATIVE' :
@@ -482,7 +474,7 @@ export class VisitDetailScene extends Component {
                 image.ir_message = irData.ir_message;
                 image.ir_status = irData.ir_status;
             }
-            const index = filteredPhoto.findIndex(photo => photo.uri === image.uri);
+            const index = filteredPhoto.findIndex(photo => photo && photo.uri === image.uri);
             const progressData = this.props.loadedProgress.get(image.uri);
             const loaded = (progressData) ? progressData.loaded : null;
             const total = (progressData) ? progressData.total : null;
@@ -625,6 +617,7 @@ export class VisitDetailScene extends Component {
 
         const needPhotoSync = photos.find(photo => {
             return (
+                photo &&
                 (photo.visit === id || photo.tmpId === id || sync[photo.visit]) &&
                 (photo.isUploaded === false || photo.isUploading === true)) &&
                 photo.isProblem !== true
@@ -645,7 +638,7 @@ export class VisitDetailScene extends Component {
         const hourDiff = moment().diff(moment(visit.started_date), "hours");
         let allowPhotoByHours = hourDiff < 24;
 
-        if (visit.gps_shop) {
+        if (visit && visit.gps_shop) {
             if (String(visit.gps_shop.customer_id) !== String(this.props.lastCustomer)) {
                 allowPhotoByHours = false;
             }
@@ -655,7 +648,7 @@ export class VisitDetailScene extends Component {
             }
         }
 
-        const _photos = this.props.photos.filter(photo => photo.visit === id || photo.tmpId === id || sync[photo.visit]).toList();
+        const _photos = this.props.photos.filter(photo => photo && (photo.visit === id || photo.tmpId === id || sync[photo.visit])).toList();
         let photosCount = _photos.count();
 
         if (visit && visit.images) {
@@ -664,7 +657,7 @@ export class VisitDetailScene extends Component {
 
         let taskQuestions = null;
         if (visit.task) {
-            taskQuestions = this.props.tasks.find(task => parseInt(task.id) === parseInt(visit.task)) || null
+            taskQuestions = this.props.tasks.find(task => task && parseInt(task.id) === parseInt(visit.task)) || null
         }
 
         this.id = id;

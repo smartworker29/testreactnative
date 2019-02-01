@@ -62,7 +62,7 @@ export const tasksNavigationOptions = (navigation) => {
 
     //console.log("favorites", favorites.toArray());
 
-    icon = (favorites && favorites.find(item => item.gps_shop && item.gps_shop.id === shop.id)) ? likeOnBigIcon : likeOffBigIcon;
+    icon = (favorites && favorites.find(item => item && item.gps_shop && item.gps_shop.id === shop.id)) ? likeOnBigIcon : likeOffBigIcon;
 
     let headerRight = (favoriteHandler && !_.isString(shop)) ? (
         <TouchableOpacity style={Styles.navBarIconAreaRight} onPress={() => {

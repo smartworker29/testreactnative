@@ -35,7 +35,7 @@ export const init = {
 };
 
 const checkNeedSync = (photos) => {
-    const photo = photos.find(photo => photo.isUploaded === false && photo.isProblem !== true);
+    const photo = photos.find(photo => photo && photo.isUploaded === false && photo.isProblem !== true);
     return !!(photo);
 };
 

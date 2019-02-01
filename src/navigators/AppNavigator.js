@@ -215,7 +215,7 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(initVisits());
         await this.props.dispatch(photoInit());
         await this.props.dispatch(initFavorites());
-        await this.props.dispatch(updateDeviceInfo());
+        //await this.props.dispatch(updateDeviceInfo());
 
         await this.props.dispatch(initQuestions());
         await this.props.dispatch(initUuidValues());
@@ -270,9 +270,7 @@ class AppWithNavigationState extends Component {
     };
 
     async componentDidMount() {
-
         await this.checkLocation();
-
         await this.props.dispatch(initFolders());
         await this.props.dispatch(initPins());
         //await this.props.dispatch(updateRatioExceptions());

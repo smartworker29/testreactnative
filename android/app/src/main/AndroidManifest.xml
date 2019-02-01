@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="inspector.cloud"
-    android:versionCode="209"
+
+    android:name="android.support.multidex.MultiDexApplication"
+    android:versionCode="224"
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -9,35 +12,32 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission
+        android:name="android.permission.READ_PHONE_STATE"
+        tools:node="remove" />
 
-
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="22" />
 
     <application
-        android:name=".MainApplication"
-        android:allowBackup="true"
+        android:name="inspector.cloud.MainApplication"
+        android:allowBackup="false"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme">
+
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait"
+            android:name="inspector.cloud.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-     <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
             </intent-filter>
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-
-        <meta-data android:name="com.bugsnag.android.API_KEY"
-                   android:value="4244c9843d1344a64b5fe149f2c1cd19"/>
     </application>
 
 </manifest>

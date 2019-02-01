@@ -18,6 +18,9 @@ export default class AsyncStorageQueue {
         }
         AsyncStorageQueue.processing = true;
         const item = AsyncStorageQueue.queue.pop();
+        if (!item.key) {
+            return;
+        }
         try {
             await AsyncStorage.setItem(item.key, item.val);
         } catch (error) {
