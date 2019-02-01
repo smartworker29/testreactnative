@@ -88,7 +88,7 @@ export const selectFavorites = () => (dispatch, getState) => {
 export const setFavorite = (shopId) => async (dispatch, getState) => {
     const id = getState().auth.id;
     dispatch({type: SET_FAVORITE_FETCH, payload: true});
-    const favShop = getState().shops.favorites.find(fav => fav.gps_shop.id === shopId);
+    const favShop = getState().shops.favorites.find(fav => fav && fav.gps_shop && fav.gps_shop.id === shopId);
     if (favShop) {
         const response = await API.deleteFavoriteShop(id, favShop.id);
         if (response !== null) {

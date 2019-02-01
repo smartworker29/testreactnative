@@ -77,8 +77,7 @@ class ListItem extends PureComponent {
         if (!shop_name || !shop_area) {
             return null
         }
-        const shop = visit.gps_shop;
-        const logo = shop.logo;
+        const logo = visit.gps_shop ? visit.gps_shop.logo : null;
         return (
             <View style={styles.topRow}>
                 {(logo) ? <CachedImage style={styles.icon} source={{uri: logo}} resizeMode="contain"/> : null}
@@ -96,6 +95,7 @@ class ListItem extends PureComponent {
         const route = (visit.current_agent_route !== undefined) ? visit.current_agent_route : pathNumber;
         const needPhotoSync = photos.find(photo => {
             return (
+                photo &&
                 (photo.visit === visit.id || photo.tmpId === visit.id || sync[photo.visit] === visit.id) &&
                 (photo.isUploaded === false || photo.isUploading === true)) &&
                 photo.isProblem !== true

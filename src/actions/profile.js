@@ -13,7 +13,6 @@ import * as API from "../api";
 import I18n from "react-native-i18n";
 import {genSeed} from "../reducer/app";
 import _ from "lodash";
-import bugsnag from '../bugsnag';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
 import uuidv4 from 'uuid/v4';
@@ -147,7 +146,6 @@ export const saveData = (action, alert = true) => async (dispatch, getState) => 
     }
 
     dispatch({type: AGENT_FETCH, payload: false});
-    bugsnag.setUser(`${authId}`, data.pathNumber, 'example@example.com');
 
     if (action) {
         dispatch(action);

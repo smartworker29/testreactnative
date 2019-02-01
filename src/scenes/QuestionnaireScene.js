@@ -46,6 +46,7 @@ class QuestionnaireScene extends Component {
     componentWillMount() {
         this.props.navigation.setParams({
             backHandler: () => dispatch => {
+                this.parseFloatValues(this.state.answers);
                 this.props.setAnswers(this.state.answers);
                 this.props.saveUuidValues(this.state.uuidValues);
                 this.props.setRequiredQuestions(this.state.required);
@@ -55,6 +56,14 @@ class QuestionnaireScene extends Component {
             }
         })
     }
+
+    parseFloatValues = (map) => {
+        map.forEach(answer => {
+            if (answer && answer.number) {
+                answer.number = String(parseFloat(answer.number) || "")
+            }
+        });
+    };
 
     componentDidMount() {
         const visitUuid = this.props.navigation.getParam("visitUuid");
@@ -130,9 +139,25 @@ class QuestionnaireScene extends Component {
         })
     }
 
+    androidChangeText(questionUuid, valueType) {
+        const answer = this.state.answers.get(this.state.visitUuid + '_' + questionUuid);
+        if (!answer) {
+            return;
+        }
+
+        if (valueType === "number") {
+            answer.number = String(parseFloat(answer.number) || "");
+            this.setState(state => {
+                let answers = state.answers.set(this.state.visitUuid + '_' + questionUuid, answer);
+                let needSync = state.needSync.set(this.state.visitUuid + '_' + questionUuid, null);
+                return {answers, needSync}
+            })
+        }
+    }
+
     renderInputQuestion(object, index, group, keyboardType, valueType) {
         const selected = this.state.answers.get(this.state.visitUuid + '_' + object.uuid, null);
-        const value = selected && selected.text ? selected.text : "";
+        const value = selected && selected[valueType] ? selected[valueType] : "";
         const requiredMark = object.required === true ? <Text style={styles.requireMark}>*</Text> : null;
         return (
             <View style={styles.questionView} key={object.uuid}>
@@ -141,9 +166,10 @@ class QuestionnaireScene extends Component {
                     <View style={{flexDirection: "column", marginLeft: 13, flex: 1}}>
                         <Text style={styles.questionTitle}>{object.text} {requiredMark}</Text>
                         {Platform.OS === "android" ?
-                            <TextInput keyboardType={keyboardType} style={styles.answerInput}
+                            <TextInput keyboardType={keyboardType} style={styles.answerContainerInput}
                                        value={value}
-                                       onChangeText={text => this.changeText(object.uuid, text, valueType)}/> :
+                                       onChangeText={text => this.changeText(object.uuid, text, valueType)}
+                                       onEndEditing={() => this.androidChangeText(object.uuid, valueType)}/> :
                             <View style={styles.answerContainerInput}>
                                 <TextInput keyboardType={keyboardType} style={styles.answerInput}
                                            value={value}
@@ -432,6 +458,7 @@ class QuestionnaireScene extends Component {
             }
         }
         this.props.saveUuidValues(this.state.uuidValues);
+        this.parseFloatValues(this.state.answers);
         this.props.setAnswers(this.state.answers);
         this.props.setRequiredQuestions(this.state.required);
         let newSync = this.props.sync.merge(this.state.needSync);
@@ -584,7 +611,9 @@ const styles = StyleSheet.create({
     answerInput: {
         flex: 1,
         marginBottom: 21,
-        fontSize: 17
+        fontSize: 17,
+        borderBottomWidth: 1,
+        borderBottomColor: "#bcbbc1"
     },
     groupTitle: {
         fontSize: 18,

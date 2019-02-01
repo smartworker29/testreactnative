@@ -55,7 +55,7 @@ export const photoInit = () => async (dispatch, getState) => {
 
 export const uploadPhoto = (uri, id, visitId = null, uuid, index) => async (dispatch, getState) => {
 
-    if (getState().photo.photos.find(photo => photo.isUploading === true)) {
+    if (getState().photo.photos.find(photo => photo && photo.isUploading === true)) {
         return;
     }
 
@@ -141,7 +141,7 @@ export const syncPhoto = () => async (dispatch, getState) => {
         if (a.timestamp === b.timestamp) {
             return 0;
         }
-    }).find(photo => photo.isUploaded === false && photo.isProblem !== true);
+    }).find(photo => photo && photo.isUploaded === false && photo.isProblem !== true);
 
     if (!photo) {
         return;
@@ -181,7 +181,7 @@ export const ADD_DELETE_ID = 'ADD_DELETE_ID';
 export const deleteImage = (uri, id, forSync = false) => async (dispatch, getState) => {
     dispatch({type: DELETE_IMAGE_REQUEST});
     const foundPhoto = getState().photo.photos.find((val, key) => {
-        return val.uri === uri
+        return val && val.uri && val.uri === uri
     });
     const pin = getState().auth.pin;
     if (foundPhoto && foundPhoto.isUploaded === false && foundPhoto.isUploading === false) {
