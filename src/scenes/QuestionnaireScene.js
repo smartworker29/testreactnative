@@ -60,7 +60,7 @@ class QuestionnaireScene extends Component {
     parseFloatValues = (map) => {
         map.forEach(answer => {
             if (answer && answer.number) {
-                answer.number = String(parseFloat(answer.number) || "")
+                answer.number = !isNaN(parseFloat(answer.number)) ? String(parseFloat(answer.number)) : "";
             }
         });
     };
@@ -146,7 +146,7 @@ class QuestionnaireScene extends Component {
         }
 
         if (valueType === "number") {
-            answer.number = String(parseFloat(answer.number) || "");
+            answer.number = !isNaN(parseFloat(answer.number)) ? String(parseFloat(answer.number)) : "";
             this.setState(state => {
                 let answers = state.answers.set(this.state.visitUuid + '_' + questionUuid, answer);
                 let needSync = state.needSync.set(this.state.visitUuid + '_' + questionUuid, null);
@@ -171,7 +171,7 @@ class QuestionnaireScene extends Component {
                                        onChangeText={text => this.changeText(object.uuid, text, valueType)}
                                        onEndEditing={() => this.androidChangeText(object.uuid, valueType)}/> :
                             <View style={styles.answerContainerInput}>
-                                <TextInput keyboardType={keyboardType} style={styles.answerInput}
+                                <TextInput keyboardType={keyboardType}
                                            value={value}
                                            onChangeText={text => this.changeText(object.uuid, text, valueType)}/>
                             </View>}
@@ -346,7 +346,19 @@ class QuestionnaireScene extends Component {
                     <View style={{flexDirection: "column", marginLeft: 13, flex: 1}}>
                         <Text style={styles.questionTitle}>{question.text}</Text>
                         <View style={[styles.answerBarcodeContainerInput, borderStyle]}>
-                            <TextInput placeholder={"00000000000"} value={value} style={styles.answerInput}/>
+                            {Platform.OS === "android" ?
+                                <TextInput placeholder={"00000000000"} value={value} style={styles.answerInput}
+                                           editable={false}/> :
+                                <TextInput placeholder={"00000000000"}
+                                           value={value}
+                                           editable={false}
+                                           style={{
+                                               flex: 1,
+                                               fontSize: 17,
+                                               marginBottom: 20,
+                                               borderColor: "white"
+                                           }}/>
+                            }
                             <TouchableOpacity onPress={() => this.showCamera(question.uuid)}>
                                 <Image source={barcode}/>
                             </TouchableOpacity>

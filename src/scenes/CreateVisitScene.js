@@ -88,7 +88,7 @@ export class CreateVisitScene extends Component {
     }
 
     componentWillUnmount() {
-        clearInterval(this.check);
+        this.check && clearInterval(this.check);
     }
 
     createVisit = async () => {
@@ -101,7 +101,6 @@ export class CreateVisitScene extends Component {
         }
 
         const {shop, taskId, taskName} = this.props.navigation.state.params;
-        console.log("CreateVisitScene", typeof shop);
         const shopId = _.isString(shop) ? shop : shop.customer_id;
         if (allowAction("create_visit_process")) {
             Keyboard.dismiss();

@@ -92,8 +92,8 @@ export class VisitDetailScene extends Component {
 
     componentWillUnmount() {
         EventEmitter.emit("updateTasksTime");
-        clearInterval(this.timer)
-        //this.props.clearVisitDetails()
+        this.timer && clearInterval(this.timer);
+        this.timeoutBackHandler && clearTimeout(this.timeoutBackHandler);
     }
 
     componentWillMount() {
@@ -500,7 +500,7 @@ export class VisitDetailScene extends Component {
     }
 
     backHandler = () => {
-        setTimeout(() => {
+        this.timeoutBackHandler = setTimeout(() => {
             this.setState({showBtn: true})
         }, 1500);
     };

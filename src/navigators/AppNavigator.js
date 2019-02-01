@@ -215,8 +215,6 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(initVisits());
         await this.props.dispatch(photoInit());
         await this.props.dispatch(initFavorites());
-        //await this.props.dispatch(updateDeviceInfo());
-
         await this.props.dispatch(initQuestions());
         await this.props.dispatch(initUuidValues());
         await this.props.dispatch(initAnswers());
@@ -224,10 +222,6 @@ class AppWithNavigationState extends Component {
         await this.props.dispatch(initRequiredQuestions());
         await this.props.dispatch(initFeedback());
         await this.props.dispatch(initSkuSync());
-
-        setInterval(async () => {
-            await this.props.dispatch(updateDeviceInfo());
-        }, 300000);
 
         if (this.props.authId === null) {
             this.props.dispatch(resetToProfile());
@@ -284,7 +278,7 @@ class AppWithNavigationState extends Component {
             ErrorLogging.deletedPhotos = JSON.parse(await AsyncStorage.getItem("deletePhotoHistory")) || [];
         } catch (err) {
         }
-        setInterval(() => {
+        this.timerErrorLogging = setInterval(() => {
             ErrorLogging.save();
         }, 5000);
     }
@@ -301,6 +295,21 @@ class AppWithNavigationState extends Component {
 
     async componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.onBackPress);
+        this.timerSyncVisitList && clearInterval(this.timerSyncVisitList);
+        this.timersyncPhoto && clearInterval(this.timersyncPhoto);
+        this.timerRefreshVisitsList && clearInterval(this.timerRefreshVisitsList);
+        this.timerGetTasksList && clearInterval(this.timerGetTasksList);
+        this.timerGetStatistics && clearInterval(this.timerGetStatistics);
+        this.timerSyncPins && clearInterval(this.timerSyncPins);
+        this.timerGetFavorites && clearInterval(this.timerGetFavorites);
+        this.timerSyncDeleteImage && clearInterval(this.timerSyncDeleteImage);
+        this.timerSyncAnswers && clearInterval(this.timerSyncAnswers);
+        this.timerSyncFeedback && clearInterval(this.timerSyncFeedback);
+        this.timerSyncReasons && clearInterval(this.timerSyncReasons);
+        this.timerSyncReasons && clearInterval(this.timerSyncReasons);
+        this.timerCheckAgent && clearInterval(this.timerCheckAgent);
+        this.timerUpdateInstance && clearInterval(this.timerUpdateInstance);
+        this.timerErrorLogging && clearInterval(this.timerErrorLogging);
     }
 
     async componentWillReceiveProps(props) {
@@ -317,62 +326,60 @@ class AppWithNavigationState extends Component {
             AppState.addEventListener('change', this.onStateChange);
             await this.updateAll();
 
-            setInterval(async () => {
+            this.timerSyncVisitList = setInterval(async () => {
                 await this.props.dispatch(syncVisitList());
             }, 2000);
 
-            setInterval(async () => {
+            this.timersyncPhoto = setInterval(async () => {
                 await this.props.dispatch(syncPhoto());
             }, 2100);
 
-            setInterval(async () => {
+            this.timerRefreshVisitsList = setInterval(async () => {
                 await this.props.dispatch(refreshVisitsList(false));
             }, 10000);
 
-            setInterval(async () => {
+            this.timerGetTasksList = setInterval(async () => {
                 await this.props.dispatch(getTasksList());
             }, 10100);
 
-            setInterval(async () => {
+            this.timerGetStatistics = setInterval(async () => {
                 await this.props.dispatch(getStatistics());
             }, 10200);
 
-            setInterval(async () => {
+            this.timerSyncPins = setInterval(async () => {
                 await this.props.dispatch(syncPins());
             }, 10300);
 
-            setInterval(async () => {
+            this.timerGetFavorites = setInterval(async () => {
                 await this.props.dispatch(getFavorites());
             }, 10400);
 
-            setInterval(async () => {
+            this.timerSyncDeleteImage = setInterval(async () => {
                 await this.props.dispatch(syncDeleteImage());
             }, 3000);
 
-            setInterval(async () => {
+            this.timerSyncAnswers = setInterval(async () => {
                 await this.props.dispatch(syncAnswers())
             }, 3500);
 
-            setInterval(async () => {
+            this.timerSyncFeedback = setInterval(async () => {
                 await this.props.dispatch(syncFeedback())
             }, 3100);
 
-            setInterval(async () => {
+            this.timerSyncReasons = setInterval(async () => {
                 await this.props.dispatch(syncReasons())
             }, 1500);
 
-            setInterval(async () => {
+            this.timerCheckAgent = setInterval(async () => {
                 const result = await API.checkUser(this.props.authId);
                 if (result && result.status === 404) {
                     Alert.alert("Ошибка агента", "Ваш агент не найден на сервере, обратитесь в службу поддержки")
                 }
             }, 10000);
 
-            setInterval(async () => {
+            this.timerUpdateInstance = setInterval(async () => {
                 await this.props.dispatch(updateInstance());
             }, 120000)
-
-            //await this.props.dispatch(deleteOldPhoto());
         }
     }
 
@@ -473,11 +480,7 @@ AppWithNavigationState.propTypes = {
 const mapStateToProps = state => ({
     pin: state.auth.pin,
     nav: state.nav,
-    error: state.app.error,
-    seed: state.app.errorSeed,
     authId: state.auth.id,
-    pathNumber: state.profile.pathNumber,
-    isForceSync: state.app.isForceSync
 });
 
 export default connect(mapStateToProps)(AppWithNavigationState);
