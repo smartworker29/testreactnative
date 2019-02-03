@@ -30,6 +30,8 @@ build/
 local.properties
 *.iml
 
+yarn.lock
+
 # node.js
 #
 node_modules/
@@ -51,3 +53,6 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+# Bundle artifact
+*.jsbundle

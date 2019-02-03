@@ -1,7 +1,6 @@
-import {Component} from "react";
+import React, {Component} from "react";
 import {feedbackCategoriesNavigationOptions} from "../navigators/options";
-import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React from "react";
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity} from "react-native";
 import connect from "react-redux/es/connect/connect";
 import {goToFeedback} from "../actions/navigation";
 import {arrowRight} from "../utils/images";
