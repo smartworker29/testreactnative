@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "clear":"watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache",
+    "g-clean":"cd android && ./gradlew clean",
+    "build":"cd android &&  ./gradlew assembleRelease"
+
   },
   "dependencies": {
     "@sentry/wizard": "^0.12.1",

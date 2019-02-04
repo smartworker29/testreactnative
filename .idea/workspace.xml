@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="210cdaff-ccb6-4fb4-b3d2-aab451a2f8a9" name="Default" comment="w2/add-offline-mode">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/Papsi.xcodeproj/project.xcworkspace/xcuserdata/oleggamega.xcuserdatad/UserInterfaceState.xcuserstate" afterPath="$PROJECT_DIR$/ios/Papsi.xcodeproj/project.xcworkspace/xcuserdata/oleggamega.xcuserdatad/UserInterfaceState.xcuserstate" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    <list default="true" id="210cdaff-ccb6-4fb4-b3d2-aab451a2f8a9" name="Default" comment="add to manifest remove RECORD_AUDIO">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle" afterPath="$PROJECT_DIR$/android/app/build.gradle" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/java/inspector/cloud/MainApplication.java" afterPath="$PROJECT_DIR$/android/app/src/main/java/inspector/cloud/MainApplication.java" />
+      <change beforePath="$PROJECT_DIR$/android/gradlew.bat" afterPath="$PROJECT_DIR$/android/gradlew.bat" />
+      <change beforePath="$PROJECT_DIR$/ios/CloudInspector.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/ios/CloudInspector.xcodeproj/project.pbxproj" />
+      <change beforePath="$PROJECT_DIR$/ios/CloudInspector/Info.plist" afterPath="$PROJECT_DIR$/ios/CloudInspector/Info.plist" />
+      <change beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change beforePath="$PROJECT_DIR$/src/navigators/AppNavigator.js" afterPath="$PROJECT_DIR$/src/navigators/AppNavigator.js" />
+      <change beforePath="$PROJECT_DIR$/src/utils/ComponentParser.js" afterPath="$PROJECT_DIR$/src/utils/ComponentParser.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -17,11 +25,114 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="styles.xml" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/android/app/src/main/res/values/styles.xml">
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+            <state relative-caret-position="135">
+              <caret line="9" column="8" lean-forward="false" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bugsnag.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/bugsnag.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ErrorBoundary.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/component/ErrorBoundary.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="3" column="21" lean-forward="false" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ComponentParser.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/utils/ComponentParser.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="129">
+              <caret line="96" column="43" lean-forward="false" selection-start-line="96" selection-start-column="43" selection-end-line="96" selection-end-column="43" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProfileScene.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/scenes/ProfileScene.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="80">
+              <caret line="171" column="25" lean-forward="false" selection-start-line="171" selection-start-column="6" selection-end-line="171" selection-end-column="25" />
+              <folding>
+                <element signature="e#1056#2563#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="App.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/App.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="176">
+              <caret line="29" column="19" lean-forward="false" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
+              <folding>
+                <element signature="e#0#38#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AppNavigator.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/navigators/AppNavigator.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="164">
+              <caret line="199" column="46" lean-forward="false" selection-start-line="199" selection-start-column="46" selection-end-line="199" selection-end-column="46" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+                <element signature="e#2941#3153#0" expanded="false" />
+                <element signature="e#3202#3537#0" expanded="false" />
+                <element signature="e#3586#4330#0" expanded="false" />
+                <element signature="n#!!block;n#updateAll#0;n#AppWithNavigationState#0" expanded="false" />
+                <element signature="e#11557#11712#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.d.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/node_modules/bugsnag-react-native/index.d.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="56" lean-forward="false" selection-start-line="5" selection-start-column="56" selection-end-line="5" selection-end-column="56" />
+              <folding>
+                <element signature="e#0#40#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.d.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/node_modules/@types/react-native/index.d.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="463" column="64" lean-forward="false" selection-start-line="463" selection-start-column="64" selection-end-line="463" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -38,73 +149,55 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>he</find>
-      <find>0.5</find>
-      <find>hei</find>
-      <find>light</find>
-      <find>Main</find>
-      <find>up</find>
-      <find>cre</find>
-      <find>payload</find>
-      <find>this.props.da</find>
-      <find>GET_VISIT</find>
-      <find>GET_VISIT_REQUEST</find>
-      <find>goToVisitDetails</find>
-      <find>success</find>
-      <find>suc</find>
-      <find>succ</find>
-      <find>succe</find>
-      <find>upload</find>
-      <find>REFRESH_VISIT_ERROR</find>
-      <find>as</find>
-      <find>asy</find>
-      <find>oBack</find>
-      <find>aw</find>
-      <find>status</find>
-      <find>js</find>
-      <find>1200</find>
-      <find>back</find>
-      <find>res</find>
-      <find>syncPhoto</find>
-      <find>UPLOAD_PHOTO_REQUEST</find>
-      <find>uploadPhoto</find>
+      <find>id</find>
+      <find>AsyncS</find>
+      <find>Sentry</find>
+      <find>sentr</find>
+      <find>captureException</find>
+      <find>Sentry.config</find>
+      <find>Root</find>
+      <find>UPLOAD_PROGRESS</find>
+      <find>x</find>
+      <find>Require cycles are allowed, but can result in uninitialized values. Consider refactoring to remove the need for a cyc</find>
+      <find>UPLOAD_PROGRESS</find>
+      <find>UPLOAD_PROGRESS_END</find>
+      <find>visist</find>
+      <find>bugsn</find>
+      <find>bugsnag&quot;</find>
+      <find>bu</find>
+      <find>bugs</find>
+      <find>bugsnag</find>
+      <find>came</find>
+      <find>./</find>
+      <find>_DEV</find>
+      <find>Sentry.</find>
+      <find>render</find>
+      <find>RNPickerSelect</find>
+      <find>hideIcon</find>
+      <find>pick</find>
+      <find>AppWithNavigatoin</find>
+      <find>AppWit</find>
+      <find>render(</find>
+      <find>setS</find>
     </findStrings>
     <replaceStrings>
       <replace />
     </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/src</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="W1" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/utils/const.js" />
-        <option value="$PROJECT_DIR$/src/scenes/util.js" />
-        <option value="$PROJECT_DIR$/locales/ru.json.js" />
-        <option value="$PROJECT_DIR$/locales/en.json.js" />
-        <option value="$PROJECT_DIR$/locales/en.json" />
-        <option value="$PROJECT_DIR$/locales/ru.json" />
-        <option value="$PROJECT_DIR$/src/utils/string.js" />
-        <option value="$PROJECT_DIR$/translations/i18.js" />
-        <option value="$PROJECT_DIR$/src/utils/i18.js" />
-        <option value="$PROJECT_DIR$/src/utils/i18n.js" />
-        <option value="$PROJECT_DIR$/src/component/Tollbar.js" />
-        <option value="$PROJECT_DIR$/src/utils/api.js" />
-        <option value="$PROJECT_DIR$/src/reducer/visit.js" />
-        <option value="$USER_HOME$/.bash_profile" />
-        <option value="$PROJECT_DIR$/src/scenes/SettingsScene.js" />
-        <option value="$PROJECT_DIR$/src/reducer/navigator.js" />
-        <option value="$PROJECT_DIR$/src/component/BackButton.js" />
-        <option value="$PROJECT_DIR$/src/reducer/newVisit.js" />
-        <option value="$PROJECT_DIR$/android/local.properties" />
-        <option value="$PROJECT_DIR$/src/navigators/AppNavigator.js" />
-        <option value="$PROJECT_DIR$/__tests__/src/App.js" />
         <option value="$PROJECT_DIR$/__tests__/src/reducer/photo.js" />
         <option value="$PROJECT_DIR$/src/reducer/visitDetails.js" />
         <option value="$PROJECT_DIR$/src/reducer/index.js" />
@@ -112,46 +205,73 @@
         <option value="$PROJECT_DIR$/src/component/Toolbar.js" />
         <option value="$PROJECT_DIR$/.babelrc" />
         <option value="$PROJECT_DIR$/src/actions/storage.js" />
-        <option value="$PROJECT_DIR$/src/scenes/VisitDetailScene.js" />
         <option value="$PROJECT_DIR$/src/actions/navigation.js" />
         <option value="$PROJECT_DIR$/locales/ru.js" />
         <option value="$PROJECT_DIR$/locales/en.js" />
         <option value="$PROJECT_DIR$/src/component/ListItem.js" />
-        <option value="$PROJECT_DIR$/src/scenes/CreateVisitScene.js" />
         <option value="$PROJECT_DIR$/src/reducer/visits.js" />
         <option value="$PROJECT_DIR$/src/reducer/auth.js" />
         <option value="$PROJECT_DIR$/src/reducer/app.js" />
-        <option value="$PROJECT_DIR$/src/actions/app.js" />
-        <option value="$PROJECT_DIR$/src/App.js" />
-        <option value="$PROJECT_DIR$/src/scenes/PhotoScene.js" />
-        <option value="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/src/actions/photo.js" />
         <option value="$PROJECT_DIR$/src/reducer/photo.js" />
         <option value="$PROJECT_DIR$/src/actions/visitDetails.js" />
-        <option value="$PROJECT_DIR$/src/scenes/VisitListScene.js" />
-        <option value="$PROJECT_DIR$/src/actions/visist.js" />
         <option value="$PROJECT_DIR$/android/app/build.gradle" />
         <option value="$PROJECT_DIR$/__tests__/src/reducer/visitDetails.js" />
-        <option value="$PROJECT_DIR$/src/api/index.js" />
         <option value="$PROJECT_DIR$/../package.json" />
         <option value="$PROJECT_DIR$/android/app/src/main/res/values/styles.xml" />
+        <option value="$PROJECT_DIR$/src/scenes/ShopsScene.js" />
+        <option value="$PROJECT_DIR$/.eslintrc" />
+        <option value="$PROJECT_DIR$/babel.config.js" />
+        <option value="$PROJECT_DIR$/src/actions/app.js" />
+        <option value="$PROJECT_DIR$/src/scenes/FeedbackCategoriesScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/FeedbackScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/MainScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/PhotoScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/PreviewScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/QuestionnaireScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/ResultsScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/TaskScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/TasksScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/VisitListScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/CreateVisitScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/EnterPinScene.js" />
+        <option value="$PROJECT_DIR$/src/scenes/VisitDetailScene.js" />
+        <option value="$PROJECT_DIR$/src/actions/photo.js" />
+        <option value="$PROJECT_DIR$/src/api/index.js" />
+        <option value="$PROJECT_DIR$/src/actions/visist.js" />
+        <option value="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/App.js" />
+        <option value="$PROJECT_DIR$/index.js" />
+        <option value="$PROJECT_DIR$/src/bugsnag.js" />
+        <option value="$PROJECT_DIR$/src/scenes/ProfileScene.js" />
+        <option value="$PROJECT_DIR$/src/App.js" />
+        <option value="$PROJECT_DIR$/src/component/ErrorBoundary.js" />
+        <option value="$PROJECT_DIR$/src/utils/ComponentParser.js" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/src/navigators/AppNavigator.js" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsFlowSettings">
+    <service-enabled>false</service-enabled>
+    <exe-path>/usr/local/lib/node_modules/flow-bin</exe-path>
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="NodeModulesDirectoryManager">
-    <handled-path value="$PROJECT_DIR$/node_modules" />
+    <handled-path value="$PROJECT_DIR$/ios/build/Build/Products/Debug-iphoneos/CloudInspector.app/assets/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="31" />
-    <option name="y" value="-924" />
+    <option name="x" value="28" />
+    <option name="y" value="23" />
     <option name="width" value="1373" />
-    <option name="height" value="797" />
+    <option name="height" value="681" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -200,6 +320,66 @@
               <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
               <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
+              <item name="outputs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
+              <item name="outputs" type="462c0819:PsiDirectoryNode" />
+              <item name="apk" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
+              <item name="outputs" type="462c0819:PsiDirectoryNode" />
+              <item name="apk" type="462c0819:PsiDirectoryNode" />
+              <item name="debug" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="android" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
+              <item name="outputs" type="462c0819:PsiDirectoryNode" />
+              <item name="apk" type="462c0819:PsiDirectoryNode" />
+              <item name="release" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mobile-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mobile-app" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -211,18 +391,28 @@
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path" value="/usr/local/bin/node" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="nodejs.jest.jest_package" value="$PROJECT_DIR$/node_modules/jest" />
-    <property name="SearchEverywhereHistoryKey" value="pa&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/package.json&#10;PhotoS&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/PhotoScene.js&#10;auth&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/reducer/auth.js&#10;Visi&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitListScene.js&#10;androidma&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/android/app/src/main/AndroidManifest.xml&#10;Pho&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/PhotoScene.js&#10;pho&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/PhotoScene.js&#10;navi&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/navigators/AppNavigator.js&#10;Cre&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/CreateVisitScene.js&#10;Too&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/component/Toolbar.js&#10;т&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/navigators/AppNavigator.js&#10;settings&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/SettingsScene.js&#10;Set&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/SettingsScene.js&#10;vis&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitDetailScene.js&#10;au&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/reducer/auth.js&#10;visi&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/actions/visist.js&#10;V&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitListScene.js&#10;Vis&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitDetailScene.js" />
+    <property name="SearchEverywhereHistoryKey" value="App&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/navigators/AppNavigator.js&#10;pa&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/package.json&#10;pac&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/package.json&#10;ComponentParser&#9;null&#9;null&#10;Pro&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/ProfileScene.js&#10;Visi&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitDetailScene.js&#10;Фзз&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/navigators/AppNavigator.js&#10;ProfileS&#9;null&#9;null&#10;PhotoS&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/PhotoScene.js&#10;auth&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/reducer/auth.js&#10;androidma&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/android/app/src/main/AndroidManifest.xml&#10;Pho&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/PhotoScene.js&#10;pho&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/PhotoScene.js&#10;navi&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/navigators/AppNavigator.js&#10;Cre&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/CreateVisitScene.js&#10;Too&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/component/Toolbar.js&#10;т&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/navigators/AppNavigator.js&#10;settings&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/SettingsScene.js&#10;Set&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/SettingsScene.js&#10;vis&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitDetailScene.js&#10;au&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/reducer/auth.js&#10;visi&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/actions/visist.js&#10;V&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitListScene.js&#10;Vis&#9;FILE&#9;file:///Users/oleggamega/WebstormProjects/mobile-app/src/scenes/VisitDetailScene.js" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="add_unversioned_files" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="$PROJECT_DIR$/node_modules/eslint" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.selected.package.standard" value="$PROJECT_DIR$/node_modules/eslint" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/ios/Papsi" />
       <recent name="$PROJECT_DIR$/ios/Papsi/Images.xcassets" />
       <recent name="$PROJECT_DIR$/android" />
-      <recent name="$PROJECT_DIR$/android/app" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/utils" />
@@ -270,6 +460,7 @@
   <component name="RunManager" selected="Jest.action ${types.GET_VISIT_DETAILS_ERROR}">
     <configuration name="action ${types.GET_VISIT_DETAILS_ERROR}" type="JavaScriptTestRunnerJest" factoryName="Jest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
+      <node-options value="" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="SUITE" />
@@ -280,6 +471,7 @@
     </configuration>
     <configuration name="action ${types.GET_VISIT_DETAILS_ERROR}.error expect to be null" type="JavaScriptTestRunnerJest" factoryName="Jest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
+      <node-options value="" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
@@ -291,6 +483,7 @@
     </configuration>
     <configuration name="action ${types.GET_VISIT_DETAILS_ERROR}.isFetch expect to be false" type="JavaScriptTestRunnerJest" factoryName="Jest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
+      <node-options value="" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
@@ -302,6 +495,7 @@
     </configuration>
     <configuration name="action ${types.GET_VISIT_DETAILS_REQUEST}" type="JavaScriptTestRunnerJest" factoryName="Jest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
+      <node-options value="" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="SUITE" />
@@ -312,6 +506,7 @@
     </configuration>
     <configuration name="action ${types.GET_VISIT_DETAILS_REQUEST}.isFetch expect to be false" type="JavaScriptTestRunnerJest" factoryName="Jest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
+      <node-options value="" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
       <scope-kind value="TEST" />
@@ -330,11 +525,11 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_ERROR}" />
-        <item index="1" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_ERROR}.isFetch expect to be false" />
-        <item index="2" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_REQUEST}" />
-        <item index="3" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_REQUEST}.isFetch expect to be false" />
-        <item index="4" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_ERROR}.error expect to be null" />
+        <item index="0" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_ERROR}.isFetch expect to be false" />
+        <item index="1" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_REQUEST}.isFetch expect to be false" />
+        <item index="2" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_ERROR}.error expect to be null" />
+        <item index="3" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_ERROR}" />
+        <item index="4" class="java.lang.String" itemvalue="Jest.action ${types.GET_VISIT_DETAILS_REQUEST}" />
       </list>
     </recent_temporary>
   </component>
@@ -367,6 +562,9 @@
       <workItem from="1520849107366" duration="467000" />
       <workItem from="1520939850234" duration="5084000" />
       <workItem from="1520945594121" duration="63000" />
+      <workItem from="1549115693257" duration="16164000" />
+      <workItem from="1549207667613" duration="6863000" />
+      <workItem from="1549220958806" duration="11755000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1518172658213</created>
@@ -410,7 +608,14 @@
       <option name="project" value="LOCAL" />
       <updated>1519047512837</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="add support soursemap, resolve some momory leaks">
+      <created>1549233331099</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1549233331100</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -446,7 +651,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="174088000" />
+    <option name="totallyTimeSpent" value="208870000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -458,28 +663,29 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="31" y="-924" width="1373" height="797" extended-state="0" />
+    <frame x="28" y="23" width="1373" height="681" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Key Promoter X" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23666416" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32914925" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33618233" sideWeight="0.51465064" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.6228137" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40273038" sideWeight="0.52366644" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32764506" sideWeight="0.6153268" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Mongo Explorer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33618233" sideWeight="0.48534936" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.40273038" sideWeight="0.4763336" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23666416" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6806137" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24943651" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32905984" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.6806137" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -517,7 +723,15 @@
     <MESSAGE value="was add multi languages text resources and some scenes" />
     <MESSAGE value="add action and reducers for visit" />
     <MESSAGE value="w2/add-offline-mode" />
-    <option name="LAST_COMMIT_MESSAGE" value="w2/add-offline-mode" />
+    <MESSAGE value="add support soursemap, resolve some momory leaks" />
+    <MESSAGE value="add to manifest remove RECORD_AUDIO" />
+    <option name="LAST_COMMIT_MESSAGE" value="add to manifest remove RECORD_AUDIO" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="404" height="1270" key="Git.Branch.Popup" />
+    <state width="404" height="1270" key="Git.Branch.Popup/2880.1800/1920.1080" />
+    <state width="202" height="635" key="Git.Branch.Popup@1920.1080" />
+    <state width="404" height="1270" key="Git.Branch.Popup@2880.1800@192dpi" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -526,143 +740,455 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/node_modules/react/index.js">
+    <entry file="file://$PROJECT_DIR$/src/reducer/navigator.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-162">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/actions/questions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-59">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#49#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.eslintrc" />
+    <entry file="file://$PROJECT_DIR$/src/utils/AsyncStorageQueue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="5" lean-forward="false" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/configStore.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/react-navigation/src/react-navigation.js">
+    <entry file="file://$PROJECT_DIR$/babel.config.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="13" column="6" lean-forward="false" selection-start-line="13" selection-start-column="6" selection-end-line="13" selection-end-column="6" />
+        <state relative-caret-position="45">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/scenes/CreateVisitScene.js" />
-    <entry file="file://$PROJECT_DIR$/node_modules/axios/index.d.ts">
+    <entry file="file://$PROJECT_DIR$/src/actions/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="126" column="0" lean-forward="false" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
+        <state relative-caret-position="135">
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/CloudInspector — копия/babel.config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/CloudInspector — копия/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1305">
+          <caret line="87" column="4" lean-forward="false" selection-start-line="75" selection-start-column="2" selection-end-line="87" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/lib.dom.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="15085" column="17" lean-forward="false" selection-start-line="15085" selection-start-column="17" selection-end-line="15085" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/CreateVisitScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="85" column="0" lean-forward="true" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
+          <folding>
+            <element signature="e#990#1313#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/FeedbackCategoriesScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-658">
+          <caret line="11" column="8" lean-forward="false" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/FeedbackScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="810">
+          <caret line="62" column="2" lean-forward="false" selection-start-line="62" selection-start-column="2" selection-end-line="64" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/MainScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="20" column="3" lean-forward="false" selection-start-line="20" selection-start-column="3" selection-end-line="20" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/PhotoScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3280">
+          <caret line="260" column="23" lean-forward="false" selection-start-line="260" selection-start-column="23" selection-end-line="260" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/PhotoViewScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-57">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/PreviewScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-470">
+          <caret line="80" column="38" lean-forward="false" selection-start-line="80" selection-start-column="30" selection-end-line="80" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/QuestionnaireScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="669">
+          <caret line="82" column="22" lean-forward="false" selection-start-line="82" selection-start-column="22" selection-end-line="82" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/ResultsScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="349">
+          <caret line="76" column="10" lean-forward="false" selection-start-line="76" selection-start-column="10" selection-end-line="76" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/ShopsScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="250" column="37" lean-forward="false" selection-start-line="250" selection-start-column="37" selection-end-line="250" selection-end-column="37" />
+          <folding>
+            <element signature="e#3309#3739#0" expanded="false" />
+            <element signature="e#3785#4327#0" expanded="false" />
+            <element signature="n#!!block;n#componentDidMount#0;n#ShopsScene#0" expanded="false" />
+            <element signature="n#!!block;n#requestShop#0;n#ShopsScene#0" expanded="false" />
+            <marker date="1549148621490" expanded="false" signature="1993:2008" ph="..." />
+            <marker date="1549148621490" expanded="true" signature="2008:2734" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2059:2072" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2157:2164" ph="..." />
+            <marker date="1549148621490" expanded="true" signature="2168:2710" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2206:2231" ph="..." />
+            <marker date="1549148621490" expanded="true" signature="2231:2435" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2273:2287" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2367:2388" ph="..." />
+            <marker date="1549148621490" expanded="true" signature="2403:2428" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2473:2490" ph="..." />
+            <marker date="1549148621490" expanded="true" signature="2490:2682" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2550:2567" ph="..." />
+            <marker date="1549148621490" expanded="true" signature="2567:2675" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2609:2629" ph="..." />
+            <marker date="1549148621490" expanded="false" signature="2765:2784" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/SyncScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1259">
+          <caret line="4" column="12" lean-forward="false" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/TaskScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="944">
+          <caret line="91" column="39" lean-forward="false" selection-start-line="91" selection-start-column="34" selection-end-line="91" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/TasksScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="648">
+          <caret line="69" column="15" lean-forward="false" selection-start-line="69" selection-start-column="11" selection-end-line="69" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/VisitListScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1515">
+          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/CloudInspector — копия/src/scenes/VisitDetailScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="98" column="3" lean-forward="true" selection-start-line="98" selection-start-column="3" selection-end-line="109" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/react-navigation/src/addNavigationHelpers.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="63" column="4" lean-forward="false" selection-start-line="63" selection-start-column="4" selection-end-line="63" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/VisitDetailScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="705">
+          <caret line="105" column="7" lean-forward="false" selection-start-line="105" selection-start-column="7" selection-end-line="105" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#48#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/EnterPinScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="27" column="13" lean-forward="false" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/GradientButton.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#39#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/react-native-sentry/lib/Sentry.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1110">
+          <caret line="78" column="9" lean-forward="false" selection-start-line="78" selection-start-column="9" selection-end-line="78" selection-end-column="9" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@sentry/wizard/lib/Steps/Integrations/ReactNative.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="83">
+          <caret line="102" column="18" lean-forward="false" selection-start-line="102" selection-start-column="18" selection-end-line="102" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/api/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="397" column="44" lean-forward="true" selection-start-line="397" selection-start-column="44" selection-end-line="397" selection-end-column="44" />
+          <folding>
+            <element signature="e#43#69#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/actions/photo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="256" column="0" lean-forward="true" selection-start-line="256" selection-start-column="0" selection-end-line="256" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#48#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/reducer/visits.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="17" column="25" lean-forward="false" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/actions/navigation.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="50" column="3" lean-forward="false" selection-start-line="50" selection-start-column="3" selection-end-line="50" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/actions/visist.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="39">
+          <caret line="22" column="11" lean-forward="false" selection-start-line="22" selection-start-column="9" selection-end-line="22" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/actions/profile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="212">
+          <caret line="99" column="44" lean-forward="false" selection-start-line="99" selection-start-column="44" selection-end-line="99" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#261#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="74" lean-forward="false" selection-start-line="8" selection-start-column="74" selection-end-line="8" selection-end-column="74" />
+        <state relative-caret-position="75">
+          <caret line="5" column="28" lean-forward="false" selection-start-line="5" selection-start-column="28" selection-end-line="5" selection-end-column="28" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/android/app/debug.keystore">
+    <entry file="file://$PROJECT_DIR$/yarn.lock">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/App.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-252">
+          <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/bugsnag-react-native/index.d.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/android/debug.keystore">
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/react-native/index.d.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="108">
+          <caret line="463" column="64" lean-forward="false" selection-start-line="463" selection-start-column="64" selection-end-line="463" selection-end-column="64" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/android/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1920">
-          <caret line="128" column="19" lean-forward="false" selection-start-line="128" selection-start-column="19" selection-end-line="128" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ios/Papsi/Images.xcassets/iTunesArtwork@1x.png" />
-    <entry file="file://$PROJECT_DIR$/ios/Papsi/Images.xcassets/Contents.json" />
-    <entry file="file://$PROJECT_DIR$/ios/Papsi/Images.xcassets/AppIcon.appiconset/Contents.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="22" lean-forward="false" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/locales/en.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="27" lean-forward="false" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Downloads/EXT-DEV-RUS.INI">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="13" lean-forward="true" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/scenes/SettingsScene.js" />
-    <entry file="file://$PROJECT_DIR$/locales/ru.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="34" column="27" lean-forward="false" selection-start-line="34" selection-start-column="27" selection-end-line="34" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.babelrc" />
-    <entry file="file://$PROJECT_DIR$/__tests__/src/reducer/visitDetails.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/actions/navigation.js" />
-    <entry file="file://$PROJECT_DIR$/src/actions/storage.js" />
-    <entry file="file://$PROJECT_DIR$/src/actions/visitDetails.js" />
-    <entry file="file://$PROJECT_DIR$/src/actions/visist.js" />
-    <entry file="file://$PROJECT_DIR$/src/component/GradientButton.js" />
-    <entry file="file://$PROJECT_DIR$/src/component/ImageView.js" />
-    <entry file="file://$PROJECT_DIR$/src/component/ListItem.js" />
-    <entry file="file://$PROJECT_DIR$/src/component/TakePhotoButton.js" />
-    <entry file="file://$PROJECT_DIR$/src/component/Toolbar.js" />
-    <entry file="file://$PROJECT_DIR$/src/navigators/AppNavigator.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/profile.js" />
-    <entry file="file://$PROJECT_DIR$/src/scenes/VisitDetailScene.js" />
-    <entry file="file://$PROJECT_DIR$/src/scenes/PhotoScene.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/navigator.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/visitDetails.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/auth.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/app.js" />
-    <entry file="file://$PROJECT_DIR$/src/navigators/options.js" />
-    <entry file="file://$PROJECT_DIR$/src/actions/profile.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/visits.js" />
-    <entry file="file://$PROJECT_DIR$/src/reducer/photo.js" />
-    <entry file="file://$PROJECT_DIR$/src/actions/app.js" />
-    <entry file="file://$PROJECT_DIR$/src/utils/redux.js" />
-    <entry file="file://$PROJECT_DIR$/src/App.js" />
-    <entry file="file://$PROJECT_DIR$/src/scenes/VisitListScene.js" />
-    <entry file="file://$PROJECT_DIR$/src/utils/api.js" />
-    <entry file="file://$PROJECT_DIR$/src/utils/images.js" />
-    <entry file="file://$PROJECT_DIR$/../package.json">
+    <entry file="file://$PROJECT_DIR$/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
-          <caret line="5" column="17" lean-forward="false" selection-start-line="5" selection-start-column="5" selection-end-line="5" selection-end-column="20" />
+          <caret line="5" column="56" lean-forward="false" selection-start-line="5" selection-start-column="56" selection-end-line="5" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/actions/photo.js" />
-    <entry file="file://$PROJECT_DIR$/src/api/index.js" />
-    <entry file="file://$PROJECT_DIR$/index.js" />
-    <entry file="file://$PROJECT_DIR$/package.json" />
-    <entry file="file://$PROJECT_DIR$/ios/Papsi/Images.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
+    <entry file="file://$PROJECT_DIR$/src/bugsnag.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/android/app/src/main/res/values/styles.xml">
+    <entry file="file://$PROJECT_DIR$/src/utils/ComponentParser.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state relative-caret-position="129">
+          <caret line="96" column="43" lean-forward="false" selection-start-line="96" selection-start-column="43" selection-end-line="96" selection-end-column="43" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="8" lean-forward="false" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/App.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="29" column="19" lean-forward="false" selection-start-line="29" selection-start-column="19" selection-end-line="29" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/ErrorBoundary.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="3" column="21" lean-forward="false" selection-start-line="3" selection-start-column="21" selection-end-line="3" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scenes/ProfileScene.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="80">
+          <caret line="171" column="25" lean-forward="false" selection-start-line="171" selection-start-column="6" selection-end-line="171" selection-end-column="25" />
+          <folding>
+            <element signature="e#1056#2563#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/navigators/AppNavigator.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="199" column="46" lean-forward="false" selection-start-line="199" selection-start-column="46" selection-end-line="199" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#2941#3153#0" expanded="false" />
+            <element signature="e#3202#3537#0" expanded="false" />
+            <element signature="e#3586#4330#0" expanded="false" />
+            <element signature="n#!!block;n#updateAll#0;n#AppWithNavigationState#0" expanded="false" />
+            <element signature="e#11557#11712#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

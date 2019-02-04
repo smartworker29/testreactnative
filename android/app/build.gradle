@@ -104,7 +104,7 @@ android {
         applicationId "inspector.cloud"
         minSdkVersion 16
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 226
+        versionCode 228
         versionName "1.0"
         archivesBaseName = "inspectorcloud-v$versionCode"
         ndk {

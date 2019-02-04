@@ -3,7 +3,6 @@
     package="inspector.cloud"
 
     android:name="android.support.multidex.MultiDexApplication"
-    android:versionCode="226"
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,6 +15,9 @@
     <uses-permission
         android:name="android.permission.READ_PHONE_STATE"
         tools:node="remove" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"
+        tools:node="remove"/>
+
 
 
     <application
