@@ -3,7 +3,6 @@
     package="inspector.cloud"
 
     android:name="android.support.multidex.MultiDexApplication"
-    android:versionCode="224"
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -16,6 +15,9 @@
     <uses-permission
         android:name="android.permission.READ_PHONE_STATE"
         tools:node="remove" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"
+        tools:node="remove"/>
+
 
 
     <application
@@ -38,6 +40,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <meta-data android:name="com.bugsnag.android.API_KEY"
+            android:value="4244c9843d1344a64b5fe149f2c1cd19"/>
     </application>
 
 </manifest>

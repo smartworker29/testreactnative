@@ -91,8 +91,8 @@ export default {
     },
     error: {
         attention: 'Attention', // "Внимание",
-        emptyName: 'Enter your name', // "Введите имя",
-        emptySurname: 'Enter your surname', // "Введите фамилию",
+        emptyName: 'Enter your Second Name', // "Введите имя",
+        emptySurname: 'Enter your First Name', // "Введите фамилию",
         emptyPathNumber: 'Enter your route ID', // "Введите Номер маршрута",
         emptyPatronymic: 'Enter your middle name', // "Введите отчество",
         agentCreation: 'Couldn\'t create an agent, try again', // "Неудалось создать агента, попробуйте ещё раз",
@@ -107,6 +107,14 @@ export default {
         favorite: "Favorite", // "Избранные",
         nearest: "Nearest", // "Ближайшие",
         enterId: "Enter ID", // "Ввести ID"
+        tasks: "Заданий",
+        m: "m",
+        km: "km",
+        notFoundById: "Магазин не найден по ID",
+        checkId: "Пожалуйста, проверьте правильность введенной информации и нажмите «Продолжить» для продолжения визита или «Отмена» для возврата к списку магазинов.",
+        continue: "Продолжить",
+        geoDeny: "Чтобы увидеть ближайшиее магазины включите геолокацию",
+        noShops: "Не удалось получить список ближайших магазинов. Попробуйте еще раз через какой-то время или введите ID магазина для начала визита."
     },
     alerts: {
         haveUpdate: "Update is available", // "Доступно обновление",
@@ -118,7 +126,9 @@ export default {
         changeRoute: "Change Route", // "Изменение маршрута",
         cancel: "Cancel", // "Отмена",
         change: "Change", // "Изменить",
-        accept: "Accept", // "Принять"
+        accept: "Accept", // "Принять",
+        idLength: "Length can not be more than 20 characters",
+        enter: "Enter"
     },
     pin: {
         enter: "Enter PIN",
@@ -135,7 +145,12 @@ export default {
     },
     tasks: {
         emptyTitle: 'No tasks yet', // "Пока нет заданий",
-        emptyDescription: 'We will notify you upon receiving new tasks', // "Мы уведомим вас при поступлении новых заданий"
+        emptyDescription: 'We will notify you upon receiving new tasks', // "Мы уведомим вас при поступлении новых заданий",
+        shopPoint: "Торговая точка"
+    },
+    arCamera: {
+        captureStarted: "AR-камера определяет плоскость полки, подождите, пожалуйста",
+        captureSuccess: "Найдена плоскость полки, прикоснитесь к экрану для начала съемки."
     },
     tabBar: {
         tasks: 'Tasks', // "Задания",
@@ -166,5 +181,23 @@ export default {
         success: 'Complaint sent!', // "Жалоба успешно отправлена",
         error: 'Complaint not sent', // "Жалоба не отправлена",
         describe: 'Describe the situation', // "Опишите ситуацию"
+    },
+    profile: {
+        route: "Route",
+        email: "E-mail",
+        position: "Position",
+        region: "Region",
+        phone: "Phone"
+    },
+    questions: {
+        questionnaire: "Questionnaire",
+        text: "In this task you need to fill out a questionnaire, please click the button below",
+        answerButton: "Answer the questions",
+        saveToServer: "Save answers to server",
+        savingToServer: "Saving answers...",
+        saveAnswersButton: "Save answers",
+        haveRequireQuestions: "Questions remained",
+        requireText: "Please answer the required questions (marked with an asterisk)",
+        ok: "Ok"
     }
 }

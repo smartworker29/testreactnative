@@ -17,7 +17,7 @@ import {Map} from "immutable";
 import {basename} from "react-native-path";
 import _ from "lodash";
 
-export default changeConnectionStatus = (connected) => (dispatch) => {
+export const changeConnectionStatus = (connected) => (dispatch) => {
     dispatch({type: CHANGE_CONNECTION_STATUS, payload: connected});
 }
 

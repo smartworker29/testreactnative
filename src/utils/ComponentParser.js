@@ -94,6 +94,7 @@ export default class ComponentParser {
                         {isNotPresent ? <RNPickerSelect
                             items={reasons}
                             placeholder={{}}
+                            hideIcon={false}
                             onValueChange={(value) => {
                                 _value = value;
                                 if (Platform.OS === "android" && value !== false) {

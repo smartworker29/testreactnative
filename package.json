@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "clear":"watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache",
+    "g-clean":"cd android && ./gradlew clean",
+    "build":"cd android &&  ./gradlew assembleRelease"
+
   },
   "dependencies": {
     "@sentry/wizard": "^0.12.1",
@@ -15,6 +19,7 @@
     "eventemitter2": "^5.0.1",
     "immutable": "^4.0.0-rc.9",
     "install": "^0.12.2",
+    "ios": "^0.0.1",
     "lodash": "^4.17.10",
     "moment": "2.18.0",
     "native-base": "^2.3.8",

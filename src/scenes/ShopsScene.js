@@ -55,7 +55,7 @@ class ShopsScene extends Component {
 
         const length = _.isArray(item.visittask_ids) ? item.visittask_ids.length : 0;
         return (
-            <TouchableOpacity style={styles.item} onPress={() => this.itemClick(item)} key={item.id}>
+            <TouchableOpacity style={styles.item} onPress={() => this.itemClick(item)} key={`${item.id}`}>
                 <View style={styles.topRow}>
                     {(logo) ? <CachedImage style={styles.icon} source={{uri: logo}} resizeMode="contain"/> : null}
                     <View style={{flex: 1}}>
@@ -313,6 +313,7 @@ class ShopsScene extends Component {
                 <Text style={{textAlign: "center"}}>{I18n.t("shops.geoDeny")}</Text>
             </View>
         }
+        console.log('list', list.toArray())
         return (
             <View style={{flex: 1}}>
                 <FlatList
@@ -320,6 +321,7 @@ class ShopsScene extends Component {
                     ListHeaderComponent={this.renderHeader}
                     ListFooterComponent={this.renderFooter}
                     renderItem={({item}) => this.renderItem(item)}
+                    keyExtractor={(item)=>`${item.id}`}
                     ListEmptyComponent={this.renderEmptyList}
                     refreshControl={
                         <RefreshControl

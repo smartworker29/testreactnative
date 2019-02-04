@@ -1,37 +1,34 @@
 import {visitDetailsAndReset} from './navigation'
-import {AsyncStorage, Alert, Clipboard} from 'react-native'
+import {Alert, AsyncStorage, Clipboard} from 'react-native'
 import API from '../api/index'
 import {
-    ADD_TASK_NAME,
-    CREATE_VISIT_ERROR,
-    CREATE_VISIT_REQUEST,
-    CREATE_VISIT_RESPONSE,
-    DELETE_OFFLINE_VISIT, FEEDBACK_CLEAR_ERROR, photoDir,
-    REFRESH_VISIT_ERROR,
-    REFRESH_VISIT_REQUEST,
-    REFRESH_VISIT_RESPONSE,
-    SEND_FEEDBACK_REQUEST, SEND_FEEDBACK_RESPONSE,
-    SEND_FEEDBACK_TIMEOUT,
-    SET_APP_DATA,
-    SET_LAST_CREATED_ID, SET_STORED_VISITS,
-    SET_SYNC_VISIT, SET_TASK_NAMES,
-    SET_VISIT_OFFLINE,
-    SYNC_VISIT_END,
-    SYNC_VISIT_REQUEST,
-    SYNC_VISIT_RESPONSE,
-    SYNC_VISIT_START
+  ADD_TASK_NAME,
+  CREATE_VISIT_ERROR,
+  CREATE_VISIT_REQUEST,
+  CREATE_VISIT_RESPONSE,
+  DELETE_OFFLINE_VISIT,
+  FEEDBACK_CLEAR_ERROR,
+  REFRESH_VISIT_ERROR,
+  REFRESH_VISIT_REQUEST,
+  REFRESH_VISIT_RESPONSE,
+  SET_APP_DATA,
+  SET_LAST_CREATED_ID,
+  SET_STORED_VISITS,
+  SET_SYNC_VISIT,
+  SET_VISIT_OFFLINE,
+  SYNC_VISIT_END,
+  SYNC_VISIT_REQUEST,
+  SYNC_VISIT_RESPONSE,
+  SYNC_VISIT_START
 } from '../utils/constants'
 import _ from "lodash";
 import {Map} from "immutable";
 import {getDeviceInfo} from "../utils/util";
 import AsyncStorageQueue from "../utils/AsyncStorageQueue";
-import {readDir, readdir} from "react-native-fs";
-import ErrorLogging from "../utils/Errors";
 import uuidv4 from 'uuid/v4';
 import moment from "moment/moment";
-import {deleteOldPhoto} from "./app";
 import {SET_SKU_REASONS} from "./visitDetails";
-import {SET_LAST_CUSTOMER, setLastCustomer} from "./shops";
+import {SET_LAST_CUSTOMER} from "./shops";
 
 const wait = (timeout) => new Promise(resolve => {
     setTimeout(() => {
