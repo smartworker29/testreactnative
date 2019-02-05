@@ -47,6 +47,7 @@
 		422DAB39E9AE4DABA3981F08 /* rubicon-icon-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2A8D49307246424EB42F9E5D /* rubicon-icon-font.ttf */; };
 		4C8B2F054CA14ABA8D860BCC /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B4EE8932A974241A09B914B /* libRNDeviceInfo.a */; };
 		4F4A6B149A574F3F96155F52 /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 81E4A332D68746FBB4EB19CB /* libRCTImageResizer.a */; };
+		5995408F143D4838AF4702C0 /* libRNSensors.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 152146489F174FFA917D56AA /* libRNSensors.a */; };
 		5B6038FDDC9C4FE1AD7D95F5 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 62932A8F2874446C863A7D6B /* Zocial.ttf */; };
 		6D16D33940DD48739744A106 /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D9DC515AA84D4FF289B71ED5 /* FontAwesome.ttf */; };
 		72AF5E777FAA4C3F9E12922C /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FE12795F683D4F0E8079E53C /* libBVLinearGradient.a */; };
@@ -310,6 +311,13 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		EB40575F2209DB0500C62EA4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9D368DE759ED4B38BCB9671D /* RNSensors.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNSensors;
+		};
 		EB88C4A2220448CC00DE65F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
@@ -527,6 +535,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = CloudInspector/main.m; sourceTree = "<group>"; };
 		13CA12C5FE36430E84F316B7 /* libRCTOrientation.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTOrientation.a; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		152146489F174FFA917D56AA /* libRNSensors.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSensors.a; sourceTree = "<group>"; };
 		1F66BA87080143728844FE68 /* libRNFS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFS.a; sourceTree = "<group>"; };
 		1F8ACE643A2A419DBAD3D33F /* libRNSnackbar.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSnackbar.a; sourceTree = "<group>"; };
 		252F1A7468084A3DB7DBA6CB /* libBugsnagReactNative.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBugsnagReactNative.a; sourceTree = "<group>"; };
@@ -553,6 +562,7 @@
 		896ABACF9FE34A3289C80798 /* STTVTableView.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = STTVTableView.xcodeproj; path = "../node_modules/react-native-largelist/ios/STTVTableView.xcodeproj"; sourceTree = "<group>"; };
 		944A099B9FBD47B99EFA8973 /* Roboto_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto_medium.ttf; path = "../node_modules/native-base/Fonts/Roboto_medium.ttf"; sourceTree = "<group>"; };
 		98DE9840802C4045A7DB743F /* RCTOrientation.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTOrientation.xcodeproj; path = "../node_modules/react-native-orientation/iOS/RCTOrientation.xcodeproj"; sourceTree = "<group>"; };
+		9D368DE759ED4B38BCB9671D /* RNSensors.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSensors.xcodeproj; path = "../node_modules/react-native-sensors/ios/RNSensors.xcodeproj"; sourceTree = "<group>"; };
 		A7DD2EEA77EF43E9B120FB1D /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/native-base/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		A9DC982FFC3C4A2D9A428778 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -616,6 +626,7 @@
 				D3BAC22FEF5B45DBB3A0A4E9 /* libRNSnackbar.a in Frameworks */,
 				3EB7473CCFB343A3BE3A8DA6 /* libreactnativeuilib.a in Frameworks */,
 				CFCBB130AFEF41DFAEA8BD6C /* libRNFetchBlob.a in Frameworks */,
+				5995408F143D4838AF4702C0 /* libRNSensors.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -818,6 +829,7 @@
 				56418EE872B94A2CA7A94F6A /* RNSnackbar.xcodeproj */,
 				077337C799974CEF8D1901EC /* reactnativeuilib.xcodeproj */,
 				065BE580F43046F69004EE77 /* RNFetchBlob.xcodeproj */,
+				9D368DE759ED4B38BCB9671D /* RNSensors.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -891,6 +903,14 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
+		EB40575C2209DB0500C62EA4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB4057602209DB0500C62EA4 /* libRNSensors.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		EB88C479220448CA00DE65F8 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -914,6 +934,7 @@
 				49278D2E01554DB598EECBD7 /* libRNI18n-tvOS.a */,
 				556F910E5C1C42848AC1F1FA /* libRNSentry-tvOS.a */,
 				F3ACA37A733449E7914B64FC /* libRNFetchBlob.a */,
+				152146489F174FFA917D56AA /* libRNSensors.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1234,6 +1255,10 @@
 					ProjectRef = 10060F23D8394E0A84CD0546 /* RNPhotoView.xcodeproj */;
 				},
 				{
+					ProductGroup = EB40575C2209DB0500C62EA4 /* Products */;
+					ProjectRef = 9D368DE759ED4B38BCB9671D /* RNSensors.xcodeproj */;
+				},
+				{
 					ProductGroup = EB88C4C4220448CD00DE65F8 /* Products */;
 					ProjectRef = B9BF27766A9F46D78D98C8D2 /* RNSentry.xcodeproj */;
 				},
@@ -1484,6 +1509,13 @@
 			fileType = archive.ar;
 			path = libRCTBlob.a;
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		EB4057602209DB0500C62EA4 /* libRNSensors.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSensors.a;
+			remoteRef = EB40575F2209DB0500C62EA4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		EB88C4A3220448CC00DE65F8 /* libjsi.a */ = {
@@ -1814,12 +1846,14 @@
 					"$(SRCROOT)/../node_modules/react-native-snackbar/ios",
 					"$(SRCROOT)/../node_modules/react-native-ui-lib/lib/ios/reactnativeuilib/**",
 					"$(SRCROOT)/../node_modules/rn-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios/**",
 				);
 				INFOPLIST_FILE = CloudInspector/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/CloudInspector\"",
 					"\"$(SRCROOT)/CloudInspector\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1859,12 +1893,14 @@
 					"$(SRCROOT)/../node_modules/react-native-snackbar/ios",
 					"$(SRCROOT)/../node_modules/react-native-ui-lib/lib/ios/reactnativeuilib/**",
 					"$(SRCROOT)/../node_modules/rn-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios/**",
 				);
 				INFOPLIST_FILE = CloudInspector/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/CloudInspector\"",
 					"\"$(SRCROOT)/CloudInspector\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1910,6 +1946,7 @@
 					"$(SRCROOT)/../node_modules/react-native-snackbar/ios",
 					"$(SRCROOT)/../node_modules/react-native-ui-lib/lib/ios/reactnativeuilib/**",
 					"$(SRCROOT)/../node_modules/rn-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios/**",
 				);
 				INFOPLIST_FILE = "CloudInspector-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1960,6 +1997,7 @@
 					"$(SRCROOT)/../node_modules/react-native-snackbar/ios",
 					"$(SRCROOT)/../node_modules/react-native-ui-lib/lib/ios/reactnativeuilib/**",
 					"$(SRCROOT)/../node_modules/rn-fetch-blob/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios/**",
 				);
 				INFOPLIST_FILE = "CloudInspector-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -26,6 +26,8 @@ import {cameraButton, closeIcon, flashAuto, flashOff, flashOn} from "../utils/im
 import {copyFile, unlink} from 'react-native-fs';
 import ImageResizer from 'react-native-image-resizer';
 import {basename} from "react-native-path";
+import Orientation from "react-native-orientation";
+import {accelerometer, setUpdateIntervalForType, SensorTypes} from "react-native-sensors";
 
 let {height, width} = Dimensions.get('window');
 const heightCamera = width / 3 * 4;
@@ -36,12 +38,14 @@ const IOS_INC = 0.001;
 const IOS_DEC = 0.001;
 const AR_CAMERA = 'AR_CAMERA';
 const STANDARD_CAMERA = "STANDARD_CAMERA";
+setUpdateIntervalForType(SensorTypes.accelerometer, 400);
 
 class PhotoScene extends Component {
 
   takePictureStatus = false;
   tmpZoom = 0;
   startedSession = false;
+  accelSubscription = null;
 
   constructor() {
     super();
@@ -64,6 +68,9 @@ class PhotoScene extends Component {
       files: [],
       photoIndex: null,
       finalUri: null,
+      x: null,
+      y: null,
+      z: null
     };
   }
 
@@ -85,11 +92,41 @@ class PhotoScene extends Component {
     });
   }
 
+  getRotate() {
+    const {x, y, z} = this.state;
+    let rotate = 0;
+
+    if (x === null || y === null || z === null) {
+      return rotate
+    }
+
+    if (Platform.OS === 'ios') {
+      if (x > 0.60 && z > -0.80 && Math.abs(y) < 0.60) {
+        rotate = 90
+      }
+      if (x < -0.60 && z > -0.80 && Math.abs(y) < 0.60) {
+        rotate = -90
+      }
+    } else {
+      if (x > 6 && z < 8 && y < 6) {
+        rotate = -90
+      }
+      if (x < -6 && z < 8 && y < 6) {
+        rotate = 90
+      }
+    }
+
+    return rotate;
+  }
+
   componentDidMount() {
-    this._isMounted = true
+    this._isMounted = true;
     StatusBar.setHidden(true);
     const photoIndex = this.props.navigation.getParam("photoIndex", null);
     this.setState({photoIndex});
+    this.accelSubscription = accelerometer.subscribe(({x, y, z, timestamp}) =>
+      this.setState({x, y, z})
+    );
   }
 
   onBackPress = () => {
@@ -97,9 +134,12 @@ class PhotoScene extends Component {
   };
 
   componentWillUnmount() {
-    this._isMounted = false
+    this._isMounted = false;
     StatusBar.setHidden(false);
     const {backHandler} = this.props.navigation.state.params;
+    if (this.accelSubscription !== null) {
+      this.accelSubscription.unsubscribe();
+    }
     backHandler && backHandler(this.state.finalUri);
   }
 
@@ -146,6 +186,14 @@ class PhotoScene extends Component {
     return false;
   };
 
+  getOrientation() {
+    return new Promise((resolve, reject) => {
+      Orientation.getOrientation((err, orientation) => {
+        return (err) ? reject(err) : resolve(orientation);
+      });
+    })
+  }
+
   takePicture = async () => {
 
     if (this.takePictureStatus === true || !this.camera) {
@@ -154,6 +202,14 @@ class PhotoScene extends Component {
 
     const photoUUID = this.props.navigation.getParam("photoUUID", null);
     const photoIndex = this.props.navigation.getParam("photoIndex", null);
+
+    let rotate = 0;
+
+    if (Platform.OS === "android") {
+      rotate = this.getRotate();
+    }
+
+    const initial = await this.getOrientation();
 
     this.fadeCamera();
     this.takePictureStatus = true;
@@ -171,6 +227,18 @@ class PhotoScene extends Component {
       return Alert.alert("Фото не сделано", _.get(error, "message", ""));
     }
 
+    if (initial !== 'PORTRAIT') {
+      rotate = 0
+    }
+
+    if (Platform.OS !== 'ios' && data.width > data.height) {
+      rotate = rotate + 90;
+    }
+
+    if (Platform.OS === 'ios' && initial === 'PORTRAIT' && rotate !== 0) {
+      rotate = 0
+    }
+
     if (data === null) {
       this.takePictureStatus = false;
       this._isMounted && this.setState({processPhoto: false});
@@ -182,7 +250,7 @@ class PhotoScene extends Component {
 
     let result;
     try {
-      result = await ImageResizer.createResizedImage(data.uri, width, height, 'JPEG', 90);
+      result = await ImageResizer.createResizedImage(data.uri, width, height, 'JPEG', 90, rotate);
     } catch (error) {
       this.takePictureStatus = false;
       this._isMounted && this.setState({processPhoto: false});
@@ -197,7 +265,7 @@ class PhotoScene extends Component {
 
     if (result.size === 0) {
       this.takePictureStatus = false;
-      this._isMounted &&  this.setState({processPhoto: false});
+      this._isMounted && this.setState({processPhoto: false});
       try {
         await unlink(data.uri);
         await unlink(result.uri);
@@ -218,7 +286,7 @@ class PhotoScene extends Component {
       await unlink(data.uri);
     } catch (error) {
       this.takePictureStatus = false;
-      this._isMounted &&  this.setState({processPhoto: false});
+      this._isMounted && this.setState({processPhoto: false});
       return Alert.alert("Ошибка удаления", _.get(error, "message", ""))
     }
 

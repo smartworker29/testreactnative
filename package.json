@@ -5,10 +5,9 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "clear":"watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache",
-    "g-clean":"cd android && ./gradlew clean",
-    "build":"cd android &&  ./gradlew assembleRelease"
-
+    "clear": "watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache",
+    "g-clean": "cd android && ./gradlew clean",
+    "build": "cd android &&  ./gradlew assembleRelease"
   },
   "dependencies": {
     "@sentry/wizard": "^0.12.1",
@@ -55,6 +54,7 @@
     "react-native-picker-select": "^5.2.4",
     "react-native-prompt": "^1.0.0",
     "react-native-radio-buttons-group": "^1.0.7",
+    "react-native-sensors": "^5.1.6",
     "react-native-sentry": "^0.40.3",
     "react-native-snackbar": "^0.5.3",
     "react-native-status-bar-height": "^2.0.0",

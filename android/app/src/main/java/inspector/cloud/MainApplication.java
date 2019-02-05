@@ -7,6 +7,7 @@ import android.support.multidex.MultiDexApplication;
 
 import com.bugsnag.BugsnagReactNative;
 import com.facebook.react.ReactApplication;
+import com.sensors.RNSensorsPackage;
 
 import io.sentry.RNSentryPackage;
 
@@ -51,6 +52,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
+            new RNSensorsPackage(),
                     new RNSentryPackage(),
                     new RNFusedLocationPackage(),
                     new SnackbarPackage(),
