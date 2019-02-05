@@ -37,8 +37,7 @@ import {
   setSync
 } from "../actions/questions";
 import {back} from "../actions/navigation";
-
-const {height, width} = Dimensions.get('window');
+import BarcodePointer from "../component/BarcodePointer"
 
 class QuestionnaireScene extends Component {
   static navigationOptions = ({navigation}) => QuestionnaireNavigationOptions(navigation);
@@ -442,30 +441,6 @@ class QuestionnaireScene extends Component {
     this.props.saveQuestions(visitUuid, questionsTree);
   }
 
-  renderBarcodePointer = () => {
-    const pointerWidth = width * 80 / 100;
-    const pointerHeight = width * 40 / 100;
-    return (
-      <View style={{
-        position: "absolute",
-        borderColor: "white",
-        borderWidth: 2,
-        width: pointerWidth,
-        height: pointerHeight,
-        top: height / 2 - pointerHeight / 2,
-        left: width / 2 - pointerWidth / 2
-      }}>
-        <View style={{
-          flex: 1, position: "absolute",
-          width: "100%",
-          height: "100%",
-          borderWidth: 2,
-          borderColor: "black",
-        }}/>
-      </View>
-    )
-  };
-
   renderGroups(groups) {
     const _groups = [];
     for (const group of groups) {
@@ -491,7 +466,7 @@ class QuestionnaireScene extends Component {
               }}
               barCodeTypes={[RNCamera.Constants.BarCodeType.ean13, RNCamera.Constants.BarCodeType.ean8]}
             />
-            {this.renderBarcodePointer()}
+            <BarcodePointer/>
             <SafeAreaView style={{position: "absolute"}}>
               <TouchableOpacity onPress={() => {
                 this._isMounted && this.setState({isCameraVisible: false})
