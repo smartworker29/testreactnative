@@ -13,7 +13,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from "react-native";
 import {
   barcode,
@@ -36,6 +37,7 @@ import {
   setSync
 } from "../actions/questions";
 import {back} from "../actions/navigation";
+import BarcodePointer from "../component/BarcodePointer"
 
 class QuestionnaireScene extends Component {
   static navigationOptions = ({navigation}) => QuestionnaireNavigationOptions(navigation);
@@ -201,7 +203,7 @@ class QuestionnaireScene extends Component {
   }
 
   selectOption(questionUuid, answerUuid, answerValue) {
-    this._isMounted &&  this.setState(state => {
+    this._isMounted && this.setState(state => {
       return {
         answers: state.answers.set(this.state.visitUuid + '_' + questionUuid, {
           question_uuid: questionUuid,
@@ -464,6 +466,7 @@ class QuestionnaireScene extends Component {
               }}
               barCodeTypes={[RNCamera.Constants.BarCodeType.ean13, RNCamera.Constants.BarCodeType.ean8]}
             />
+            <BarcodePointer/>
             <SafeAreaView style={{position: "absolute"}}>
               <TouchableOpacity onPress={() => {
                 this._isMounted && this.setState({isCameraVisible: false})
