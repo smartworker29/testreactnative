@@ -107,14 +107,16 @@ class PreviewScene extends Component {
     })
   };
 
-  componentDidMount() {
-    this._isMounted = true
+  componentWillMount() {
+    this._isMounted = true;
     const uri = this.props.navigation.getParam("uri");
     const id = this.props.navigation.getParam("id");
     const photos = getPhotoFromVisit(id, this.props.photos, this.props.sync);
     const index = photos.findIndex(photo => photo && photo.uri === uri);
-    this.setState({photoUri: uri, initIndex: index || 0});
+    this._isMounted && this.setState({photoUri: uri, initIndex: index || 0});
+  }
 
+  componentDidMount() {
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('light-content');
     }
@@ -122,7 +124,7 @@ class PreviewScene extends Component {
   }
 
   componentWillUnmount() {
-    this._isMounted = false
+    this._isMounted = false;
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('dark-content');
     }
