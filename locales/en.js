@@ -100,7 +100,8 @@ export default {
         createAgent: 'Error while creating agent', // "Ошибка создания агента",
         updateAgent: 'Error while updating agent', // "Ошибка обновления агента"
         geoPlayService: "Please, install Google Play services", // "Установите Google Play сервисы",
-        geoTimeout: "Geolocation timeout", // "Истекло время получения геопозиции"
+        geoTimeout: "Geolocation timeout", // "Истекло время получения геопозиции",
+        accelerometerError: "Accelerometer not available"
     },
     shops: {
         shops: "Shops", // "Магазины",
