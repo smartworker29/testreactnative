@@ -28,6 +28,9 @@ import ImageResizer from 'react-native-image-resizer';
 import {basename} from "react-native-path";
 import Orientation from "react-native-orientation";
 import {accelerometer, setUpdateIntervalForType, SensorTypes} from "react-native-sensors";
+import I18n from 'react-native-i18n'
+
+import {Sentry} from 'react-native-sentry'
 
 let {height, width} = Dimensions.get('window');
 const heightCamera = width / 3 * 4;
@@ -124,9 +127,16 @@ class PhotoScene extends Component {
     StatusBar.setHidden(true);
     const photoIndex = this.props.navigation.getParam("photoIndex", null);
     this.setState({photoIndex});
-    this.accelSubscription = accelerometer.subscribe(({x, y, z, timestamp}) =>
-      this.setState({x, y, z})
-    );
+    try {
+      this.accelSubscription = accelerometer.subscribe(({x, y, z}) =>
+        this.setState({x, y, z})
+      );
+    } catch (error) {
+      Sentry.captureException(I18n.t("error.accelerometerError"));
+
+      Alert.alert(I18n.t("error.attention"), I18n.t("error.accelerometerError"));
+    }
+
   }
 
   onBackPress = () => {

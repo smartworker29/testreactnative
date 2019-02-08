@@ -101,6 +101,7 @@ export default {
         updateAgent: 'Error al actualizar el agente', // 'Error while updating agent', // "Ошибка обновления агента"
         geoPlayService: "Instalar servicios de Google Play", // "Установите Google Play сервисы",
         geoTimeout: "Hora de recibir la posición geográfica", // "Истекло время получения геопозиции"
+        accelerometerError: "Accelerometer not available"
     },
     shops: {
         shops: "Tiendas", // "Магазины",
