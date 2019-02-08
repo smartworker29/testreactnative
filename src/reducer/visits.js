@@ -102,7 +102,7 @@ export default (state = init, action) => {
 
             let ids = OrderedSet([...tmpIds, ...action.payload.result, ...additionalIds]).sort().reverse().take(limit).toArray();
             const _needSync = state.entities.offline ? _.keys(state.entities.offline).length : 0;
-            let newVisits = OrderedMap().concat(tmpVisits).concat(refreshVisits).concat(additionalVisits);
+            let newVisits = OrderedMap().merge(tmpVisits).merge(refreshVisits).merge(additionalVisits);
 
             return {
                 ...state,
