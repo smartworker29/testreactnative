@@ -132,8 +132,7 @@ class PhotoScene extends Component {
         this.setState({x, y, z})
       );
     } catch (error) {
-      Sentry.captureException(I18n.t("error.accelerometerError"));
-
+      Sentry.captureMessage(I18n.t("error.accelerometerError"));
       Alert.alert(I18n.t("error.attention"), I18n.t("error.accelerometerError"));
     }
 
