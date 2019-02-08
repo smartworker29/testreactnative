@@ -11,7 +11,7 @@ import {Sentry} from 'react-native-sentry'
 import ErrorBoundary from './component/ErrorBoundary'
 
 if (!__DEV__) {
-  Sentry.config('https://11d80528d8d744ce9098692402b0339f@sentry.inspector-cloud.ru//6').install().then(console.log).catch(console.log);
+  Sentry.config('https://11d80528d8d744ce9098692402b0339f@sentry.inspector-cloud.ru//6').install();
 }
 const currentLocale = I18n.currentLocale();
 
@@ -25,13 +25,13 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <Root>
-        <Provider store={store}>
-          <ErrorBoundary>
+      <Provider store={store}>
+        <ErrorBoundary>
+          <Root>
             <AppWithNavigationState/>
-          </ErrorBoundary>
-        </Provider>
-      </Root>
+          </Root>
+        </ErrorBoundary>
+      </Provider>
     )
   }
 }
