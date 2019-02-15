@@ -113,7 +113,6 @@ android {
 
         multiDexEnabled = true
 
-
     }
     signingConfigs {
         release {
@@ -157,6 +156,8 @@ android {
 }
 
 dependencies {
+    implementation project(':appcenter-analytics')
+    implementation project(':appcenter')
     implementation project(':react-native-sensors')
     implementation project(':react-native-sentry')
     implementation project(':react-native-geolocation-service')

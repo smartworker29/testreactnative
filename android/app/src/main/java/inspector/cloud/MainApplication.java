@@ -7,6 +7,8 @@ import android.support.multidex.MultiDexApplication;
 
 import com.bugsnag.BugsnagReactNative;
 import com.facebook.react.ReactApplication;
+import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
+import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import com.sensors.RNSensorsPackage;
 
 import io.sentry.RNSentryPackage;
@@ -52,6 +54,8 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
         protected List<ReactPackage> getPackages() {
             return Arrays.<ReactPackage>asList(
                     new MainReactPackage(),
+            new AppCenterReactNativeAnalyticsPackage(MainApplication.this, getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)),
+            new AppCenterReactNativePackage(MainApplication.this),
             new RNSensorsPackage(),
                     new RNSentryPackage(),
                     new RNFusedLocationPackage(),

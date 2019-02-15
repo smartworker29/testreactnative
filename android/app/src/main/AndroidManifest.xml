@@ -3,7 +3,7 @@
     package="inspector.cloud"
 
     android:name="android.support.multidex.MultiDexApplication"
-    android:versionName="1.0">
+   >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
