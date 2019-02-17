@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="app_name">Inspector Cloud Debug</string>
+    <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true">ALWAYS_SEND</string>
+</resources>
