@@ -80,6 +80,7 @@ project.ext.react = [
 
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-sentry/sentry.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -180,6 +181,7 @@ dependencies {
     implementation project(':react-native-device-info')
     implementation project(':react-native-camera')
     implementation project(':bugsnag-react-native')
+    implementation project(':react-native-code-push')
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
